@@ -1,0 +1,50 @@
+*{
+    margin:0;
+    padding:0;
+}
+
+.login-background {
+    position:absolute;
+    top:0;
+    left: 0;
+    right:0;
+    bottom:0;
+    background: url(../../assets/login-resources/newyork/newyork-skyline.jpg) no-repeat;
+    background-size: cover;
+    background-position:center;
+    width: 100%;
+    height:100%;
+}
+
+@keyframes move-twinkle-back{
+    from {background-position: 0 0;}
+    to {background-position: -10000px 500px}
+}
+
+@keyframes scattered-twinkle {
+    0%, 100% {
+        opacity: 1; /* Fully visible */
+    }
+    50% {
+        opacity: 0.3; /* Dimmer */
+    }
+}
+
+.stars{
+    background:transparent url(../../assets/login-resources/newyork/stars-ny.png);
+    position: absolute;
+    top:0;
+    left: 0;
+    right:0;
+    bottom:0;
+    width:100%;
+    height:100%;
+    z-index: 2;
+    background-size: cover;
+    background-position:center;
+    animation: scattered-twinkle 5s infinite ease-in-out;
+
+    /* Add filters for randomness */
+    filter: brightness(1.2) contrast(1.2);
+}
+
