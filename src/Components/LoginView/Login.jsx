@@ -15,6 +15,7 @@ export default function Login() {
       <>
       <div className="login-background"></div>
       <div className="stars"></div>
+        <p className="city-name">New York</p>
         <p>Login</p>
       </>
     )
