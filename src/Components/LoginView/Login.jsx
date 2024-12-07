@@ -1,8 +1,10 @@
 import "./Login.css"
+import NewYorkImage from "../../assets/login-resources/newyork/newyork-skyline.jpg"
+import NewYorkStars from "./stars-ny.png"
 
 function useCityBackground() {
   let cityList = [
-    ['newyork-skyline.png','stars-ny.png']
+    {"name":"New York","city":NewYorkImage,"stars":NewYorkStars}
   ];
 
   let randInt = Math.floor(Math.random() * ((cityList.length - 1) + 1));
@@ -13,11 +15,22 @@ function useCityBackground() {
 export default function Login() {
     return (
       <>
-      <div className="login-background"></div>
+      <img className="city-background" src={NewYorkImage}/>
       <div className="stars"></div>
         <p className="city-name">New York</p>
         <p>Login</p>
       </>
+    )
+  }
+
+
+  function BackgroundImage({cityImg,starsImg}){
+    return(
+      <div className="login-background">
+      <img className="city-background" src={cityImg}/>
+      <img className="stars-background" src={starsImg}/>
+      <p></p>
+      </div>
     )
   }
   
