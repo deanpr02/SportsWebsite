@@ -1,15 +1,18 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import { useCityBackground } from './useCityBackground'
+import BackgroundImage from './Components/LoginView/BackgroundImage'
 import Login from './Components/LoginView/Login'
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const [userExists,setUserExists] = useState(true)
+  let randCity = useCityBackground()
   return (
     <>
-      <Login/>
+      <BackgroundImage cityImg={randCity.city} starsImg={randCity.stars} cityName={randCity.name}/>
+      {userExists ? <Login setUserExists={setUserExists}/>:
+      <p>User exists</p>
+      }
     </>
   )
 }
