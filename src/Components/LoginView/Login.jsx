@@ -1,5 +1,8 @@
 import "./Login.css"
 import { FaUser,FaLock } from 'react-icons/fa';
+import { createUserWithEmailAndPassword } from "firebase/auth"
+
+
 import NewYorkImage from "../../assets/login-resources/newyork/newyork-skyline.jpg"
 import NewYorkStars from "../../assets/login-resources/newyork/stars-ny.png"
 

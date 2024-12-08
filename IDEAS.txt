@@ -1,0 +1,1 @@
+1. On the login screen, for a new user, you can select your favorite team and then that city would display, maybe some different images of the city are displayed
