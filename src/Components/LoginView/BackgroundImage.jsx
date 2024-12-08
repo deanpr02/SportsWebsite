@@ -1,3 +1,5 @@
+import "./BackgroundImage.css"
+
 export default function BackgroundImage({cityImg,starsImg,cityName}){
     return(
       <div className="login-background">
