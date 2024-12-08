@@ -17,8 +17,7 @@ export default function CreateUser({setUserExists}){
     await createUserWithEmailAndPassword(auth,email,password)
       .then((userCredential) => {
         const user = userCredential.user;
-        console.log(user);
-        navigate("/home")
+        navigate("/home");
 
       })
       .catch((error) => {
