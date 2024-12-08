@@ -1,0 +1,48 @@
+*{
+    margin:0;
+    padding:0;
+}
+
+.city-background {
+    position:absolute;
+    top:0;
+    left: 0;
+    right:0;
+    bottom:0;
+    background-size: cover;
+    background-position:center;
+    width: 100%;
+    height:100%;
+    z-index:-1;
+}
+
+@keyframes twinkle {
+    0% { opacity: 0.5; }
+    100% { opacity: 1; }
+  }
+
+.stars-background{
+    position: absolute;
+    top:0;
+    left: 0;
+    right:0;
+    bottom:0;
+    width:100%;
+    height:100%;
+    z-index: 0;
+    background-size: cover;
+    background-position:center;
+    animation: twinkle 4s infinite alternate;;
+
+    /* Add filters for randomness */
+    /*filter: brightness(1.2) contrast(1.2);*/
+}
+
+.city-name{
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    font-size: 30px;
+    color: white;
+    font-weight: bold;
+}
