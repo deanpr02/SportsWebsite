@@ -2,6 +2,7 @@ import { useState,useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useNavigate,Route,Routes } from 'react-router-dom'
 import { auth } from '../../firebase'
+import './Home.css'
 
 import MainMenu from './MainMenu'
 
@@ -19,7 +20,7 @@ export default function Home(){
                 console.log("No user signed in")
             }
         })
-    })
+    },[])
     
     return(
         <>
@@ -27,7 +28,6 @@ export default function Home(){
         <Routes>
             <Route path={"/"} element={<MainMenu/>}/>
         </Routes>
-        
         }
         </>
     )
