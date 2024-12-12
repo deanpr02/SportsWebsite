@@ -5,6 +5,7 @@ import { auth } from '../../firebase'
 import './Home.css'
 
 import MainMenu from './MainMenu'
+import MLBView from './MLBView'
 
 export default function Home(){
     const [isAuthenticated,setIsAuthenticated] = useState(false)
@@ -27,6 +28,7 @@ export default function Home(){
         {isAuthenticated &&
         <Routes>
             <Route path={"/"} element={<MainMenu/>}/>
+            <Route path={"/mlb"} element={<MLBView/>}/>
         </Routes>
         }
         </>
