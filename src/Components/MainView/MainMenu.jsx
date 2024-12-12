@@ -1,10 +1,10 @@
 import './MainMenu.css'
 import SportMenuContainer from './SportMenuContainer'
-import Baseball from '../../assets/baseball.svg'
-import Football from '../../assets/football.svg'
-import Basketball from '../../assets/basketball.svg'
-import Hockey from '../../assets/hockey.svg'
-import Soccer from '../../assets/soccer.svg'
+import Baseball from '../../assets/menu-resources/mlb-logo.png'
+import Football from '../../assets/menu-resources/nfl-logo.png'
+import Basketball from '../../assets/menu-resources/nba-logo.png'
+import Hockey from '../../assets/menu-resources/nhl-logo.png'
+import Soccer from '../../assets/menu-resources/mls-logo.png'
 
 export default function MainMenu(){
     return(
