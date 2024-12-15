@@ -1,0 +1,44 @@
+.vl{
+    border-left: 6px solid green;
+    height: 500px;
+}
+
+.match-up{
+    padding:20px;
+}
+
+.team{
+    border: 3px solid white;
+    height:50%;
+    display: flex;
+    justify-content: horizontal;
+    margin:5px;
+}
+
+.team-logo{
+    width:25%;
+    height:25%;
+    background:lightgray;
+    object-fit: contain;
+}
+
+.team-name{
+    display:flex;
+    flex-direction:column;
+    justify-content: center;
+    align-items:center;
+    padding:10px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.score{
+    text-align:right;
+    font-size:24px;
+    font-weight:bold;
+    display:flex;
+    justify-content: flex-end;
+    align-items:center;
+    margin-left:auto;
+    padding:20px;
+}
