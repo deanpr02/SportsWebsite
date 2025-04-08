@@ -1,56 +1,210 @@
 import './Bracket.css'
-import Yankees from '../../assets/mlb-resources/mlb-yankees-primary.png'
-import Orioles from '../../assets/mlb-resources/mlb-orioles-primary.png'
-import Royals from '../../assets/mlb-resources/mlb-royals-primary.png'
-import Tigers from '../../assets/mlb-resources/mlb-tigers-primary.png'
-import Astros from '../../assets/mlb-resources/mlb-astros-primary.png'
-import Guardians from '../../assets/mlb-resources/mlb-guardians-primary.png'
-import Dodgers from '../../assets/mlb-resources/mlb-dodgers-primary.png'
+import { useRetrieveTeam } from '../../Hooks/useRetrieveTeam'
+import { useState,useEffect,useContext } from 'react'
 
+/* Save the webscraped information to the session so we dont have to keep making the calls to the api
+each time a user redirects to a different page and then returns*/
 export default function Bracket(){
+
+    const [data,setData] = useState({})
+    const [year,setYear] = useState('2024')
+    const [leftConference,setLeftConference] = useState({})
+    const [rightConference,setRightConference] = useState({})
+
+    //Make custom hooks for these use effects
+    useEffect(() =>{
+        const fetchData = async () => {
+            try{
+                const response = await fetch('http://localhost:5000/api/webscrape/postseason');
+                if(!response.ok){
+                    throw new Error(`HTTP error! status: ${response.status}`)
+                }
+                const result = await response.json();
+                setData(result);
+            }
+            catch (error) {
+            if (error instanceof TypeError) {
+                console.log('Network or CORS error: ' + error.message);
+            } else {
+                console.log('Fetch error: ' + error.message);
+            }
+        } 
+        }
+        fetchData();
+    },[])
+
     return(
         <>
         <div className="bracket-container">
-            <Round/>
-
+            <YearSelector data={data} year={year} setYear={setYear}/>
+            {Object.entries(data).find(([key, results]) => key === year) && 
+                <div className="bracket">
+                <LeftBracket results={data[year]["AL"]} setLeft={setLeftConference}/>
+                <Championship leftConference={leftConference} rightConference={rightConference}/>
+                <RightBracket results={data[year]["NL"]} setRight={setRightConference}/>
+                </div>
+            }
         </div>
         </>
     )
 }
 
-function Round(){
-    const yanks = {name:"Yankees",city:"New York", logo:Yankees}
-    const orioles = {name:"Orioles",city:"Baltimore",logo:Orioles}
-    const royals = {name:"Royals",city:"Kansas City",logo:Royals}
-    const tigers = {name:"Tigers",city:"Detroit",logo:Tigers}
-    const astros = {name:"Astros",city:"Houston",logo:Astros}
-    const guardians = {name:"Guardians",city:"Cleveland",logo:Guardians}
+function LeftBracket({results,setLeft}){
+    useEffect(()=>{
+        const conferenceWinner = Object.entries(results).find(([name, data]) => !Array.isArray(data));
+        setLeft(conferenceWinner[1]);
+    },[results])
+
     return(
-        <div className="round-container">
-            <MatchUp away={tigers} home={astros}/>
-            <MatchUp away={royals} home={orioles}/>
+        <div className="row-container">
+                    {Object.entries(results).reverse().map(([roundName, roundData]) => (
+                        Array.isArray(roundData) && <div key={roundName}>
+                            <h3>{roundName}</h3>
+                            <Round roundData={roundData} />
+                        </div>
+                    ))}
         </div>
     )
 }
 
-function MatchUp({home,away}){
+function RightBracket({results,setRight}){
+    useEffect(()=>{
+        const conferenceWinner = Object.entries(results).find(([name, data]) => !Array.isArray(data));
+        setRight(conferenceWinner[1]);
+    },[results])
+
+    return(
+        <div className="row-container">
+                    {Object.entries(results).map(([roundName, roundData]) => (
+                        Array.isArray(roundData) && <div key={roundName}>
+                            <h3>{roundName}</h3>
+                            <Round roundData={roundData} />
+                        </div>
+                    ))}
+        </div>
+    )
+}
+
+function Championship({leftConference,rightConference}){
+    const leftTeam = useRetrieveTeam(leftConference?.name)
+    const rightTeam = useRetrieveTeam(rightConference?.name)
+    const [rendered,setRendered] = useState(false)
+
+    useEffect(() =>{
+        if(Object.keys(leftConference).length != 0 && Object.keys(rightConference).length != 0){
+            setRendered(true)
+        }
+    },[leftConference,rightConference])
+
+    return(
+        <>
+        {rendered && 
+        <div className="championship-container">
+            <p className="championship-text">Championship</p>
+            <div className="championship-series">
+                <div className="left-conference-champion">
+                    <Team team={leftTeam} seriesScore={leftConference.games_won}/>
+                </div>
+                <div className="right-conference-champion">
+                    <Team team={rightTeam} seriesScore={rightConference.games_won}/>
+                </div>
+            </div>
+            </div>
+        }
+        </>
+        /*
+        <div className="championship-container">
+        <p>Left Conference Winner</p>
+        <p>{leftConference.name}</p>
+        <p>Games won: {leftConference.games_won}</p>
+        </div>
+        */
+    )
+}
+
+function Round({roundData}){
+    if (roundData === undefined) {
+        return <div>Round data is undefined</div>;
+    }
+    return(
+    <div className="round-container">
+        {roundData.map((match, index) => {
+            const winningTeam = useRetrieveTeam(match.winner.name);
+            const losingTeam = useRetrieveTeam(match.loser.name);
+            return (
+                <div className="match-div" key={index}>
+                    <MatchUp home={winningTeam} away={losingTeam} homeWon={match.winner.games_won} awayWon={match.loser.games_won}/>
+                </div>
+            );
+        })}
+    </div>
+    )
+    
+}
+
+function MatchUp({home,away,homeWon,awayWon}){
     return(
         <div className="match-up">
-            <Team teamCity={away.city} teamName={away.name} teamLogo={away.logo}/>
-            <Team teamCity={home.city} teamName={home.name} teamLogo={home.logo}/>
+            <Team team={away} seriesScore={awayWon}/>
+            <Team team={home} seriesScore={homeWon}/>
         </div>
     )
 }
 
-function Team({teamCity,teamName,teamLogo}){
+function Team({team,seriesScore}){
     return(
-        <div className="team">
-            <img className="team-logo" src={teamLogo} alt="Team Logo"></img>
+        <div className="team" style={{"backgroundColor":`${team.primaryColor}00`}}>
+            <img className="team-logo" src={team.primaryLogo} alt="Team Logo" style={{"backgroundColor":team.secondaryColor}}></img>
             <div className="team-name">
-            <p>{teamCity}</p>
-            <p>{teamName}</p>
+                <div className="team-city">
+                <p>{team.city}</p>
+                </div>
+                <p>{team.name}</p>
             </div>
-            <p className="score">0</p>
+            <p className="score">{seriesScore}</p>
+        </div>
+    )
+}
+
+function YearSelector({data,year,setYear}){
+    const [isVisible,setIsVisible] = useState(false)
+    return (
+        <div className="drop-down">
+        <DropDownTop displayedText={year} setIsVisible={setIsVisible}/>
+        {isVisible && <DropDown data={data} setYear={setYear} setIsVisible={setIsVisible}/>}
+        </div>
+    );
+}
+
+
+function DropDownTop({displayedText,setIsVisible}){
+    return(
+        <div className="dropdown-top" onClick={()=>setIsVisible(true)}>
+            <p>{displayedText}</p>
+        </div>
+    )
+}
+
+
+function DropDown({data,setYear,setIsVisible}){
+    return(
+        <div className="dropdown-container" onMouseLeave={()=>setIsVisible(false)}>
+            {Object.keys(data).reverse().map((key =>
+                <DropDownItem key={key} content={key} setYear={setYear} setIsVisible={setIsVisible}/>
+            ))}
+        </div>
+    )
+}
+
+function DropDownItem({content,setYear,setIsVisible}){
+    const handleClick = () => {
+        setYear(content);
+        setIsVisible(false);
+    }
+    
+    return(
+        <div className="dropdown-item">
+            <p onClick={handleClick}>{content}</p>
         </div>
     )
 }

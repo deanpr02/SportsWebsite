@@ -1,0 +1,174 @@
+.chat-container{
+    width: 80%;
+    background-color: rgb(50,50,50);
+    display:flex;
+    border: 2px solid gray;
+    justify-content: center;
+    align-items: center;
+    min-height:90vh;
+    flex-direction: column;
+    
+}
+
+.clubhouse-container{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content: flex-end;
+}
+
+.post-input{
+    height:6vh;
+    width:100%;
+    border: 0px;
+    vertical-align:bottom;
+    border-radius:10px;
+    padding:10px;
+    background-color: rgb(35,35,35);
+}
+
+.post-input-container{
+    height:10vh;
+    width:95%;
+    background-color: rgb(35,35,35);
+    border-radius:10px;
+    display:flex;
+    flex-direction:column;
+    border: 2px solid rgb(45,45,45);
+    box-shadow: 1px 1px 1px 1px black;
+    margin-bottom:5px;
+}
+
+.send-arrow{
+    align-self: center;
+    margin:10px;
+    width:30px;
+    height:30px;
+    object-fit: fill;
+}
+
+.post-container{
+    display:flex;
+    flex-direction: row;
+    padding:10px;
+    width:100%;
+    padding-top: 15px;
+    padding-bottom:15px;
+}
+
+.profile-image{
+    width:50px;
+    height:50px;
+    min-height: 50px;
+    min-width:50px;
+    background-color: red;
+    border-radius:100%;
+    margin-right:10px;
+}
+
+.posts{
+    display:flex;
+    flex-direction:column-reverse;
+    width:95%;
+    height:80vh;
+    overflow:scroll;
+    scrollbar-width: 0;
+
+}
+
+.post-time{
+    padding-left: 10px;
+    color: rgb(150,150,150);
+}
+
+.post-content{
+    display:flex;
+    width:inherit;
+    white-space: none;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    justify-content: flex-start;
+    text-align:left;
+    max-width:100%;
+}
+
+.content{
+    width:100%;
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:flex-start;
+    max-width:100%;
+}
+
+.content-counter{
+    align-self: flex-start;
+    padding-left:10px;
+}
+
+.club-selection-container{
+    display:flex;
+    flex-direction:column;
+    width:35vh;
+    overflow:scroll;
+    scrollbar-width: none;
+    height:90vh;
+    box-shadow:'10px 0px 10px white'
+}
+
+
+
+
+.club-square-container{
+    display:flex;
+    justify-items:center;
+    align-items: center;
+    width:15vh;
+    margin-right:10px;
+    margin-left:10px;
+    min-width: 15vh;
+    min-height: 15vh;
+    background-color:rgb(150,150,150);
+    border-radius:10px;
+    border: 2px solid white;
+    background-color: rgba(150, 150, 150, 0.7); /* Black with 50% opacity */
+    background-position: center;
+    background-repeat:no-repeat;
+}
+
+.lock-picture{
+    width:3vh;
+    position:relative;
+}
+
+
+.club-square-background{
+    z-index:0;
+    width:10vh;
+    height:10vh;
+    opacity:0.4;
+    margin:auto;
+    align-self: center;
+}
+
+.pullout-container{
+    
+}
+
+.pullout-spot{
+    width:15vh;
+    background-color: rgb(100,100,100);
+    padding:5px;
+    margin:5px;
+    border-radius:10px;
+    font-family: "Bebas Neue", sans-serif;
+    font-size:20px;
+    cursor:pointer;
+}
+
+.pullout-spot:hover{
+    opacity:0.5;
+}
+
+input:focus{
+    outline: none;
+}

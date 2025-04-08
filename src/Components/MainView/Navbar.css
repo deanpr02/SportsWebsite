@@ -1,0 +1,84 @@
+.navbar-container{
+    width:100%;
+    height:75px;
+    background-color: black;
+    z-index:0;
+    top:0;
+    margin-bottom:5px;
+    display:flex;
+    flex-direction:row;
+    font-family: "Bebas Neue", sans-serif;
+    border-bottom: 2px solid gray;
+}
+
+.selected-league{
+    height:100%;
+    width:10%;
+    display:flex;
+    flex-direction:column;
+    position:relative;
+    object-fit:contain;
+    border-right: 2px solid gray;
+    margin-right:20px;
+    cursor:pointer;
+}
+
+.selected-league img{
+    max-height: 80%;
+    width: auto;
+    object-fit: contain;
+    padding:0px;
+    overflow:hidden;
+    padding-top:2px;
+}
+
+.selected-league p{
+    font-weight:bold;
+}
+
+.nav-items{
+    display:flex;
+    flex-direction:row;
+    justify-content:flex-start;
+    align-items:flex-start;
+    height:100%;
+    width:90%;
+}
+
+.nav-items p{
+    padding:10px;
+    font-size:24px;
+    font-weight:bold;
+    height:100%;
+}
+
+.diagonal-line {
+    width: 5%;
+    transform: rotate(-45deg); 
+}
+
+.item{
+    display:flex;
+    height:100%;
+    align-items:center;
+    cursor:pointer;
+    z-index:2;
+}
+
+.item:hover{
+    color:gray;
+}
+
+.nav-logout-button{
+    display:flex;
+    flex-direction:row;
+    align-self:center;
+    width:6vh;
+    cursor:pointer;
+    margin-right:10px;
+    padding:5px;
+}
+
+
+
+

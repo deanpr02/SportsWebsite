@@ -1,1 +1,35 @@
 1. On the login screen, for a new user, you can select your favorite team and then that city would display, maybe some different images of the city are displayed
+
+
+JSON
+
+{
+    "{year}":
+            {
+                "AL":
+                    {
+                        "conference_winner":
+                                            {"name":{New York Yankees},"record":101-65,"games_won":1}
+                        "ALDS":[{},{series}],
+                    },
+                "NL":
+                    {}
+            }
+
+}
+
+/* import { useState, useEffect } from 'react';
+
+function useSessionStorage(key, defaultValue) {
+  const [value, setValue] = useState(() => {
+    const storedValue = sessionStorage.getItem(key);
+    return storedValue !== null ? JSON.parse(storedValue) : defaultValue;
+  });
+
+  useEffect(() => {
+    sessionStorage.setItem(key, JSON.stringify(value));
+  }, [key, value]);
+
+  return [value, setValue];
+}
+*/

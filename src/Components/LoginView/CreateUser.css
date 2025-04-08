@@ -13,7 +13,7 @@ body{
 
 .create-user-frame{
     width:420px;
-    background: transparent;
+    background-color: rgba(0,0,0,0.3);
     border:2px solid rgba(255,255,255,0.2);
     backdrop-filter:blur(30px);
     box-shadow: 0 0 10px rgba(0,0,0,0.2);
@@ -26,6 +26,7 @@ body{
 .create-user-frame h1{
     font-size:36px;
     text-align:center;
+    cursor:default;
 }
 
 .create-user-frame .input-box{
@@ -104,6 +105,7 @@ body{
     color:#fff;
     text-decoration:none;
     font-weight:600; 
+    cursor:default;
 }
 
 .login-link p a:hover{

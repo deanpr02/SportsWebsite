@@ -1,8 +1,9 @@
 import './Login.css'
 import { FaUser,FaLock } from 'react-icons/fa';
 import { useState } from 'react'
-import { signInWithEmailAndPassword } from 'firebase/auth'
-import { auth } from '../../firebase'
+import { doc,getDoc } from 'firebase/firestore'
+import { signInWithEmailAndPassword,setPersistence,browserSessionPersistence } from 'firebase/auth'
+import { auth,db } from '../../firebase'
 import { useNavigate } from 'react-router-dom'
 
 export default function Login({setUserExists}) {
@@ -10,14 +11,39 @@ export default function Login({setUserExists}) {
     const [email,setEmail] = useState("")
     const [password,setPassword] = useState("")
 
+    const getUsername = async (userID) => {
+      const userRef = doc(db,'users',userID);
+      const userData = await getDoc(userRef);
+      const username = userData.data()['username'];
+      sessionStorage['username'] = username;
+    }
+
+    const delay = (ms) => {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    const showWrongPassword = async () => {
+      const loginFrame = document.getElementById('login-frame');
+      const previousStyle = loginFrame.style.cssText;
+      loginFrame.style.backgroundColor = 'red';
+      loginFrame.style.animation = 'shake 0.5s';
+      await delay(500);
+      loginFrame.style = previousStyle;
+    }
+
     const onLogin = (e) => {
       e.preventDefault()
-      signInWithEmailAndPassword(auth,email,password)
-        .then((userCredential) =>{
+      setPersistence(auth, browserSessionPersistence)
+      .then(() => {
+          return signInWithEmailAndPassword(auth,email,password);
+      })
+      .then((userCredential) => {
           const user = userCredential.user;
-          navigate("/home")
-        })
+          getUsername(user.uid);
+          navigate('/home')
+      })
         .catch((error) =>{
+          showWrongPassword();
           const errorCode = error.code;
           const errorMessage = error.message;
           console.log(errorCode,errorMessage);
@@ -26,7 +52,7 @@ export default function Login({setUserExists}) {
   
   return (
       <>
-        <div className="login-frame">
+        <div className="login-frame" id="login-frame">
           <form action="">
             <h1>Welcome!</h1>
             <div className="input-box">

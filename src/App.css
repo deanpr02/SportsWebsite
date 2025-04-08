@@ -3,6 +3,83 @@
     padding: 2rem;
     text-align: center;
   }
+
+  .login-page-container{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    height:100vh;
+    background-position: center;
+    background-repeat:no-repeat;
+    background-size:cover;
+    backdrop-filter: grayscale(100%);
+  }
+
+  .login-page-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: inherit;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    filter: grayscale(100%);
+    z-index: -1;
+  }
+
+  .city-name{
+    /*position: fixed;
+    bottom: 20px;
+    left: 20px;*/
+    font-size: 30px;
+    color: white;
+    font-weight: bold;
+}
+
+.information-container{
+  position:absolute;
+  left:1vh;
+  bottom:1vh;
+  display:flex;
+  flex-direction:row;
+  align-items: center;
+  border-radius:10px;
+  backdrop-filter:blur(30px);
+  background-color:rgba(0,0,0,0.3);
+  padding:5px;
+  cursor:default;
+}
+
+.city-team-information{
+  display:flex;
+  flex-direction:row;
+  font-size:26px;
+  margin-left:40px;
+  font-weight:bold;
+  align-self:center;
+  align-items: center;
+}
+
+.city-team-arrow{
+  margin-left:10px;
+  width: 0; 
+  height: 0; 
+  border-top: 16px solid transparent;
+  border-bottom: 16px solid transparent;
+  
+  border-left: 16px solid gray;
+}
+
+.city-team-display{
+  margin-left:10px;
+  font-size:16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
   
   .logo {
     height: 6em;
@@ -10,27 +87,7 @@
     will-change: filter;
     transition: filter 300ms;
   }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.react:hover {
-    filter: drop-shadow(0 0 2em #61dafbaa);
-  }
   
-  @keyframes logo-spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  
-  @media (prefers-reduced-motion: no-preference) {
-    a:nth-of-type(2) .logo {
-      animation: logo-spin infinite 20s linear;
-    }
-  }
   
   .card {
     padding: 2em;

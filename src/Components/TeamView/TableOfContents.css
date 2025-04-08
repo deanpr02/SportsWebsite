@@ -1,0 +1,51 @@
+.toc-container{
+    background-color: black;
+    border: 2px solid gray;
+    border-radius:10px;
+    padding:10px;
+    font-weight:bold;
+    font-size:18px;
+    opacity:1;
+    z-index:2;
+    font-family: "Bebas Neue", sans-serif;
+    margin-bottom:50px;
+}
+
+.toc-header{
+    font-size:22px;
+    padding-left:50px;
+    padding-right:50px;
+}
+
+.toc-header{
+    border-bottom: 2px solid gray;
+}
+
+.toc-items{
+    display:flex;
+    flex-direction:column;
+    align-items: baseline;
+    padding-left:10px;
+    padding-top:10px;
+}
+
+.toc-text:hover{
+    cursor:pointer;
+}
+
+.toc-text{
+    font-size:18px;
+    line-height:1.4;
+    padding:2px;
+    display:inline-block;
+}
+
+ul {
+    list-style: none;
+}
+li::before {
+    content: "•";
+    margin-right: 8px;
+}
+
+

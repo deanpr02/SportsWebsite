@@ -1,0 +1,116 @@
+.about-text{
+    font-family: "Bebas Neue", sans-serif;
+    font-size:72px;
+}
+
+.about-container{
+    position:relative;
+    z-index:2;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items: center;
+    margin-bottom:30px;
+}
+
+.description-area{
+    width:50%;
+    height:auto;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background-color:rgba(200,200,200,0.3);
+    border-radius:10px;
+    border: 2px solid gray;
+    margin-bottom:50px;
+}
+
+.championship-container{
+    width:50%;
+    height:auto;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background-color:rgb(200,200,200,0.3);
+    border-radius:10px;
+    border: 2px solid gray;
+    gap:0;
+    padding:10px;
+    font-weight:bold;
+    margin-bottom:50px;
+}
+
+.chart-row{
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    border-left: 2px solid black;
+    border-right: 2px solid black;
+    flex-wrap:nowrap;
+    width:100%;
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+.chart-row img{
+    width:30px;
+    height:auto;
+    object-fit:cover;
+}
+
+.null-text{
+    font-size:32px;
+    background-color: rgba(0,0,0,0.3);
+    padding:10px;
+    border-radius:10px;
+}
+
+.chart-row p{
+    height:100%;
+}
+
+.column{
+    width:100%;
+    height:100%;
+}
+
+.column-trophy{
+    width:30%;
+    border-right: 2px solid black;
+}
+
+
+.description-area p{
+    width:100%;
+    padding:10px;
+    font-size: 20px;
+}
+
+.map-area{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+
+.about-images{
+    display:flex;
+    height:100%;
+    width:auto;
+    padding:25px;
+    flex-direction:row;
+    background-color: rgba(200,200,200,0.3);
+    justify-content: center;
+    align-items:center;
+    border: 2px solid gray;
+    border-radius:10px;
+    margin-bottom:50px;
+}
+
+.about-images img{
+    width:50vh;
+    height:50vh;
+}

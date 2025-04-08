@@ -1,5 +1,5 @@
 import './MainMenu.css'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate,Routes,Route } from 'react-router-dom'
 import SportMenuContainer from './SportMenuContainer'
 import Baseball from '../../assets/menu-resources/mlb-logo.png'
 import Football from '../../assets/menu-resources/nfl-logo.png'
@@ -10,21 +10,14 @@ import Soccer from '../../assets/menu-resources/mls-logo.png'
 export default function MainMenu(){
     const navigate = useNavigate()
     return(
-        <>
-        <div className="main-menu-container">
-            <div className="menu-row">
-                <SportMenuContainer sportName={"MLB"} sportImage={Baseball} navFunc={()=>navigate("./mlb")}/>
-                <SportMenuContainer sportName={"NFL"} sportImage={Football} navFunc={()=>console.log("nfl")}/>
-            </div>
-            <div className="menu-row">
-                <SportMenuContainer sportName={"NBA"} sportImage={Basketball}/>
-                <SportMenuContainer sportName={"NHL"} sportImage={Hockey}/>
-            </div>
-            <div className="menu-row">
-                <SportMenuContainer sportName={"MLS"} sportImage={Soccer}/>
-                <SportMenuContainer sportName={"MLS"} sportImage={Soccer}/>
+        <div className="external-main">
+            <div className="main-menu-container">
+                <SportMenuContainer sportAbbr={"MLB"} sportName={"Major League Baseball"} sportImage={Baseball} navFunc={()=>navigate("./mlb")}/>
+                <SportMenuContainer sportAbbr={"NFL"} sportName={"National Football League"} sportImage={Football} navFunc={()=>console.log("nfl")}/>
+                <SportMenuContainer sportAbbr={"NBA"} sportName={"National Basketball Association"} sportImage={Basketball}/>
+                <SportMenuContainer sportAbbr={"NHL"} sportName={"National Hockey League"} sportImage={Hockey}/>
+                <SportMenuContainer sportAbbr={"MLS"} sportName={"Major League Soccer"} sportImage={Soccer}/>
             </div>
         </div>
-        </>
     )
 }

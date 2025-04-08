@@ -1,25 +1,36 @@
+#root{
+    width:100%;
+    padding:0;
+}
+
 .vl{
     border-left: 6px solid green;
     height: 500px;
 }
 
 .match-up{
-    padding:20px;
+    padding:5px;
+    padding-top:10px;
 }
 
 .team{
     border: 3px solid white;
-    height:50%;
+    height:auto;
     display: flex;
     justify-content: horizontal;
-    margin:5px;
+    align-items:center;
+    border-radius:10px;
+    margin-top:5px;
 }
 
 .team-logo{
-    width:25%;
-    height:25%;
+    width:40px;
+    height:40px;
     background:lightgray;
+    border: 1px solid white;
     object-fit: contain;
+    flex-shrink: 0;
+    margin-left:2px;
 }
 
 .team-name{
@@ -27,18 +38,111 @@
     flex-direction:column;
     justify-content: center;
     align-items:center;
-    padding:10px;
-    font-size:18px;
+    padding-top:10px;
+    padding-bottom:10px;
+    padding-left:5px;
+    padding-right:5px;
+    font-size: clamp(8px, 1vw, 12px);
     font-weight:bold;
+}
+
+.team-city{
+    white-space:nowrap;
 }
 
 .score{
     text-align:right;
-    font-size:24px;
+    font-size:90%;
     font-weight:bold;
     display:flex;
     justify-content: flex-end;
     align-items:center;
     margin-left:auto;
-    padding:20px;
+    padding:10px;
+    border-left:2px solid white;
 }
+
+.drop-down{
+    display:flex;
+    flex-direction:column;
+    z-index:11;
+    margin-left:10px;
+    margin-bottom:10px;
+    width:50%;
+    height:25%;
+    margin-top:5px;
+}
+
+.dropdown-container{
+    display:flex;
+    flex-direction:column;
+    position:relative;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index:11;
+    width:25%;
+    background-color:gray;
+    box-shadow:5px 5px 5px #000000;
+    border-radius:5px 5px 10px 10px;
+    align-items:center;
+}
+
+.dropdown-top{
+    background-color:gray;
+    width:25%;
+    border-radius: 5px 5px 5px 5px;
+    border: 2px solid white;
+    backdrop-filter: blur(10px);
+    z-index:10;
+}
+
+.row-container{
+    display:flex;
+    flex-direction: row;
+    width: 50%;
+    align-items:center;
+}
+
+.bracket{
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    z-index:1;
+}
+
+.championship-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 0 10px; /* Add horizontal padding to maintain spacing from rounds */
+    align-items:center;
+}
+
+.championship-series {
+    display: flex;
+    gap: 5px;
+    white-space:nowrap;
+}
+
+.championship-text{
+    font-size:20px;
+    font-weight:bold;
+    color:goldenrod;
+    
+}
+
+.left-conference-champion{
+    padding-right:5px;
+}
+
+.bracket-container{
+    z-index:1;
+}
+
+.round-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px; /* Use gap instead of margins for consistent spacing */
+    
+}
+

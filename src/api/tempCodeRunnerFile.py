@@ -1,0 +1,1 @@
+mlb/players/{player_name}/profile
