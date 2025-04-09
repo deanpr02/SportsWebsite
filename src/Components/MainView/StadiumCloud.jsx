@@ -2,13 +2,19 @@ import YankeesDepth from '../../assets/mlb-resources/stadiums/testdepth.png'
 import Yankees from '../../assets/mlb-resources/stadiums/test.png'
 import RedSoxDepth from '../../assets/mlb-resources/stadiums/fenwaydepth.png'
 import RedSox from '../../assets/mlb-resources/stadiums/fenway.jpg'
+import DodgersDepth from '../../assets/mlb-resources/stadiums/dodgerdepth.png'
+import Dodgers from '../../assets/mlb-resources/stadiums/dodger_stadium.jpg'
+import PadresDepth from '../../assets/mlb-resources/stadiums/petcodepth.png'
+import Padres from '../../assets/mlb-resources/stadiums/petco_park.jpg'
+import GiantsDepth from '../../assets/mlb-resources/stadiums/oracledepth.png'
+import Giants from '../../assets/mlb-resources/stadiums/oracle_park.jpg'
 
 
 import {useEffect,useMemo,useState,useRef} from 'react'
 import { Points,OrbitControls } from '@react-three/drei'
-import { Canvas,useFrame } from '@react-three/fiber'
+import { Canvas } from '@react-three/fiber'
 
-export default function StadiumCloud({home,away}){
+export default function StadiumCloud(){
     return(
         <div>
             <CloudFrame stadiumSrc={Yankees} depthSrc={YankeesDepth}/>
@@ -60,10 +66,9 @@ function CloudFrame({stadiumSrc,depthSrc}){
 
     },[stadiumSrc,depthSrc])
 
-//x: 2.8544675800844064, y: -0.019388767150134635, z: 3.1358678719811413
     return(
         <div>
-            <Canvas style={{ height: '100vh', width: '100vw' }} camera={{ position: [0, 0, -1],fov:50}}>
+            <Canvas style={{ height: '50vh', width: '50vw',border: '2px solid #111111' }} camera={{ position: [0, -1, -1],fov:30}}>
                 {stadiumData && depthData && (
                         <CloudImage 
                             pixelData={stadiumData}

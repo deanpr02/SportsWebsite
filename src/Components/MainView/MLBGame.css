@@ -1,0 +1,39 @@
+.mlb-game-container{
+    display:flex;
+    flex-direction:column;
+    align-items: center;
+}
+
+.mlb-mid-score{
+    display:flex;
+    flex-direction:row;
+    justify-content: center;
+    align-items: center;
+}
+
+.mlb-side-view{
+    background-color:#333333;
+    width:50vh;
+    height:50vh;
+}
+
+.mlb-score-box{
+    background-color: #333333;
+    width:100%;
+}
+
+.score-bug-logo{
+    object-fit: contain;
+    width:3vh;
+    height:3vh;
+}
+
+.mlb-score-bug{
+    display:flex;
+    flex-direction:column;
+}
+
+.score-bug-section{
+    display:flex;
+    flex-direction:row;
+}

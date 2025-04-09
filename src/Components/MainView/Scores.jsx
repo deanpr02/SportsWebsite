@@ -3,7 +3,7 @@ import { Routes,Route,useNavigate } from 'react-router-dom'
 import { useGetSchedule } from "../../Hooks/useGetSchedule"
 import './Scores.css'
 import { useRetrieveTeam } from '../../Hooks/useRetrieveTeam';
-import StadiumCloud from './StadiumCloud';
+import MLBGame from './MLBGame';
 
 export default function Scores(){
     const {schedule} = useGetSchedule('MLB');
@@ -44,13 +44,13 @@ function DateListing({index,date,isSelected,setCurrentDay}){
 }
 
 function GameList({games}){
-    const [homeTeam,setHomeTeam] = useState("Home");
-    const [awayTeam,setAwayTeam] = useState("Away");
+    const [homeTeam,setHomeTeam] = useState("New York Yankees");
+    const [awayTeam,setAwayTeam] = useState("Boston Red Sox");
 
     return(
         <>
         <Routes>
-            <Route path="game" element={<StadiumCloud home={homeTeam} away={awayTeam}/>}/>
+            <Route path="game" element={<MLBGame home={homeTeam} away={awayTeam}/>}/>
             <Route path="/" element={<><div className='score-game-list'>
                     {games.map((game => {
                         return <Game home={game.teams.home} away={game.teams.away} venue={game.venue.name}/>
