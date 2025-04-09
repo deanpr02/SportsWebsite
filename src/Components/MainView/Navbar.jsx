@@ -40,7 +40,7 @@ function NavbarItem({itemName,itemID,homePath}){
     const navigate = useNavigate();
     return(
         <div className="item" onClick={()=>navigate(`${homePath}/${itemID}`)}>
-            <p style={{paddingRight:'30px'}}>{itemName}</p>
+            <p style={{paddingRight:'20px'}}>{itemName}</p>
             <div className="diagonal-line" style={{borderBottom:`2px solid gray`}}></div>
         </div>
     )

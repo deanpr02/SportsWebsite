@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useRetrieveTeam } from '../../Hooks/useRetrieveTeam'
 import './MLBGame.css'
 import StadiumCloud from "./StadiumCloud"
@@ -21,22 +22,52 @@ export default function MLBGame({home,away}){
 function ScoreBox({homeInfo,awayInfo}){
     return(
         <div className='mlb-score-box'>
-            <ScoreBug homeAbbr={homeInfo.abbr} awayAbbr={awayInfo.abbr} homeLogo={homeInfo.primaryLogo} awayLogo={awayInfo.primaryLogo}/>
+            <ScoreBug home={homeInfo} away={awayInfo}/>
+            <BoxScore/>
         </div>
     )
 }
 
-function ScoreBug({homeAbbr,awayAbbr,homeLogo,awayLogo}){
+function ScoreBug({home,away}){
     return(
         <div className='mlb-score-bug'>
-            <div className='score-bug-section'>
-                <img className='score-bug-logo' src={awayLogo}></img>
-                <p>{awayAbbr}</p>
+            <div className='score-bug-section' style={{backgroundColor:`#${away.secondaryColor}`}}>
+                <img className='score-bug-logo' src={away.primaryLogo}></img>
+                <p style={{color:`#${away.primaryColor}`,paddingLeft:'10px'}}>{away.abbr}</p>
             </div>
-            <div className='score-bug-section'>
-                <img className='score-bug-logo' src={homeLogo}></img>
-                <p>{homeAbbr}</p>
+            <div className='score-bug-section' style={{backgroundColor:`#${home.secondaryColor}`}}>
+                <img className='score-bug-logo' src={home.primaryLogo}></img>
+                <p style={{color:`#${home.primaryColor}`,paddingLeft:'10px'}}>{home.abbr}</p>
             </div>
+        </div>
+    )
+}
+
+function BoxScore(){
+    const [numInnings,setNumInnings] = useState(9);
+    const innings = Array.from({length:numInnings},(_,i)=> i+1);
+    console.log(innings)
+    return(
+        <div className='mlb-box-score'>
+            {innings.map((inn) => {
+                return <Inning inningNumber={inn}/>
+            })}
+            <div style={{width:'10%',height:'100%',borderRight:'1px solid gray',borderLeft:'1px solid gray'}}></div>
+            <Inning inningNumber={"R"}/>
+            <Inning inningNumber={"H"}/>
+            <Inning inningNumber={"E"}/>
+        </div>
+    )
+}
+
+function Inning({inningNumber}){
+    const [awayScore,setAwayScore] = useState("");
+    const [homeScore,setHomeScore] = useState("");
+    return(
+        <div className='mlb-score-inning'>
+            <div style={{width:'100%',height:'5vh',borderBottom:'2px solid gray'}}><p>{awayScore}</p></div>
+            <div style={{width:'100%',height:'5vh',borderBottom:'2px solid gray'}}><p>{homeScore}</p></div>
+            <p>{inningNumber}</p>
         </div>
     )
 }
