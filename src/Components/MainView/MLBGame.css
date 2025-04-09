@@ -4,6 +4,16 @@
     align-items: center;
 }
 
+.mlb-score-graphic{
+    display:flex;
+    flex-direction:row;
+    align-items: center;
+    font-size:42px;
+    font-weight:bold;
+    font-family: "Bebas Neue", sans-serif;
+    margin-top:10px;
+}
+
 .mlb-mid-score{
     display:flex;
     flex-direction:row;
@@ -37,16 +47,16 @@
     font-size:18px;
     width:20vh;
     font-weight:bold;
+    border-top:1px solid gray;
 }
 
 .score-bug-section{
     display:flex;
     flex-direction:row;
+    align-items: center;
     height:5vh;
+    border-left: 1px solid gray;
     border-bottom: 1px solid gray;
-    border-left: 2px solid gray;
-    border-top: 1px solid gray;
-    border-right: 2px solid gray;
 }
 
 .mlb-box-score{
@@ -54,8 +64,8 @@
     display:flex;
     align-items: baseline;
     font-family: "Bebas Neue", sans-serif;
-    border-bottom:2px solid gray;
-    border-top: 2px solid gray;
+    border-bottom:1px solid gray;
+    border-top:1px solid gray;
 }
 
 .mlb-score-inning{
@@ -67,6 +77,5 @@
     align-self:center;
     align-items:center;
     width:10%;
-    border-right: 1px solid gray;
     border-left: 1px solid gray;
 }
