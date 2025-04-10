@@ -28,12 +28,11 @@ export default function DepthChart({teamName,primaryColor,secondaryColor}){
 
 function PlayerPool({playerList,primaryColor,secondaryColor,sortKey,sortDirection,sortedAttribute}){
     const [modifiedData,setModifiedData] = useState(playerList)
-    console.log(playerList)
 
     const filterPlayers = (playerObject,key) => {
         return Object.fromEntries(
             Object.entries(playerObject).filter(([_,value]) =>{
-                return typeof value.stats['2024'] === 'object' && value.stats['2024'] !== null && key in value.stats['2024']
+                return typeof value.stats['2025'] === 'object' && value.stats['2025'] !== null && key in value.stats['2025']
             })
         )
     }
@@ -48,8 +47,8 @@ function PlayerPool({playerList,primaryColor,secondaryColor,sortKey,sortDirectio
             return direction * aValue.localeCompare(bValue);
         }
         else{
-            aValue = Object.values(a)[1]['stats']['2024'][key];
-            bValue = Object.values(b)[1]['stats']['2024'][key];
+            aValue = Object.values(a)[1]['stats']['2025'][key];
+            bValue = Object.values(b)[1]['stats']['2025'][key];
             return direction * (Number(bValue) - Number(aValue))
         }
         }));
@@ -73,7 +72,7 @@ function PlayerPool({playerList,primaryColor,secondaryColor,sortKey,sortDirectio
         <>
         {Object.entries(modifiedData).map(([playerName,playerInfo]) => (
             <>
-            <PlayerCard playerName={playerName} playerStats={playerInfo.stats["2024"]} playerPosition={playerInfo.position} playerImage={playerInfo.image} primaryColor={primaryColor} secondaryColor={secondaryColor} sortedAttribute={sortedAttribute}/>
+            <PlayerCard playerName={playerName} playerStats={playerInfo.stats["2025"]} playerPosition={playerInfo.position} playerImage={playerInfo.image} primaryColor={primaryColor} secondaryColor={secondaryColor} sortedAttribute={sortedAttribute}/>
             </>
         ))}
         </>
@@ -169,7 +168,7 @@ function SortButton({name,identifier,setSortKey,setSortDirection,setSortedAttrib
     return(
         <>
         <p className='tab-item' onClick={selectSort}>{name}</p>
-        <div class="diagonal-line" style={{borderBottom:`2px solid gray`}}></div> 
+        <div className="diagonal-line" style={{borderBottom:`2px solid gray`}}></div> 
         </>
     )
 }

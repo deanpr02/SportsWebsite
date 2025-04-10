@@ -30,7 +30,7 @@ const formatter = new Intl.DateTimeFormat('en-US', timeOptions);
 
 export default function Clubhouse(){
     const getCurrentTime = () => formatter.format(new Date());
-    const username = sessionStorage['username'];
+    const username = sessionStorage['username'] || 'Anonymous';
     const chat = sha256('Yankees-pub')
     const [currentChat,setCurrentChat] = useState(chat);
     const [contentCounter,setContentCounter] = useState(0);

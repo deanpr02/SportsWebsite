@@ -23,8 +23,42 @@
 
 .mlb-side-view{
     background-color:#333333;
+    font-family: "Bebas Neue", sans-serif;
+    font-weight:bold;
+    font-size:36px;
     width:40vh;
     height:50vh;
+}
+
+.mlb-score-stat{
+    display:flex;
+    flex-direction:row;
+    width:100%;
+    margin:0px;
+    font-size:18px;
+    align-items:center;
+}
+
+.score-stat-bar-wrapper{
+    display:flex;
+    width:40vh;
+    height:5vh;
+    border-radius: 10px;
+    margin-right:5px;
+    background-color:rgba(0,0,0,0.3);
+    align-items: center;
+}
+
+.score-stat-bar{
+    display:flex;
+    justify-self:flex-start;
+    width:100%;
+    height:5vh;
+    border: 1px solid white;
+    border-radius: 10px;
+    align-items: center;
+    justify-content: flex-end;
+    padding:5px;
 }
 
 .mlb-score-box{

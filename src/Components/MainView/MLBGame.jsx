@@ -20,9 +20,9 @@ export default function MLBGame({home,away}){
             <ScoreGraphic home={homeTeamInfo} away={awayTeamInfo} homeScore={homeScore} awayScore={awayScore}/>
             <ScoreBox homeInfo={homeTeamInfo} awayInfo={awayTeamInfo}/>
             <div className='mlb-mid-score'>
-                <SideView/>
+                <SideView city={awayTeamInfo.city} color={awayTeamInfo.primaryColor}/>
                 <StadiumCloud/>
-                <SideView/>
+                <SideView city={homeTeamInfo.city} color={homeTeamInfo.primaryColor}/>
             </div>
         </div>
     )
@@ -69,7 +69,7 @@ function ScoreBug({home,away}){
 function BoxScore(){
     const [numInnings,setNumInnings] = useState(9);
     const innings = Array.from({length:numInnings},(_,i)=> i+1);
-    console.log(innings)
+    
     return(
         <div className='mlb-box-score'>
             {innings.map((inn) => {
@@ -96,10 +96,18 @@ function Inning({inningNumber}){
     )
 }
 
-function SideView(){
+function SideView({city,color}){
     return(
         <div className='mlb-side-view'>
-            <p>Side</p>
+            <p>{city}</p>
+            <div className='mlb-score-stat'>
+                <div style={{marginRight:'10px',marginLeft:'10px'}}><p>Runs</p></div>
+                <div className='score-stat-bar-wrapper'>
+                    <div className='score-stat-bar' style={{backgroundColor:`#${color}`}}>
+                        <p style={{fontSize:'14px',marginRight:'10px'}}>1000</p>
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }

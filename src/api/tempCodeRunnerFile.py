@@ -1,1 +1,1 @@
-mlb/players/{player_name}/profile
+extract_player_info

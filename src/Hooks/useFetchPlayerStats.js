@@ -56,12 +56,13 @@ export function useFetchPlayerStats(url, league, playerName) {
             setBaseError(null)
             try {
                 const snapshot = await getDoc(doc(db,league,"data","players",playerName));
-                if(snapshot.exists() && Object.keys(snapshot.data().stats).length > 1){
+                if(snapshot.exists() && snapshot.data().awards && snapshot.data().about){
                     const result = await fetchFromDatabase()
                     setPlayerData(result)
                 }
                 else{
                     const result = await fetchFromAPI(snapshot.data().ref)
+                    console.log(result)
                     await updateFirestore(result)
                     //setPlayerData(result)
                     setPlayerData({

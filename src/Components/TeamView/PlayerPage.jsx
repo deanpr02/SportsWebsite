@@ -92,7 +92,7 @@ const statDetails = {
 export default function PlayerPage({teamInfo}){
     const {playerName} = useParams()
     const { playerData, isBaseLoading, baseError } = useFetchPlayerStats("http://localhost:5000/api/webscrape/individual_player",'mlb',playerName)
-    const [year, setYear] = useState('2024')
+    const [year, setYear] = useState('2025')
 
     return(
         <div className='player-page-container'>

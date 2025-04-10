@@ -7,6 +7,10 @@ import re
 
 from bs4 import BeautifulSoup, Comment
 
+#mlb_teams = {
+#    'NYY': "New York Yankees"
+#}
+
 def get_mlb_postseason_results():
     """
     Function to scrape MLB postseason results from 1969 - 2024
@@ -114,15 +118,15 @@ def extract_player_images(player_row):
 
 
 #i changed the object to be stats
-def extract_player_info(player_table):
+def extract_player_info(player_table,team_name):
     player_info = {}
 
     player_rows = player_table.find('tbody').find_all('tr')
     for row in player_rows:
         if not row.has_attr('class'):
             games = row.find('td',attrs={'data-stat':['b_games','p_g']})
-            if int(games.text) <= 5:
-                continue
+            #if int(games.text) <= 5:
+            #    continue
             player_ref = row.find('a').get('href')
             cols = row.find_all('td')
             player_name = None
@@ -148,6 +152,10 @@ def extract_player_info(player_table):
                     player_info[player_name]['stats'][column_type] = converted_val
                 except ValueError:
                     player_info[player_name]['stats'][column_type] = 0.0
+
+                #input the team
+                player_info[player_name]['team'] =  team_name
+
     return player_info
 
     
@@ -178,7 +186,7 @@ def get_mlb_players(team_name):
 
     players = {}
     try:
-        r = requests.get(f'https://www.baseball-reference.com/teams/{team_name}/2024.shtml#players_standard_pitching')
+        r = requests.get(f'https://www.baseball-reference.com/teams/{team_name}/2025.shtml#players_standard_pitching')
         soup = BeautifulSoup(r.content,'html.parser')
         
     except requests.exceptions.Timeout:
@@ -187,21 +195,27 @@ def get_mlb_players(team_name):
         print(f"An error occurred: {e}")
 
 # Function to extract table from comment
+    #print(soup.find_all('table',attrs={'id':'players_standard_pitching'}))
     batting_tables = soup.find_all('table',attrs={'id':'players_standard_batting'})
     for table in batting_tables:
-        batting_players = extract_player_info(table)
+        batting_players = extract_player_info(table,team_name)
         players.update(batting_players)
+
+    pitching_tables = soup.find_all('table',attrs={'id':'players_standard_pitching'})
+    for table in pitching_tables:
+        pitching_players = extract_player_info(table,team_name)
+        players.update(pitching_players)
 
 
     # Extract pitching table
-    comments = soup.find_all(string=lambda text: isinstance(text, Comment))
-    pitching_table = None
-    for comment in comments:
-        if 'players_standard_pitching' in comment:
-            pitching_table = extract_table(comment, 'players_standard_pitching')
-            pitching_players = extract_player_info(pitching_table)
-            players.update({k: v for k, v in pitching_players.items() if k not in players})
-            break
+    #comments = soup.find_all(string=lambda text: isinstance(text, Comment))
+    #pitching_table = None
+    #for comment in comments:
+    #    if 'players_standard_pitching' in comment:
+    #        pitching_table = extract_table(comment, 'players_standard_pitching')
+    #        pitching_players = extract_player_info(pitching_table)
+    #        players.update({k: v for k, v in pitching_players.items() if k not in players})
+    #        break
     return players
 
 def get_mlb_individual_player(ref):
