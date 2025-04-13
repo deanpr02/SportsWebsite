@@ -1,0 +1,18 @@
+.standings-container{
+    width:100%;
+    display:flex;
+    flex-direction:row;
+}
+
+.standings-visual-container{
+    display:flex;
+    justify-self: center;
+    align-items: center;
+    justify-content: center;
+    height:60vh;
+    width:60vw;
+    margin:10px;
+    background-color:#333333;
+    border-radius:10px;
+    border: 2px solid #555555;
+}

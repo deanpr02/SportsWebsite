@@ -4,10 +4,9 @@ import { Edges,OrbitControls,Instance,Instances } from '@react-three/drei'
 import { TextureLoader } from 'three';
 import * as THREE from 'three'
 
-import Yankees from '../../assets/mlb-resources/teams/mariners/mariners-primary.png'
-
 import { useRetrieveTeam } from '../../Hooks/useRetrieveTeam'
-import { MdDriveFileRenameOutline } from 'react-icons/md';
+import StandingsChart from './StandingsChart';
+import './Standings.css'
 
 const standings = {
     'American League':
@@ -93,50 +92,53 @@ export default function Standings(){
     },[conference,division])
 
     return(
-        <>
-        <Canvas style={{ height: '50vh', width: '50vw',border: '2px solid #111111',borderRadius:'10px' }} camera={{ position: [5, 8, 5]}}>
-            {standings && (() => {
+        <div className='standings-container'>
+        <div className='standings-visual-container'>
+            <Canvas style={{ height: '50vh', width: '50vw',border: '2px solid #111111',borderRadius:'10px' }} camera={{ position: [5, 8, 5]}}>
+                {standings && (() => {
 
-                const totalDivisions = Object.values(standings).reduce((acc, conf) => acc + Object.keys(conf).length, 0);
-                const radius = 50;
-                let divisionIndex = 0;
-    
-                return Object.entries(standings).flatMap(([confName, divisions]) => {
-                    return Object.entries(divisions).map(([divName, teams]) => {
-                        const angle = (divisionIndex * 2 * Math.PI) / totalDivisions;
-                        const x = radius * Math.sin(angle);
-                        const z = radius * Math.cos(angle);
-                        divisionIndex++;
-            
-                    return (
-                        <group 
-                            key={`${confName}-${divName}`} 
-                            position={[x, 0, z]} 
-                            rotation={[0, angle + Math.PI/2, 0]}>
-                            {Object.entries(teams).map(([name, obj], i) => {
-                                const teamOffset = i - (Object.keys(teams).length - 1) / 2;
-                                return <IndividualStanding 
-                                    key={name} 
-                                    pos={[teamOffset * 11, 0, 0]} // Center teams within division
-                                    teamName={name} 
-                                    wins={obj.W} 
-                                    losses={obj.L} />
-                            })}
-                        </group>
-                        )
+                    const totalDivisions = Object.values(standings).reduce((acc, conf) => acc + Object.keys(conf).length, 0);
+                    const radius = 50;
+                    let divisionIndex = 0;
+                
+                    return Object.entries(standings).flatMap(([confName, divisions]) => {
+                        return Object.entries(divisions).map(([divName, teams]) => {
+                            const angle = (divisionIndex * 2 * Math.PI) / totalDivisions;
+                            const x = radius * Math.sin(angle);
+                            const z = radius * Math.cos(angle);
+                            divisionIndex++;
+                        
+                        return (
+                            <group 
+                                key={`${confName}-${divName}`} 
+                                position={[x, 0, z]} 
+                                rotation={[0, angle + Math.PI/2, 0]}>
+                                {Object.entries(teams).map(([name, obj], i) => {
+                                    const teamOffset = i - (Object.keys(teams).length - 1) / 2;
+                                    return <IndividualStanding 
+                                        key={name} 
+                                        pos={[teamOffset * 11, 0, 0]} // Center teams within division
+                                        teamName={name} 
+                                        wins={obj.W} 
+                                        losses={obj.L} />
+                                })}
+                            </group>
+                            )
+                        })
                     })
-                })
-            })()}
-            <mesh position={[0,0,0]} rotation={[Math.PI/2,0,0]}>
-                <planeGeometry args={[200,200]}/>
-                <meshStandardMaterial color="black" transparent={true} opacity={0.3} side={2}/>
-            </mesh>
-            <ambientLight intensity={3} />
-            <color attach="background" args={['#444444']}/>
-            <CustomCamera/>
-            <OrbitControls/>
-        </Canvas>
-        </>
+                })()}
+                <mesh position={[0,0,0]} rotation={[Math.PI/2,0,0]}>
+                    <planeGeometry args={[200,200]}/>
+                    <meshStandardMaterial color="black" transparent={true} opacity={0.3} side={2}/>
+                </mesh>
+                <ambientLight intensity={3} />
+                <color attach="background" args={['#444444']}/>
+                <CustomCamera/>
+                <OrbitControls/>
+            </Canvas>
+        </div>
+        <StandingsChart standings={standings}/>
+        </div>
     )
 }
 

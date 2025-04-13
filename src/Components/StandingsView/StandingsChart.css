@@ -1,0 +1,24 @@
+.standings-chart-container{
+    display:flex;
+    flex-direction:row;
+    font-family: "Bebas Neue", sans-serif;
+    margin-left:20px;
+}
+
+.standings-team-row{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    border-bottom:1px solid gray;
+    height:5vh;
+}
+
+.standings-division-container{
+    border: 1px solid gray;
+    margin-bottom:5px;
+    border-radius:5px;
+}
+
+.standings-conference{
+    margin-right:20px;
+}
