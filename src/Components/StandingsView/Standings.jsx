@@ -67,8 +67,8 @@ const standings = {
 
 
 export default function Standings(){
-    const [conference,setConference] = useState('American League');
-    const [division,setDivision] = useState('East');
+    const [conference,setConference] = useState('');
+    const [division,setDivision] = useState('');
     const [cameraPos,setCameraPos] = useState([-80,10,120])
     const [singleDiv,setSingleDiv] = useState(false)
 
@@ -80,12 +80,12 @@ export default function Standings(){
                     {!singleDiv ? 
                         <FullStandings standings={standings} setCameraPos={setCameraPos}/>
                         :
-                        <DivisionStandings division={standings['American League']['East']} setCameraPos={setCameraPos}/>
+                        <DivisionStandings division={standings[conference][division]} setCameraPos={setCameraPos}/>
                     }
                     <CustomCamera pos={cameraPos}/>
                 </Canvas>
             </div>
-            <StandingsChart standings={standings} setSingleDiv={setSingleDiv}/>
+            <StandingsChart standings={standings} setSingleDiv={setSingleDiv} setConference={setConference} setDivision={setDivision}/>
         </div>
     )
 }

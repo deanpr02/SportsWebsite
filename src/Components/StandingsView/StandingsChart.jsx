@@ -5,16 +5,16 @@ import { useRetrieveTeam } from '../../Hooks/useRetrieveTeam'
 import AL from '../../assets/mlb-resources/american-league.png'
 import NL from '../../assets/mlb-resources/national-league.png'
 
-export default function StandingsChart({standings,setSingleDiv}){
+export default function StandingsChart({standings,setSingleDiv,setConference,setDivision}){
     return(
-        <div className='standings-chart-container' onClick={()=>setSingleDiv(true)}>
+        <div className='standings-chart-container'>
             <div className='standings-conference'>
                 <div style={{display:'flex',width:'100%',height:'2vh',margin:'5px',justifyContent:'center',alignItems:'center'}}>
                     <p style={{marginRight:'5px'}}>American League</p>
                     <img src={AL} style={{width:'2vh'}}></img>
                 </div>
                 {Object.entries(standings['American League']).map(([name,teams]) => {
-                    return <StandingsDivision divisionName={name} divisionTeams={teams}/>
+                    return <StandingsDivision conference={'American League'} divisionName={name} divisionTeams={teams} setConference={setConference} setDivision={setDivision} setSingleDiv={setSingleDiv}/>
                 })}
             </div>
             <div className='standings-conference'>
@@ -23,14 +23,14 @@ export default function StandingsChart({standings,setSingleDiv}){
                     <img src={NL} style={{width:'2vh'}}></img>
                 </div>
                 {Object.entries(standings['National League']).map(([name,teams]) => {
-                    return <StandingsDivision divisionName={name} divisionTeams={teams}/>
+                    return <StandingsDivision conference={'National League'} divisionName={name} divisionTeams={teams} setConference={setConference} setDivision={setDivision} setSingleDiv={setSingleDiv}/>
                 })}
             </div>      
         </div>
     )
 }
 
-function StandingsDivision({divisionName,divisionTeams}){
+function StandingsDivision({conference,divisionName,divisionTeams,setConference,setDivision,setSingleDiv}){
     const [sortedTeams,setSortedTeams] = useState(undefined)
     
     useEffect(() => {
@@ -46,8 +46,14 @@ function StandingsDivision({divisionName,divisionTeams}){
         sortTeams()
     },[divisionTeams])
 
+    const handleClick = () => {
+        setConference(conference)
+        setDivision(divisionName)
+        setSingleDiv(true)
+    }
+
     return(
-        <div className='standings-division-container'>
+        <div className='standings-division-container' onClick={handleClick}>
             <p style={{fontSize:'18px',width:'100%',borderBottom:'1px solid gray'}}>{divisionName}</p>
             {sortedTeams && sortedTeams.map(([teamName,obj]) => {
                 return <StandingsRow teamName={teamName} teamRecord={obj}/>
