@@ -1,10 +1,13 @@
+import { setDefaultEventParameters } from 'firebase/analytics'
 import { useFetchTeamStats } from '../../Hooks/useFetchTeamStats'
 
 export default function TeamStats(){
-    const teamStats = useFetchTeamStats('NYY')
+    const {teamStats} = useFetchTeamStats('NYY')
     return(
         <>
-            <p>Team Stats</p>
+            {Object.entries(teamStats).map(([statName,stat]) => {
+                return <p>{statName} : {stat}</p>
+            })}
         </>
     )
 }

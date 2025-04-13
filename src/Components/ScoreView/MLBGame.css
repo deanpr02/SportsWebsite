@@ -30,6 +30,14 @@
     height:50vh;
 }
 
+.mlb-score-statname{
+    display:flex;
+    align-items: flex-start;
+    margin-left:10px;
+    margin-right:10px;
+    font-size:18px;
+}
+
 .mlb-score-stat{
     display:flex;
     flex-direction:row;
@@ -37,6 +45,9 @@
     margin:0px;
     font-size:18px;
     align-items:center;
+    justify-content: center;
+    margin-top:10px;
+    margin-bottom:10px;
 }
 
 .score-stat-bar-wrapper{
@@ -52,7 +63,7 @@
 .score-stat-bar{
     display:flex;
     justify-self:flex-start;
-    width:100%;
+    /*width:100%;*/
     height:5vh;
     border: 1px solid white;
     border-radius: 10px;

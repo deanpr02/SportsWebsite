@@ -1,7 +1,11 @@
-import { useState } from 'react'
+import { useState,useMemo } from 'react'
 import { useRetrieveTeam } from '../../Hooks/useRetrieveTeam'
+import { useTeamRank } from  '../../Hooks/useFetchTeamRank'
+import { useStatNames } from '../../Hooks/useStatNames'
 import './MLBGame.css'
 import StadiumCloud from "./StadiumCloud"
+import GameSimulation from './GameSimulation'
+import { setDefaultEventParameters } from 'firebase/analytics'
 
 const gameState = {
     active: 0,
@@ -20,10 +24,13 @@ export default function MLBGame({home,away}){
             <ScoreGraphic home={homeTeamInfo} away={awayTeamInfo} homeScore={homeScore} awayScore={awayScore}/>
             <ScoreBox homeInfo={homeTeamInfo} awayInfo={awayTeamInfo}/>
             <div className='mlb-mid-score'>
-                <SideView city={awayTeamInfo.city} color={awayTeamInfo.primaryColor}/>
-                <StadiumCloud/>
-                <SideView city={homeTeamInfo.city} color={homeTeamInfo.primaryColor}/>
+                <>
+                    <SideView city={awayTeamInfo.city} color={awayTeamInfo.primaryColor} teamName={awayTeamInfo.abbr}/>
+                    <StadiumCloud/>
+                    <SideView city={homeTeamInfo.city} color={homeTeamInfo.primaryColor} teamName={homeTeamInfo.abbr}/>
+                </>
             </div>
+            <GameSimulation/>
         </div>
     )
 }
@@ -96,18 +103,35 @@ function Inning({inningNumber}){
     )
 }
 
-function SideView({city,color}){
+function SideView({city,color,teamName}){
+    const stats = useMemo(() => ['p_earned_run_avg','b_hr','b_r'], []);
+    const formattedStats = useStatNames()
+    const {rankings} = useTeamRank(teamName,stats)
+
     return(
         <div className='mlb-side-view'>
             <p>{city}</p>
-            <div className='mlb-score-stat'>
-                <div style={{marginRight:'10px',marginLeft:'10px'}}><p>Runs</p></div>
+            {rankings && formattedStats && Object.entries(rankings).map(([statName,obj]) => {
+                return <TeamStatBar statName={formattedStats[statName]} statRank={obj.rank} stat={obj.value} color={color}/>
+            })}
+        </div>
+    )
+}
+
+function TeamStatBar({statName,statRank,stat,color}){
+    const barFilled = ((30 - parseInt(statRank)) / 29) * 90 + 10;
+    
+    return(
+        <>
+        <div className='mlb-score-statname'><p>{statName}</p></div>
+        <div className='mlb-score-stat'>
+                <p style={{width:'8vh'}}>{stat}</p>
                 <div className='score-stat-bar-wrapper'>
-                    <div className='score-stat-bar' style={{backgroundColor:`#${color}`}}>
-                        <p style={{fontSize:'14px',marginRight:'10px'}}>1000</p>
+                    <div className='score-stat-bar' style={{backgroundColor:`#${color}`, width:`${barFilled}%`}}>
+                        <p style={{fontSize:'14px',marginRight:'10px'}}>{statRank}</p>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     )
 }

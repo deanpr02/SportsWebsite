@@ -12,7 +12,6 @@ export default function Scores(){
     return(
         <div>
             <div className='scores-date-list'>
-                {console.log(schedule)}
                 {schedule.map((item,index) => {
                     return currentDay === index ?
                         <DateListing index={index} date={item.date} setCurrentDay={setCurrentDay} isSelected={true}></DateListing>

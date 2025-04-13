@@ -96,7 +96,7 @@ function CloudImage({pixelData,depthData,width,height,depthWidth,depthHeight}){
     const { positions,colors } = useMemo(() => {
         const positions = new Float32Array(width*height*3);
         const colors = new Float32Array(width*height*3);
-
+        
         const aspect = width / height;
         const xScale = aspect > 1 ? 1 : aspect;
         const yScale = aspect < 1 ? 1 : 1/aspect;

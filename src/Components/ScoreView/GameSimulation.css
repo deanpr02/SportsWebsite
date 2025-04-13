@@ -1,0 +1,58 @@
+.game-simulation-container{
+    display:flex;
+    position:relative;
+    align-items: center;
+    justify-content: center;
+    width:100vh;
+    background-color: #333333;
+}
+
+.simulation-homeplate{
+    display:flex;
+    position:relative;
+    width:60vh;
+    height:50vh;
+    background-color:red;
+    background-position:center;
+    background-size:cover;
+    align-items:end;
+    justify-content: center;
+}
+
+.simulation-strikezone{
+    width:15vh;
+    height:20vh;
+    background-color:rgba(128,128,128,0.7);
+    border-radius:10px;
+    border: 5px solid gray;
+    cursor:pointer;
+    z-index:2;
+}
+
+
+
+.simulation-strike{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    position:absolute;
+    width:3vh;
+    height:3vh;
+    border-radius:100%;
+    background-color: red;
+    font-weight:bold;
+    z-index:3;
+}
+
+.simulation-ball{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    position:absolute;
+    width:3vh;
+    height:3vh;
+    border-radius:100%;
+    background-color: green;
+    font-weight:bold;
+    z-index:3;
+}

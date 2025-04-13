@@ -151,7 +151,13 @@ export function useFetchPlayerbase(url, params, league,team) {
             setIsBaseLoading(true)
             setBaseError(null)
             try{
+                const cachedData = sessionStorage.getItem(`depthChart-${team}`)
+                if(cachedData){
+                    setBaseData(JSON.parse(result))
+                    return
+                }
                 const result = await fetchPlayersByTeam()
+                sessionStorage.setItem(`depthChart-${team}`,JSON.stringify(result))
                 setBaseData(result)
             } catch(error){
                 console.error('Fetch error: ',error)

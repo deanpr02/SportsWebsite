@@ -1,0 +1,47 @@
+export function useStatNames(){
+    const mlbStats = {
+        'b_ab': 'AB',
+        'b_batting_avg': 'BA',
+        'b_bb': 'BB',
+        'b_cs': 'CS',
+        'b_doubles': '2B',
+        'b_games': 'G',
+        'b_gidp': 'GIDP',
+        'b_h': 'H',
+        'b_hbp': 'HBP',
+        'b_hr': 'HR',
+        'b_ibb': 'IBB',
+        'b_onbase_perc': 'OBP',
+        'b_onbase_plus_slugging': 'OPS',
+        'b_onbase_plus_slugging_plus': 'OPS+',
+        'b_pa': 'PA',
+        'b_r': 'R',
+        'b_rbat_plus': 'RBA+',
+        'b_rbi': 'RBI',
+        'b_roba': 'ROBA',
+        'b_sb': 'SB',
+        'b_sf': 'SF',
+        'b_sh': 'SH',
+        'b_slugging_perc': 'SLG',
+        'b_so': 'SO',
+        'b_tb': 'TB',
+        'b_triples': '3B',
+        'b_war': 'WAR',
+        'p_war': 'WAR',
+        'p_earned_run_avg': 'ERA',
+        'p_g': 'G',
+        'p_gs': 'GS',
+        'p_gf': 'GF',
+        'p_cg': 'CG',
+        'p_sho': 'SHO',
+        'p_sv': 'SV',
+        'p_ip': 'IP',
+        'p_h': 'H',
+        'p_er': 'ER',
+        'p_whip': 'WHIP',
+        'p_hits_per_nine': 'H9'
+    }
+
+    return mlbStats
+
+}
