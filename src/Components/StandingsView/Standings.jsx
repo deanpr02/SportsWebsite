@@ -1,6 +1,6 @@
-import { useState,useEffect,useMemo,useRef } from 'react'
+import { useState,useEffect,useRef } from 'react'
 import { Canvas,useThree,useLoader } from '@react-three/fiber'
-import { Edges,OrbitControls,Instance,Instances } from '@react-three/drei'
+import { Edges,OrbitControls } from '@react-three/drei'
 import { TextureLoader } from 'three';
 import * as THREE from 'three'
 
@@ -71,7 +71,7 @@ export default function Standings(){
     const [division,setDivision] = useState('East');
     const [cameraPos,setCameraPos] = useState([-80,10,120])
     const [singleDiv,setSingleDiv] = useState(false)
-//100, 5, -100
+
     return(
         <div className='standings-container'>
             <div className='standings-visual-container'>
@@ -121,7 +121,7 @@ function FullStandings({standings}){
                             const teamOffset = i - (Object.keys(teams).length - 1) / 2;
                             return <IndividualStanding 
                                 key={name} 
-                                pos={[teamOffset * 11, 0, 0]} // Center teams within division
+                                pos={[teamOffset * 11, 0, 0]}
                                 teamName={name} 
                                 wins={obj.W} 
                                 losses={obj.L} />
@@ -153,7 +153,7 @@ function DivisionStandings({division,setCameraPos}){
                 {Object.entries(division).map(([name, obj], i) => {
                     return <IndividualStanding 
                         key={name} 
-                        pos={[i * 11, 0, 0]} // Center teams within division
+                        pos={[i * 11, 0, 0]}
                         teamName={name} 
                         wins={obj.W} 
                         losses={obj.L} />
@@ -167,10 +167,9 @@ function DivisionStandings({division,setCameraPos}){
 function IndividualStanding({pos,teamName,wins,losses,rotation}){
     const teamInfo = useRetrieveTeam(teamName);
     const gamesAbove500 = wins - losses;
-// Base height plus bonus for games above .500
     const height =  (gamesAbove500);
-// Add a minimum height
     const finalHeight = height;
+
     return(
         <group>
             { teamInfo &&
@@ -187,25 +186,19 @@ function CustomCamera({pos}) {
     const { camera } = useThree();
     
     useEffect(() => {
-        // Create a proper Vector3 with individual x, y, z values
-        
-        // Use animation frame for smooth camera movement
         const updateCamera = () => {
             const targetPosition = new THREE.Vector3(...pos);
         
-        // Set camera position directly without animation
             camera.position.set(targetPosition.x, targetPosition.y, targetPosition.z);
             camera.lookAt(0, 0, 0);
             camera.updateProjectionMatrix();
-
         };
         
         updateCamera();
-
         
     }, [camera,pos]);
 
-    return null; // This component doesn't render anything
+    return null;
 }
 
 function Pillar({pos,teamColor,wins,losses,height,rotation}){
@@ -221,53 +214,6 @@ function Pillar({pos,teamColor,wins,losses,height,rotation}){
     )
 }
 
-//function DepthifiedLogo({ srcLogo }) {
-//    const canvasRef = useRef(null);
-//    const [logoSize, setLogoSize] = useState({ width: 0, height: 0 });
-//    const [logoData, setLogoData] = useState(null);
-//
-//    useEffect(() => {
-//        const canvas = canvasRef.current;
-//        const ctx = canvas.getContext('2d');
-//
-//        const loadImage = async () => {
-//            const img = new Image();
-//            img.src = srcLogo;
-//            await img.decode();
-//
-//            const scaleFactor = 0.25;
-//
-//            canvas.width = img.width * scaleFactor;
-//            canvas.height = img.height * scaleFactor;
-//
-//            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-//            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-//            setLogoData(imageData.data);
-//            setLogoSize({ width: canvas.width, height: canvas.height });
-//        };
-//
-//        loadImage();
-//    }, [srcLogo]);
-//
-//    return (
-//        <>
-//            <canvas ref={canvasRef} hidden />
-//            <Canvas style={{ height: '50vh', width: '50vw', border: '2px solid #111111' }} camera={{ position: [0, 0, 2], fov: 50 }}>
-//                <ambientLight intensity={0.5} />
-//                <pointLight position={[10, 10, 10]} intensity={1} />
-//                {logoData && (
-//                    <VoxelImage
-//                        pixelData={logoData}
-//                        width={logoSize.width}
-//                        height={logoSize.height}
-//                    />
-//                )}
-//                <OrbitControls />
-//            </Canvas>
-//        </>
-//    );
-//}
-
 function VoxelImage({ logoSrc,pos,logoHeight}) {
     const texture = useLoader(TextureLoader,logoSrc);
     const meshRef = useRef();
@@ -280,16 +226,10 @@ function VoxelImage({ logoSrc,pos,logoHeight}) {
         const canvas = document.createElement('canvas')
         const ctx = canvas.getContext('2d');
 
-        //const scaleFactor = 0.25;
-        //const width = texture.image.width * scaleFactor;
-        //const height = texture.image.height * scaleFactor;
-
         const targetWidth = 100; 
         
-        // Calculate adaptive scale factor based on original image width
         const scaleFactor = targetWidth / texture.image.width;
         
-        // Apply the scale factor to get dimensions
         const width = Math.floor(texture.image.width * scaleFactor);
         const height = Math.floor(texture.image.height * scaleFactor);
 
@@ -308,24 +248,19 @@ function VoxelImage({ logoSrc,pos,logoHeight}) {
     useEffect(() => {
         if (!meshRef.current || !pixelData) return;
     
-      // Create temporary object to help position instances
         const tempObject = new THREE.Object3D();
         const tempColor = new THREE.Color();
-    
-        //const {width,height} = dimensions;
         
         let instanceCount = 0;
-      // First count non-transparent pixels to know how many instances we need
+
         for (let i = 0; i < dimensions.width * dimensions.height; i++) {
             const idx = i * 4;
             const alpha = pixelData[idx + 3];
             if (alpha > 10) instanceCount++;
         }
     
-      // Set the count on the instanced mesh
         meshRef.current.count = instanceCount;
     
-      // Now set the matrix and color for each instance
         let instanceIndex = 0;
         for (let i = 0; i < dimensions.width * dimensions.height; i++) {
             const x = i % dimensions.width;
@@ -333,24 +268,20 @@ function VoxelImage({ logoSrc,pos,logoHeight}) {
             const idx = i * 4;
             const alpha = pixelData[idx + 3];
         
-        // Skip transparent pixels
             if (alpha <= 10) continue;
         
             const scale = 0.1;
-        // Position the temporary object
+        
             tempObject.position.set(
-                (x - dimensions.width/2)*scale,  // Center horizontally
-                (-y + dimensions.height/2)*scale, // Center vertically and flip Y axis
+                (x - dimensions.width/2)*scale,
+                (-y + dimensions.height/2)*scale,
                 0
             );
         
-        // Update its matrix
             tempObject.updateMatrix();
         
-        // Set the matrix for this instance
             meshRef.current.setMatrixAt(instanceIndex, tempObject.matrix);
         
-        // Set the color for this instance
             tempColor.setRGB(
                 Math.pow(pixelData[idx] / 255,2.1),
                 Math.pow(pixelData[idx + 1] / 255,2.1),
@@ -362,7 +293,6 @@ function VoxelImage({ logoSrc,pos,logoHeight}) {
         instanceIndex++;
     }
     
-      // Update the instance matrices and colors
         meshRef.current.instanceMatrix.needsUpdate = true;
         if (meshRef.current.instanceColor) meshRef.current.instanceColor.needsUpdate = true;
     
@@ -373,7 +303,7 @@ function VoxelImage({ logoSrc,pos,logoHeight}) {
         <instancedMesh 
             ref={meshRef} 
             args={[null, null, dimensions.width * dimensions.height]} 
-            position={[0,logoHeight >= 0 ? logoHeight+10 : logoHeight-10,0]}// Maximum possible instances
+            position={[0,logoHeight >= 0 ? logoHeight+10 : logoHeight-10,0]}
         >
         <boxGeometry args={[0.1, 0.1, 2.5]} />
         <meshStandardMaterial />
