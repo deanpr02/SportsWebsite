@@ -1,17 +1,28 @@
-import { TbRelationManyToManyFilled } from 'react-icons/tb'
+import { useState,useEffect } from 'react'
 import './StandingsChart.css'
 import { useRetrieveTeam } from '../../Hooks/useRetrieveTeam'
 
-export default function StandingsChart({standings}){
+import AL from '../../assets/mlb-resources/american-league.png'
+import NL from '../../assets/mlb-resources/national-league.png'
+
+export default function StandingsChart({standings,setSingleDiv}){
     return(
-        <div className='standings-chart-container'>
+        <div className='standings-chart-container' onClick={()=>setSingleDiv(true)}>
             <div className='standings-conference'>
+                <div style={{display:'flex',width:'100%',height:'2vh',margin:'5px',justifyContent:'center',alignItems:'center'}}>
+                    <p style={{marginRight:'5px'}}>American League</p>
+                    <img src={AL} style={{width:'2vh'}}></img>
+                </div>
                 {Object.entries(standings['American League']).map(([name,teams]) => {
                     return <StandingsDivision divisionName={name} divisionTeams={teams}/>
                 })}
             </div>
             <div className='standings-conference'>
-            {Object.entries(standings['National League']).map(([name,teams]) => {
+                <div style={{display:'flex',width:'100%',height:'2vh',margin:'5px',justifyContent:'center',alignItems:'center'}}>
+                    <p style={{marginRight:'5px'}}>National League</p>
+                    <img src={NL} style={{width:'2vh'}}></img>
+                </div>
+                {Object.entries(standings['National League']).map(([name,teams]) => {
                     return <StandingsDivision divisionName={name} divisionTeams={teams}/>
                 })}
             </div>      
@@ -20,10 +31,25 @@ export default function StandingsChart({standings}){
 }
 
 function StandingsDivision({divisionName,divisionTeams}){
+    const [sortedTeams,setSortedTeams] = useState(undefined)
+    
+    useEffect(() => {
+        const sortFunc = (a,b) => {
+            return b[1]['W'] - a[1]['W']
+        }
+
+        const sortTeams = () => {
+            const newTeams = Object.entries(divisionTeams).sort(sortFunc)
+            setSortedTeams(newTeams)
+        }
+
+        sortTeams()
+    },[divisionTeams])
+
     return(
         <div className='standings-division-container'>
             <p style={{fontSize:'18px',width:'100%',borderBottom:'1px solid gray'}}>{divisionName}</p>
-            {Object.entries(divisionTeams).map(([teamName,obj]) => {
+            {sortedTeams && sortedTeams.map(([teamName,obj]) => {
                 return <StandingsRow teamName={teamName} teamRecord={obj}/>
             })}
         </div>

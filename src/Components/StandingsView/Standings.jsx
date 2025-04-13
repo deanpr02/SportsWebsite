@@ -67,78 +67,100 @@ const standings = {
 
 
 export default function Standings(){
-    const [conference,setConference] = useState('American League')
-    const [division,setDivision] = useState('East')
-    const [teams,setTeams] = useState(undefined)
-    let rot = 0;
-    //const division = standings["American League"]["East"]
-
-    useEffect(() => {
-        const selectedTeams = {}
-        if(conference === 'MLB'){
-            Object.values(standings).forEach(league => {
-                Object.values(league).forEach(divisionTeams => {
-                    Object.assign(selectedTeams, divisionTeams)
-                    })
-                })
-            }
-        else{
-            const conf = standings[conference]
-            if(conf){
-                Object.assign(selectedTeams,conf[division])
-            }
-        }
-            setTeams(selectedTeams)
-    },[conference,division])
-
+    const [conference,setConference] = useState('American League');
+    const [division,setDivision] = useState('East');
+    const [cameraPos,setCameraPos] = useState([-80,10,120])
+    const [singleDiv,setSingleDiv] = useState(false)
+//100, 5, -100
     return(
         <div className='standings-container'>
-        <div className='standings-visual-container'>
-            <Canvas style={{ height: '50vh', width: '50vw',border: '2px solid #111111',borderRadius:'10px' }} camera={{ position: [5, 8, 5]}}>
-                {standings && (() => {
+            <div className='standings-visual-container'>
+                <div style={{width:'5vh', backgroundColor:'red'}} onClick={()=>setSingleDiv(false)}><p>Click</p></div>
+                <Canvas style={{ height: '50vh', width: '50vw',border: '2px solid #111111',borderRadius:'10px' }} camera={{position:cameraPos}} >
+                    {!singleDiv ? 
+                        <FullStandings standings={standings} setCameraPos={setCameraPos}/>
+                        :
+                        <DivisionStandings division={standings['American League']['East']} setCameraPos={setCameraPos}/>
+                    }
+                    <CustomCamera pos={cameraPos}/>
+                </Canvas>
+            </div>
+            <StandingsChart standings={standings} setSingleDiv={setSingleDiv}/>
+        </div>
+    )
+}
 
-                    const totalDivisions = Object.values(standings).reduce((acc, conf) => acc + Object.keys(conf).length, 0);
-                    const radius = 50;
-                    let divisionIndex = 0;
+function FullStandings({standings}){
+    const sortTeams = (a,b) => {
+        return b[1]['W'] - a[1]['W'];
+    }
+
+    return(
+        <>
+        {standings && (() => {
+
+            const totalDivisions = Object.values(standings).reduce((acc, conf) => acc + Object.keys(conf).length, 0);
+            const radius = 50;
+            let divisionIndex = 0;
+
+            return Object.entries(standings).flatMap(([confName, divisions]) => {
+                return Object.entries(divisions).map(([divName, teams]) => {
+                    const angle = (divisionIndex * 2 * Math.PI) / totalDivisions;
+                    const x = radius * Math.sin(angle);
+                    const z = radius * Math.cos(angle);
+                    divisionIndex++;
                 
-                    return Object.entries(standings).flatMap(([confName, divisions]) => {
-                        return Object.entries(divisions).map(([divName, teams]) => {
-                            const angle = (divisionIndex * 2 * Math.PI) / totalDivisions;
-                            const x = radius * Math.sin(angle);
-                            const z = radius * Math.cos(angle);
-                            divisionIndex++;
-                        
-                        return (
-                            <group 
-                                key={`${confName}-${divName}`} 
-                                position={[x, 0, z]} 
-                                rotation={[0, angle + Math.PI/2, 0]}>
-                                {Object.entries(teams).map(([name, obj], i) => {
-                                    const teamOffset = i - (Object.keys(teams).length - 1) / 2;
-                                    return <IndividualStanding 
-                                        key={name} 
-                                        pos={[teamOffset * 11, 0, 0]} // Center teams within division
-                                        teamName={name} 
-                                        wins={obj.W} 
-                                        losses={obj.L} />
-                                })}
-                            </group>
-                            )
-                        })
-                    })
-                })()}
-                <mesh position={[0,0,0]} rotation={[Math.PI/2,0,0]}>
-                    <planeGeometry args={[200,200]}/>
-                    <meshStandardMaterial color="black" transparent={true} opacity={0.3} side={2}/>
-                </mesh>
+                    const sortedTeams = Object.entries(teams).sort(sortTeams)
+                
+                return (
+                    <group 
+                        key={`${confName}-${divName}`} 
+                        position={[x, 0, z]} 
+                        rotation={[0, angle + Math.PI/2, 0]}>
+                        {sortedTeams.map(([name, obj], i) => {
+                            const teamOffset = i - (Object.keys(teams).length - 1) / 2;
+                            return <IndividualStanding 
+                                key={name} 
+                                pos={[teamOffset * 11, 0, 0]} // Center teams within division
+                                teamName={name} 
+                                wins={obj.W} 
+                                losses={obj.L} />
+                        })}
+                    </group>
+                    )
+                })
+            })
+        })()}
+            <ambientLight intensity={3} />
+            <color attach="background" args={['#444444']}/>
+            <OrbitControls/>
+        </>
+    )
+}
+
+function DivisionStandings({division,setCameraPos}){
+    useEffect(() => {
+        setCameraPos([0,0,10]);
+
+        return () => setCameraPos([-80,10,120])
+    },[])
+
+    return(
+        <>
+            <group 
+                key={`standing`} 
+                position={[-20,0,-100]} >
+                {Object.entries(division).map(([name, obj], i) => {
+                    return <IndividualStanding 
+                        key={name} 
+                        pos={[i * 11, 0, 0]} // Center teams within division
+                        teamName={name} 
+                        wins={obj.W} 
+                        losses={obj.L} />
+                })}
                 <ambientLight intensity={3} />
-                <color attach="background" args={['#444444']}/>
-                <CustomCamera/>
-                <OrbitControls/>
-            </Canvas>
-        </div>
-        <StandingsChart standings={standings}/>
-        </div>
+            </group>
+        </>
     )
 }
 
@@ -161,11 +183,27 @@ function IndividualStanding({pos,teamName,wins,losses,rotation}){
     )
 }
 
-function CustomCamera() {
+function CustomCamera({pos}) {
     const { camera } = useThree();
+    
+    useEffect(() => {
+        // Create a proper Vector3 with individual x, y, z values
+        
+        // Use animation frame for smooth camera movement
+        const updateCamera = () => {
+            const targetPosition = new THREE.Vector3(...pos);
+        
+        // Set camera position directly without animation
+            camera.position.set(targetPosition.x, targetPosition.y, targetPosition.z);
+            camera.lookAt(0, 0, 0);
+            camera.updateProjectionMatrix();
 
-    // Point the camera towards (0, 0, 0)
-    camera.lookAt(0, 0, 0);
+        };
+        
+        updateCamera();
+
+        
+    }, [camera,pos]);
 
     return null; // This component doesn't render anything
 }
