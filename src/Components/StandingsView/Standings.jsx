@@ -75,7 +75,7 @@ export default function Standings(){
     return(
         <div className='standings-container'>
             <div className='standings-visual-container'>
-                <div style={{width:'5vh', backgroundColor:'red'}} onClick={()=>setSingleDiv(false)}><p>Click</p></div>
+                <div style={{width:'5vh', backgroundColor:'red'}} onClick={()=>setSingleDiv(false)}><p>View All</p></div>
                 <Canvas style={{ height: '50vh', width: '50vw',border: '2px solid #111111',borderRadius:'10px' }} camera={{position:cameraPos}} >
                     {!singleDiv ? 
                         <FullStandings standings={standings} setCameraPos={setCameraPos}/>
@@ -83,6 +83,7 @@ export default function Standings(){
                         <DivisionStandings division={standings[conference][division]} setCameraPos={setCameraPos}/>
                     }
                     <CustomCamera pos={cameraPos}/>
+                    <color attach="background" args={['#444444']}/>
                 </Canvas>
             </div>
             <StandingsChart standings={standings} setSingleDiv={setSingleDiv} setConference={setConference} setDivision={setDivision}/>
@@ -132,25 +133,33 @@ function FullStandings({standings}){
             })
         })()}
             <ambientLight intensity={3} />
-            <color attach="background" args={['#444444']}/>
             <OrbitControls/>
         </>
     )
 }
 
 function DivisionStandings({division,setCameraPos}){
+    const [sortedTeams,setSortedTeams] = useState(undefined)
+
+    const sortTeams = (a,b) => {
+        return b[1]['W'] - a[1]['W']
+    }
+
     useEffect(() => {
         setCameraPos([0,0,10]);
 
+        const sorted = Object.entries(division).sort(sortTeams)
+        setSortedTeams(sorted)
+
         return () => setCameraPos([-80,10,120])
-    },[])
+    },[division])
 
     return(
         <>
             <group 
                 key={`standing`} 
                 position={[-20,0,-100]} >
-                {Object.entries(division).map(([name, obj], i) => {
+                {sortedTeams && sortedTeams.map(([name, obj], i) => {
                     return <IndividualStanding 
                         key={name} 
                         pos={[i * 11, 0, 0]}
