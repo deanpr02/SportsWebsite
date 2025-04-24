@@ -3,7 +3,7 @@ import { collection, query, orderBy, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 
 // Standalone function to get team rank
-async function getTeamRank(teamAbbr, stat) {
+async function getStatLeader(teamAbbr, stat) {
     try {
         const teamsRef = collection(db, 'mlb', 'data', 'teams');
         const q = query(teamsRef, orderBy(`averageStats.${stat}`,'desc'));
@@ -38,7 +38,7 @@ export function useStatLeaders(teamName, stats) {
             try {
                 const results = {};
                 for (const stat of stats) {
-                    const { rank, value } = await getTeamRank(teamName, stat);
+                    const { rank, value } = await getStatLeader(teamName, stat);
                     results[stat] = { rank, value }; // Store both rank and value
                 }
                 setRankings(results);

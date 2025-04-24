@@ -30,7 +30,7 @@ function Information({name,teams}){
         {name}
       </p>
       <div className='city-team-information'>
-        <p style={{border: '2px solid white',borderRadius:'100px',padding:'3px 13px 3px 13px',zIndex:2}} onMouseEnter={() => setHovered(true)} onMouseLeave={()=>setHovered(false)}>i</p>
+        <p style={{border: '2px solid white',borderRadius:'100%',padding:'3px 13px 3px 13px',zIndex:2}} onMouseEnter={() => setHovered(true)} onMouseLeave={()=>setHovered(false)}>i</p>
         {hovered &&
         <>
         <div className='city-team-arrow'></div>

@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState,useContext,useEffect } from 'react'
+import { PlayerContext } from './TeamPage';
 import { useParams } from 'react-router-dom'
 import { LineChart,PieChart, ResponsiveChartContainer } from '@mui/x-charts';
 import './PlayerPage.css'
@@ -20,9 +21,13 @@ import HR from '../../assets/mlb-resources/mlb-hr.png'
 import SO from '../../assets/mlb-resources/mlb-so.png'
 import Down from '../../assets/mlb-resources/mlb-down.png'
 import DownArrow from '../../assets/down-arrow.png'
+import Blank from '../../assets/mlb-resources/blank_face.png'
 import { useFetchPlayerStats } from '../../Hooks/useFetchPlayerStats'
 import { useGetAverageStat } from '../../Hooks/useGetAverageStat';
-import { TbPlayerSkipForwardFilled } from 'react-icons/tb';
+import { useDatabase } from '../../Hooks/useDatabase'
+import { usePlayerNames } from '../../Hooks/usePlayerNames';
+import { useFetchComparedPlayer } from '../../Hooks/useFetchComparedPlayer';
+import Spinner from '../MainView/Spinner';
 
 
 const playerStats = {'stats': {
@@ -60,70 +65,82 @@ const playerStats = {'stats': {
 }
 
 const statDetails = {
-    'b_ab': {'title': 'At Bats','logo':AB},
-    'b_batting_avg': {'title': 'Batting Average','logo':H},
-    'b_bb': {'title': 'Base on Balls','logo':BB},
-    'b_cs': {'title': 'Caught Stealing','logo':CS},
-    'b_doubles': {'title': 'Doubles','logo':Doubles},
-    'b_games': {'title': 'Games Played','logo':Games},
-    'b_gidp': {'title': 'Grounded Into Double-Play','logo':GIDP},
-    'b_h': {'title': 'Hits','logo':H},
-    'b_hbp': {'title': 'Hit By Pitch','logo':HBP},
-    'b_hr': {'title': 'Home Runs','logo':HR},
-    'b_ibb': {'title': 'Intentional Base on Balls','logo':IBB},
-    'b_onbase_perc': {'title': 'On-Base Percentage','logo':H},
-    'b_onbase_plus_slugging': {'title': 'On-Base Plus Slugging','logo':H},
-    'b_onbase_plus_slugging_plus':{'title': 'OPS+','logo':H},
-    'b_pa': {'title': 'Plate Appearances','logo':AB},
-    'b_r': {'title': 'Runs','logo':R},
-    'b_rbat_plus': {'title': 'Rbat+','logo':R},
-    'b_rbi': {'title': 'Runs Batted In','logo':RBI},
-    'b_roba': {'title': 'rOBA','logo':H},
-    'b_sb': {'title': 'Stolen Bases','logo':R},
-    'b_sf': {'title': 'Sacrifice Flies','logo':SF},
-    'b_sh': {'title': 'Sacrifice Hits','logo':SF},
-    'b_slugging_perc': {'title': 'Slugging Percentage','logo':H},
-    'b_so': {'title': 'Strike Outs','logo':SO},
-    'b_tb': {'title': 'Total Bases','logo':R},
-    'b_triples': {'title': 'Triples','logo':Triples},
-    'b_war': {'title': 'Wins Above Replacement','logo':WAR},
+    'gamesPlayed': Games,
+    'groundOuts': GIDP,
+    'airOuts': SF,
+    'runs': R,
+    'doubles': Doubles,
+    'triples': Triples,
+    'homeRuns': HR,
+    'strikeOuts': SO,
+    'baseOnBalls': BB,
+    'intentionalWalks': IBB,
+    'hits': H,
+    'hitByPitch': HBP,
+    'avg': H,
+    'atBats': AB,
+    'obp': H,
+    'slg': H,
+    'ops': RBI,
+    'caughtStealing': CS,
+    'stolenBases': R,
+    'stolenBasePercentage': R,
+    'groundIntoDoublePlay': GIDP,
+    'numberOfPitches': BB,
+    'plateAppearances': AB,
+    'totalBases': AB,
+    'rbi': RBI,
+    'leftOnBase': CS,
+    'sacBunts': R,
+    'sacFlies': R,
+    'babip': H,
+    'groundOutsToAirOuts':SF,
+    'catchersInterference': IBB,
+    'atBatsPerHomeRun': AB
 }
 
 export default function PlayerPage({teamInfo}){
     const {playerName} = useParams()
+    const {playerID,_} = useContext(PlayerContext)
+    const {dataObj,isLoading} = useDatabase('/api/player_info',{'id':playerID})
     const { playerData, isBaseLoading, baseError } = useFetchPlayerStats("http://localhost:5000/api/webscrape/individual_player",'mlb',playerName)
     const [year, setYear] = useState('2025')
 
     return(
+        <>
+        {isLoading ? <Spinner color={teamInfo.primaryColor}/>
+        :
         <div className='player-page-container'>
-            {playerData &&
+            {playerData && dataObj && 
             <>
-                <PlayerAbout about={playerData.about} image={playerData.image} position={playerData.position} teamInfo={teamInfo} seasons={Object.keys(playerData.stats)}/>
-                <PlayerStats stats={playerData.stats} year={year} setYear={setYear} playerData={playerData.stats}/>
-                <PlayerChart stats={playerData.stats} teamInfo={teamInfo}/>
-                <PlayerAwards awards={playerData.awards}/>
-                <PlayerComparison currentPlayerStats={playerData.stats} currentPlayerImage={playerData.image} currentPlayerName={playerName}/>
+                <PlayerAbout about={dataObj.about} number={dataObj['number']} image={dataObj['image-link']} position={dataObj.position} teamInfo={teamInfo} seasons={Object.keys(dataObj.stats)}/>
+                <PlayerStats stats={dataObj.stats} year={year} setYear={setYear} playerData={dataObj.stats}/>
+                <PlayerChart stats={dataObj.stats} teamInfo={teamInfo}/>
+                <PlayerAwards awards={dataObj.awards}/>
+                <PlayerComparison currentPlayerStats={dataObj.stats} currentPlayerImage={dataObj['image-link']} currentPlayerName={playerName}/>
             </>
             }
         </div>
+        }
+        </>
     )
 }
 
-function PlayerAbout({about,image,position,teamInfo,seasons}){
+function PlayerAbout({about,number,image,position,teamInfo,seasons}){
     const {playerName} = useParams()
     return(
         <div className='profile-container'>
             <PlayerProfile teamInfo={teamInfo} image={image}/>
             <p className='profile-name'>{playerName}</p>
-            <PlayerNumber primaryColor={teamInfo.primaryColor} secondaryColor={teamInfo.secondaryColor} number={about.number}/>
+            <PlayerNumber primaryColor={teamInfo.primaryColor} secondaryColor={teamInfo.secondaryColor} number={number}/>
             <div className='position-sec'>
-                <p>Bats: {about['Bats']}</p>
+                <p>Bats: {about['batside']}</p>
                 <div className='diagonal-line-1'></div>
-                <p>Throws: {about['Throws']}</p>
+                <p>Throws: {about['pitchhand']}</p>
             </div>
             <div className='position-sec'>
                 <p>Measurements:</p>
-                <p>{about.size}</p>
+                <p>{about['height']} - {about['weight']} lbs</p>
             </div>
             <div className='position-sec'>
                 <img className='profile-team-image' src={teamInfo.secondaryLogo}></img>
@@ -133,7 +150,11 @@ function PlayerAbout({about,image,position,teamInfo,seasons}){
             </div>
             <div className='position-sec'>
                 <p>Born:</p>
-                <p>{about.birthday}</p>
+                <p>{about['birthdate']}</p>
+            </div>
+            <div className='position-sec'>
+                <p>Birthplace:</p>
+                <p>{about.birthplace}</p>
             </div>
             <div className='position-sec' style={{borderBottom:'2px solid gray'}}>
                 <p>Seasons:</p>
@@ -211,7 +232,7 @@ function PlayerStats({stats,year,setYear,playerData}){
     const batchSize = 21;
     const shownBatch = Object.entries(stats[year]).slice(0,batchSize)
     const [hidden,setHidden] = useState(true)
-    const {averageStats} = useGetAverageStat('mlb','2024',Object.keys(playerData[year]))
+    //const {averageStats} = useGetAverageStat('mlb','2024',Object.keys(playerData[year]))
     //const greenRatio = Math.round(Math.min((stats[year]['b_hr'] / averageStats)*200,255))
     //const redRatio = Math.round(Math.min(averageStats/stats[year]['b_hr'])*200,255)
 
@@ -224,11 +245,11 @@ function PlayerStats({stats,year,setYear,playerData}){
             </div>
             {hidden ? 
                         shownBatch.map(([key,value]) => {
-                            return <StatRow statistic={value} title={statDetails[key].title} logo={statDetails[key].logo}/>
+                            return <StatRow statistic={value} title={key} logo={statDetails[key]}/>
                         })
                         :
                         Object.entries(stats[year]).map(([key,value]) => {
-                            return <StatRow statistic={value} title={statDetails[key].title} logo={statDetails[key].logo}/>
+                            return <StatRow statistic={value} title={key} logo={statDetails[key]}/>
                         })}
             <div className='expand-bar' style={{padding:'1px'}} onClick={() => setHidden((prev) => !prev)}>
                 {hidden ?
@@ -254,7 +275,7 @@ function StatRow({statistic,title,logo}){
 }
 
 function PlayerChart({stats,teamInfo}){
-    const [statName,setStatName] = useState('b_war')
+    const [statName,setStatName] = useState('avg')
     const years = Object.keys(stats)
     const statNameList = Object.keys(stats['2024'])
     const statValues = Object.values(stats).map((statObj => statObj[statName])) 
@@ -368,8 +389,8 @@ function StatLineChart({xValues,yValues,statName,teamColor}){
 }
 
 function PlayerAwards({awards}){
-    const awardYears = awards.map((award => <p>{award.substring(0,5)}</p>))
-    const awardTitles = awards.map((award => <p>{award.substring(5,award.length)}</p>))
+    const awardYears = awards.map((award => <p style={{height:'5vh'}}>{award.year}</p>))
+    const awardTitles = awards.map((award => <p style={{height:'5vh'}}>{award.name}</p>))
     return(
         <div className='player-awards-container'>
             <div className='stat-bar'>
@@ -380,10 +401,10 @@ function PlayerAwards({awards}){
                 <p style={{fontSize:'30px',width:'80%',borderBottom:'2px solid gray'}}>Award</p>
             </div>
             <div style={{display:'flex',flexDirection:'row'}}>
-                <div style={{width:'20%',borderRight:'2px solid gray'}}>
+                <div style={{width:'20%',fontSize:'1.5vw',borderRight:'2px solid gray'}}>
                     {awardYears}
                 </div>
-                <div style={{width:'80%'}}>
+                <div style={{width:'80%',fontSize:'1.5vw'}}>
                     {awardTitles}
                 </div>
             </div>
@@ -392,24 +413,24 @@ function PlayerAwards({awards}){
 }
 
 function PlayerComparison({currentPlayerStats,currentPlayerImage,currentPlayerName}){
-    const { playerData, isBaseLoading, baseError } = useFetchPlayerStats("http://localhost:5000/api/webscrape/individual_player",'mlb','Juan Soto') 
-    const currentPlayerYears = Object.keys(currentPlayerStats)
-    const otherPlayerYears = playerData ? Object.keys(playerData.stats) : []
-    const yearsAvailable = currentPlayerYears.length > otherPlayerYears.length ? otherPlayerYears : currentPlayerYears
-    const [year,setYear] = useState('2024')
+    const [otherName,setOtherName] = useState('---')
+    const [otherImage,setOtherImage] = useState(Blank)
+    const [yearsAvailable,setYearsAvailable] = useState(Object.keys(currentPlayerStats).reverse())
+    const { playerNameList } = usePlayerNames()
+    const [year,setYear] = useState('2025')
     return(
         <div className='player-comparison-container'>
             <div className='stat-bar' style={{width:'100%'}}>
                 <p className='stats-text-header' style={{width:'100%'}}>Player Comparison</p>
                 <StatDropDown data={yearsAvailable} state={year} setFunc={setYear}/>
             </div>
-            {playerData &&
+            {playerNameList &&
                 <div>
                     <div className='player-comparison'>
                         <CurrentPlayer stats={currentPlayerStats} image={currentPlayerImage} name={currentPlayerName}/>
-                        <CompPlayer stats={playerData.stats} image={playerData.image} year={year}/>
+                        <CompPlayer names={playerNameList} otherName={otherName} setOtherName={setOtherName} image={otherImage}/>
                     </div>
-                    <StatCompare playerOne={currentPlayerStats} playerTwo={playerData.stats} year={year}/>
+                    <StatCompare playerOne={currentPlayerStats} playerTwo={otherName === '---' ? null : playerNameList[otherName]} year={year} setImage={setOtherImage} setYears={setYearsAvailable}/>
                 </div>
                 }
         </div>
@@ -426,47 +447,64 @@ function CurrentPlayer({stats,image,name}){
     )
 }
 
-function CompPlayer({stats,image,year}){
+function CompPlayer({names,otherName,setOtherName,image}){
     return(
     <div className='player-comp-card'>
         <img className='player-comp-img' src={image}/>
-        <p style={{fontSize:'32px'}}>Juan Soto</p>
+        <StatDropDown data={Object.keys(names)} state={otherName} setFunc={setOtherName}/>
     </div>
     )
 }
 
-function StatCompare({playerOne,playerTwo,year}){
+function StatCompare({playerOne,playerTwo,year,setImage,setYears}){
+    const { playerData,isLoaded } = useFetchComparedPlayer(playerTwo)
+
+    useEffect(() => {
+        if(playerData){
+            setImage(playerData['image'])
+            const currentPlayerYears = Object.keys(playerOne)
+            const otherPlayerYears = Object.keys(playerData['stats'])
+            const years = currentPlayerYears.length <= otherPlayerYears.years ? currentPlayerYears : otherPlayerYears
+            setYears(years.reverse())
+        }
+    },[playerData])
+
     return(
         <>
+        {!playerTwo || isLoaded ?
         <div style={{display:'flex',flexDirection:'column',alignItems:'center',width:'80vh'}}>
         {Object.keys(playerOne[year]).map((key) => {
+            const comparedPlayerStat = playerData ? playerData['stats'][year][key] : 0
             return (<div className='stat-compare-row'>
-                        {Number(playerOne[year][key]) > Number(playerTwo[year][key]) 
+                        {Number(playerOne[year][key]) > comparedPlayerStat 
                         ? 
                         <>
                             <p className='current-player-compare' style={{color:'green'}}>{playerOne[year][key]} </p>
-                            <div style={{display:'flex',flexDirection:'row'}}><p style={{color:'gray',textWeight:'bold',paddingRight:'10px'}}>{'<'}</p><p style={{fontSize:'24px'}}>{key.slice(2,key.length)} </p></div>
-                            <p style={{width:'20vh',color:'red'}}>{playerTwo[year][key]}</p>
+                            <div style={{display:'flex',flexDirection:'row'}}><p style={{color:'gray',textWeight:'bold',paddingRight:'10px'}}>{'<'}</p><p style={{fontSize:'24px'}}>{key} </p></div>
+                            <p style={{width:'20vh',color:'red'}}>{comparedPlayerStat}</p>
                         </>
                         :
-                        playerTwo[year][key] > playerOne[year][key] 
+                        comparedPlayerStat > playerOne[year][key] 
                         ?
                         <>
                             <p className='current-player-compare' style={{color:'red'}}>{playerOne[year][key]} </p>
-                            <div style={{display:'flex',flexDirection:'row'}}><p style={{fontSize:'24px'}}>{key.slice(2,key.length)} </p><p style={{color:'gray',textWeight:'bold',paddingLeft:'10px'}}>{'>'}</p></div>
-                            <p style={{width:'20vh',color:'green'}}>{playerTwo[year][key]}</p>
+                            <div style={{display:'flex',flexDirection:'row'}}><p style={{fontSize:'24px'}}>{key} </p><p style={{color:'gray',textWeight:'bold',paddingLeft:'10px'}}>{'>'}</p></div>
+                            <p style={{width:'20vh',color:'green'}}>{comparedPlayerStat}</p>
                         </>
                         :
                         <>
                             <p className='current-player-compare' style={{color:'white'}}>{playerOne[year][key]} </p>
-                            <p style={{fontSize:'24px'}}>{key.slice(2,key.length)} </p>
-                            <p style={{width:'20vh',color:'white'}}>{playerTwo[year][key]}</p>
+                            <p style={{fontSize:'24px'}}>{key} </p>
+                            <p style={{width:'20vh',color:'white'}}>{comparedPlayerStat}</p>
                         </>
                     }
                     </div>
                     )
         })}
         </div>
+        :
+        <Spinner color={'000000'}/>
+        }
         </>
     )
 }

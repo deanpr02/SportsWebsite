@@ -3,7 +3,7 @@ This file will be in control of webscraping various websites for sports informat
 such as postseason history and etc.
 """
 import requests
-import re
+import mlbstatsapi
 
 from bs4 import BeautifulSoup, Comment
 
@@ -80,6 +80,7 @@ def get_mlb_team_championships(team_abbr):
     try:
         r = requests.get(f'https://www.baseball-reference.com/teams/{team_abbr}/',timeout=10)
         soup = BeautifulSoup(r.content,'html.parser')
+        print(soup)
     except requests.exceptions.Timeout:
         print("The request timed out")
     except requests.exceptions.RequestException as e:
@@ -309,8 +310,49 @@ def extract_player_awards(soup):
             return awards
         
     return awards
-        
-        
+
+
+def fetch_player_info(player_id):
+    mlb = mlbstatsapi.Mlb()
+    player_info = {}
+    player_info['about'] = {}
+
+    player = mlb.get_person(player_id)
+
+    player_info['about']['height'] = player.height
+    player_info['about']['weight'] = player.weight
+    player_info['about']['batside'] = player.batside.code
+    player_info['about']['pitchhand'] = player.pitchhand.code
+    player_info['about']['birthdate'] = player.birthdate
+    player_info['about']['birthplace'] = player.birthcity + ', ' + (player.birthstateprovince if player.birthstateprovince else player.birthcountry)
+
+    response = requests.get(f'https://statsapi.mlb.com/api/v1/people/{player_id}/stats?stats=yearByYear&group=hitting&hydrate=awards')
+    stats = response.json()
+
+    player_info['stats'] = {}
+    for split in stats['stats'][0]['splits']:
+        season = split['season']
+        player_info['stats'][season] = {}
+
+        stat = split['stat']  # This is a dict of all stat categories for the season
+        for k, v in stat.items():
+            player_info['stats'][season][k] = v
+    
+    response = requests.get(f'https://statsapi.mlb.com/api/v1/people/{player_id}?hydrate=awards')
+
+    award_data = response.json()
+    people = award_data.get("people", [])
+    if people:
+        player = people[0]
+        awards_obj = player.get("awards", [])
+        player_info['awards'] = []
+        for award in awards_obj:
+            player_info['awards'].append({'name':award['name'],'year':award['season']})
+    else:
+        player_info['awards'] = []
+
+    return player_info
+    
 
 
 

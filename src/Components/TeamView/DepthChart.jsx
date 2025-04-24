@@ -1,8 +1,11 @@
-import { useState,useEffect } from 'react'
+import { useState,useEffect,useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
 import FilterImage from '../../assets/mlb-resources/filter.png'
 import SortImage from '../../assets/mlb-resources/sort.png'
 import { useFetchData } from '../../Hooks/useFetchData'
+import { useDatabase } from '../../Hooks/useDatabase'
 import { useFetchPlayerbase } from '../../Hooks/useFetchPlayerbase'
+import { PlayerContext } from './TeamPage'
 
 import './DepthChart.css'
 
@@ -11,16 +14,17 @@ const defaultPicture = "https://img.mlbstatic.com/mlb-photos/image/upload/d_peop
 export default function DepthChart({teamName,primaryColor,secondaryColor}){
     //const {data,isLoading,error} = useFetchData("http://localhost:5000/api/webscrape/players",{'name':teamName},`${teamName}-players`);
     const [sortKey,setSortKey] = useState(null)
+    const {dataObj} = useDatabase('/api/depth_chart',{'name':teamName})
     const [sortDirection,setSortDirection] = useState(1)
     const [sortedAttribute,setSortedAttribute] = useState("N/A")
-    const {baseData,isBaseLoading,baseError} = useFetchPlayerbase("http://localhost:5000/api/webscrape/players",{'name':teamName},'mlb',teamName)
+    //const {baseData,isBaseLoading,baseError} = useFetchPlayerbase("http://localhost:5000/api/webscrape/players",{'name':teamName},'mlb',teamName)
     
     return(
         <div className='depth-additional'>
         <p className="header-text">Depth Chart</p>
         <FilterSortBar setSortKey={setSortKey} setSortDirection={setSortDirection} setSortedAttribute={setSortedAttribute}/>
         <div className='depth-chart-container'>
-            {!isBaseLoading && <PlayerPool playerList={baseData} primaryColor={primaryColor} secondaryColor={secondaryColor} sortKey={sortKey} sortDirection={sortDirection} sortedAttribute={sortedAttribute}/>}
+            {dataObj && <PlayerPool playerList={dataObj} primaryColor={primaryColor} secondaryColor={secondaryColor} sortKey={sortKey} sortDirection={sortDirection} sortedAttribute={sortedAttribute}/>}
         </div>
         </div>
     )
@@ -70,18 +74,26 @@ function PlayerPool({playerList,primaryColor,secondaryColor,sortKey,sortDirectio
     
     return(
         <>
-        {Object.entries(modifiedData).map(([playerName,playerInfo]) => (
+        {modifiedData.map((playerInfo) => (
             <>
-            <PlayerCard playerName={playerName} playerStats={playerInfo.stats["2025"]} playerPosition={playerInfo.position} playerImage={playerInfo.image} primaryColor={primaryColor} secondaryColor={secondaryColor} sortedAttribute={sortedAttribute}/>
+            <PlayerCard playerID={playerInfo.id} playerName={playerInfo.name} playerStats={playerInfo.stats["2025"]} playerPosition={playerInfo.position} playerImage={playerInfo['image-link']} primaryColor={primaryColor} secondaryColor={secondaryColor} sortedAttribute={sortedAttribute}/>
             </>
         ))}
         </>
     )
 }
 
-function PlayerCard({playerName,playerStats,playerPosition,playerImage,primaryColor,secondaryColor,sortedAttribute}){
+function PlayerCard({playerID,playerName,playerStats,playerPosition,playerImage,primaryColor,secondaryColor,sortedAttribute}){
+    const {_,setPlayerID} = useContext(PlayerContext);
+    const navigate = useNavigate()
+
+    const navigateToPlayer = () => {
+        setPlayerID(playerID);
+        navigate(playerName)
+    }
+
     return(
-        <div className="player-card" style={{backgroundColor:`#${secondaryColor}`,border:`10px solid #${primaryColor}`}}>
+        <div className="player-card" style={{backgroundColor:`#${secondaryColor}`,border:`10px solid #${primaryColor}`}} onClick={navigateToPlayer}>
             <p style={{color:`#${primaryColor}`,borderBottom:`2px solid #${primaryColor}`}}>{playerName}</p>
             <img className="depth-chart-img" src={playerImage ? playerImage : defaultPicture}></img>
             <p style={{color:`#${primaryColor}`,borderTop:`2px solid #${primaryColor}`}}>{playerPosition}</p>

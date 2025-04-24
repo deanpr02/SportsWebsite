@@ -6,6 +6,7 @@ import { useState,useEffect,createContext } from 'react'
 import { Routes,Route } from 'react-router-dom'
 
 export const WidgetContext = createContext(null);
+export const PlayerContext = createContext(null);
 
 //TODO: Make this nicer with the route, such as moving it to its own component
 
@@ -14,6 +15,7 @@ export default function TeamPage({teamObject}){
     const [widgetKey,setWidgetKey] = useState(0)
     const [teamInfo,setTeamInfo] = useState(null);
     const [aura,setAura] = useState('')
+    const [playerID,setPlayerID] = useState(null);
 
     function hexToRgb(hex){
         const num = parseInt(hex,16);
@@ -64,6 +66,7 @@ export default function TeamPage({teamObject}){
     },[])
 
     return(
+        <PlayerContext.Provider value={{playerID,setPlayerID}}>
         <Routes>
             <Route path={"/"} element={<>
             {teamInfo && 
@@ -102,6 +105,7 @@ export default function TeamPage({teamObject}){
             <Route path={"/:playerName"} element={<>
             {teamInfo && <PlayerPage teamInfo={teamInfo}/>}</>}/>
         </Routes>
+        </PlayerContext.Provider>
     )
 }
 

@@ -3,56 +3,52 @@ import './GameSimulation.css'
 import HomePlate from '../../assets/mlb-resources/mlb-homeplate.jpg'
 
 export default function GameSimulation() {
-  const [strikes, setStrikes] = useState([])
-  const [balls, setBalls] = useState([])
-  const strikeZoneRef = useRef(null)
 
-  const handlePitchClick = (event) => {
-    const homePlate = event.currentTarget
-    const homePlateRect = homePlate.getBoundingClientRect()
-    const strikeZoneRect = strikeZoneRef.current.getBoundingClientRect()
+    const [strikeCount,setStrikeCount] = useState(0)
+    const [ballCount,setBallCount] = useState(0)
+    const [strikes, setStrikes] = useState([])
+    const [balls, setBalls] = useState([])
+    const strikeZoneRef = useRef(null)  
 
-    // Calculate click position relative to home plate
-    const relativeX = event.clientX - homePlateRect.left
-    const relativeY = event.clientY - homePlateRect.top
+    const handlePitchClick = (event) => {
+        const homePlate = event.currentTarget
+        const homePlateRect = homePlate.getBoundingClientRect()
+        const strikeZoneRect = strikeZoneRef.current.getBoundingClientRect()
 
-    // Calculate strike zone boundaries relative to home plate
-    const strikeZoneLeft = strikeZoneRect.left - homePlateRect.left
-    const strikeZoneRight = strikeZoneLeft + strikeZoneRect.width
-    const strikeZoneTop = strikeZoneRect.top - homePlateRect.top
-    const strikeZoneBottom = strikeZoneTop + strikeZoneRect.height
+        // Calculate click position relative to home plate
+        const relativeX = event.clientX - homePlateRect.left
+        const relativeY = event.clientY - homePlateRect.top
 
-    // Check if click is within strike zone boundaries
-    if (relativeX >= strikeZoneLeft && 
-        relativeX <= strikeZoneRight &&
-        relativeY >= strikeZoneTop &&
-        relativeY <= strikeZoneBottom) {
-      setStrikes(prev => [...prev, { x: relativeX, y: relativeY }])
-    } else {
-      setBalls(prev => [...prev, { x: relativeX, y: relativeY }])
+        // Calculate strike zone boundaries relative to home plate
+        const strikeZoneLeft = strikeZoneRect.left - homePlateRect.left
+        const strikeZoneRight = strikeZoneLeft + strikeZoneRect.width
+        const strikeZoneTop = strikeZoneRect.top - homePlateRect.top
+        const strikeZoneBottom = strikeZoneTop + strikeZoneRect.height
+
+        // Check if click is within strike zone boundaries
+        if (relativeX >= strikeZoneLeft && 
+            relativeX <= strikeZoneRight &&
+            relativeY >= strikeZoneTop &&
+            relativeY <= strikeZoneBottom) {
+                setStrikes(prev => [...prev, { x: relativeX, y: relativeY }])
+        } else {
+            setBalls(prev => [...prev, { x: relativeX, y: relativeY }])
+        }
     }
-  }
 
-  return(
+    return(
     <div className='game-simulation-container'>
-      <div 
-        className='simulation-homeplate' 
-        style={{ backgroundImage:`url(${HomePlate})` }} 
-        onClick={handlePitchClick}
-      >
-        {strikes.map((strike, index) => (
-          <Strike key={`strike-${index}`} x={strike.x} y={strike.y} />
-        ))}
-        {balls.map((ball, index) => (
-          <Ball key={`ball-${index}`} x={ball.x} y={ball.y} />
-        ))}
-        <div 
-          className='simulation-strikezone' 
-          ref={strikeZoneRef}
-        ></div>
-      </div>
+        <div className='simulation-homeplate' style={{ backgroundImage:`url(${HomePlate})` }} onClick={handlePitchClick}>
+            {strikes.map((strike, index) => (
+                <Strike key={`strike-${index}`} x={strike.x} y={strike.y} />
+            ))}
+            {balls.map((ball, index) => (
+                <Ball key={`ball-${index}`} x={ball.x} y={ball.y} />
+            ))}
+            <div className='simulation-strikezone' ref={strikeZoneRef}></div>
+        </div>
     </div>
-  )
+    )
 }
 
 function Strike({ x, y }) {
