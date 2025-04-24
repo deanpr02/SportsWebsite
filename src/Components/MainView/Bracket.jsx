@@ -2,6 +2,10 @@ import './Bracket.css'
 import { useRetrieveTeam } from '../../Hooks/useRetrieveTeam'
 import { useState,useEffect,useContext } from 'react'
 
+import AL from '../../assets/mlb-resources/american-league.png'
+import NL from '../../assets/mlb-resources/national-league.png'
+import Trophy from '../../assets/mlb-resources/ws-trophy.png'
+
 /* Save the webscraped information to the session so we dont have to keep making the calls to the api
 each time a user redirects to a different page and then returns*/
 export default function Bracket(){
@@ -50,17 +54,19 @@ export default function Bracket(){
 }
 
 function LeftBracket({results,setLeft}){
+    let rowOffset = 30;
+
     useEffect(()=>{
         const conferenceWinner = Object.entries(results).find(([name, data]) => !Array.isArray(data));
         setLeft(conferenceWinner[1]);
     },[results])
 
     return(
-        <div className="row-container">
-                    {Object.entries(results).reverse().map(([roundName, roundData]) => (
+        <div className="row-container" >
+            <img className='bracket-background-img' src={AL}></img>
+                    {Object.entries(results).reverse().map(([roundName, roundData],i) => (
                         Array.isArray(roundData) && <div key={roundName}>
-                            <h3>{roundName}</h3>
-                            <Round roundData={roundData} />
+                            <Round roundData={roundData} offset={(Object.keys(results).length-i-2)*15} dir={1}/>
                         </div>
                     ))}
         </div>
@@ -75,10 +81,10 @@ function RightBracket({results,setRight}){
 
     return(
         <div className="row-container">
-                    {Object.entries(results).map(([roundName, roundData]) => (
+            <img className='bracket-background-img' src={NL}></img>
+                    {Object.entries(results).map(([roundName, roundData],i) => (
                         Array.isArray(roundData) && <div key={roundName}>
-                            <h3>{roundName}</h3>
-                            <Round roundData={roundData} />
+                            <Round roundData={roundData} offset={(i-1)*15} dir={-1}/>
                         </div>
                     ))}
         </div>
@@ -97,10 +103,10 @@ function Championship({leftConference,rightConference}){
     },[leftConference,rightConference])
 
     return(
-        <>
+        <div style={{display:'flex',flexDirection:'column',fontSize:'30px',height:'50vh',justifyContent:'center',alignItems:'center',alignSelf:'center'}}>
+            <img className='championship-background-img' src={Trophy}></img>
         {rendered && 
-        <div className="championship-container">
-            <p className="championship-text">Championship</p>
+        <div className="bracket-championship-container">
             <div className="championship-series">
                 <div className="left-conference-champion">
                     <Team team={leftTeam} seriesScore={leftConference.games_won}/>
@@ -111,7 +117,7 @@ function Championship({leftConference,rightConference}){
             </div>
             </div>
         }
-        </>
+        </div>
         /*
         <div className="championship-container">
         <p>Left Conference Winner</p>
@@ -122,7 +128,9 @@ function Championship({leftConference,rightConference}){
     )
 }
 
-function Round({roundData}){
+function Round({roundData,offset,dir}){
+    const rotationDeg = offset === 0 ? 0 : 45
+
     if (roundData === undefined) {
         return <div>Round data is undefined</div>;
     }
@@ -132,8 +140,26 @@ function Round({roundData}){
             const winningTeam = useRetrieveTeam(match.winner.name);
             const losingTeam = useRetrieveTeam(match.loser.name);
             return (
-                <div className="match-div" key={index}>
+                <div className="match-div" key={index}style={{height:`${offset}vh`}}>
+                    {dir == 1 ? 
+                    <>
                     <MatchUp home={winningTeam} away={losingTeam} homeWon={match.winner.games_won} awayWon={match.loser.games_won}/>
+                    {index < roundData.length / 2 ? 
+                        <div className='bracket-line' style={{transform:`rotate(${rotationDeg}deg)`}}></div>
+                        :
+                        <div className='bracket-line' style={{transform:`rotate(${rotationDeg*-1}deg)`}}></div>
+                    }
+                    </>
+                    :
+                    <>
+                    {index < roundData.length / 2 ? 
+                        <div className='bracket-line' style={{transform:`rotate(${rotationDeg*-1}deg)`}}></div>
+                        :
+                        <div className='bracket-line' style={{transform:`rotate(${rotationDeg}deg)`}}></div>
+                    }
+                    <MatchUp home={winningTeam} away={losingTeam} homeWon={match.winner.games_won} awayWon={match.loser.games_won}/>
+                    </>
+                    }
                 </div>
             );
         })}
@@ -153,15 +179,15 @@ function MatchUp({home,away,homeWon,awayWon}){
 
 function Team({team,seriesScore}){
     return(
-        <div className="team" style={{"backgroundColor":`${team.primaryColor}00`}}>
-            <img className="team-logo" src={team.primaryLogo} alt="Team Logo" style={{"backgroundColor":team.secondaryColor}}></img>
+        <div className="team">
+            <img className="team-logo" src={team.secondaryLogo} alt="Team Logo" style={{"backgroundColor":`white`,border:'2px solid black'}}></img>
             <div className="team-name">
                 <div className="team-city">
                 <p>{team.city}</p>
                 </div>
                 <p>{team.name}</p>
             </div>
-            <p className="score">{seriesScore}</p>
+            <div className='score'><p style={{height:'100%'}}>{seriesScore}</p></div>
         </div>
     )
 }

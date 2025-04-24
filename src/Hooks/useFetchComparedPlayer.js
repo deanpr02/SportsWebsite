@@ -19,6 +19,7 @@ export function useFetchComparedPlayer(playerID){
             }
 
             const data = await response.json()
+            console.log(data)
             const parsedData = {image: data['image-link'],stats: data['stats']}
             setPlayerData(parsedData)
             setIsLoaded(true)

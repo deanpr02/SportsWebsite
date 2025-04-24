@@ -440,9 +440,9 @@ function StatCompare({playerOne,playerTwo,year,setImage,setYears}){
     },[playerData])
 
     return(
-        <>
+        <div style={{width:'80vh'}}>
         {!playerTwo || isLoaded ?
-        <div style={{display:'flex',flexDirection:'column',alignItems:'center',width:'80vh'}}>
+        <div style={{display:'flex',flexDirection:'column',alignItems:'center'}}>
         {Object.keys(playerOne[year]).map((key) => {
             const comparedPlayerStat = playerData ? playerData['stats'][year][key] : 0
             return (<div className='stat-compare-row'>
@@ -475,6 +475,6 @@ function StatCompare({playerOne,playerTwo,year,setImage,setYears}){
         :
         <Spinner color={'000000'}/>
         }
-        </>
+        </div>
     )
 }
