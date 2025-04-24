@@ -87,7 +87,7 @@ export default function PlayerPage({teamInfo}){
                 <PlayerStats stats={dataObj.stats} year={year} setYear={setYear} playerData={dataObj.stats}/>
                 <PlayerChart stats={dataObj.stats} teamInfo={teamInfo}/>
                 <PlayerAwards awards={dataObj.awards}/>
-                <PlayerComparison currentPlayerStats={dataObj.stats} currentPlayerImage={dataObj['image-link']} currentPlayerName={playerName}/>
+                <PlayerComparison currentPlayerStats={dataObj.stats} currentPlayerImage={dataObj['image-link']} currentPlayerName={playerName} currentPlayerPos={dataObj.position}/>
             </>
             }
         </div>
@@ -382,11 +382,11 @@ function PlayerAwards({awards}){
     )
 }
 
-function PlayerComparison({currentPlayerStats,currentPlayerImage,currentPlayerName}){
+function PlayerComparison({currentPlayerStats,currentPlayerImage,currentPlayerName,currentPlayerPos}){
     const [otherName,setOtherName] = useState('---')
     const [otherImage,setOtherImage] = useState(Blank)
     const [yearsAvailable,setYearsAvailable] = useState(Object.keys(currentPlayerStats).reverse())
-    const { playerNameList } = usePlayerNames()
+    const { playerNameList } = usePlayerNames(currentPlayerPos)
     const [year,setYear] = useState('2025')
     return(
         <div className='player-comparison-container'>

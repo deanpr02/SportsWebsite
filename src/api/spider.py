@@ -326,7 +326,12 @@ def fetch_player_info(player_id):
     player_info['about']['birthdate'] = player.birthdate
     player_info['about']['birthplace'] = player.birthcity + ', ' + (player.birthstateprovince if player.birthstateprovince else player.birthcountry)
 
-    response = requests.get(f'https://statsapi.mlb.com/api/v1/people/{player_id}/stats?stats=yearByYear&group=hitting&hydrate=awards')
+    if player.primaryposition.abbreviation == 'P':
+        statsFilter = 'pitching'
+    else:
+        statsFilter = 'hitting'
+
+    response = requests.get(f'https://statsapi.mlb.com/api/v1/people/{player_id}/stats?stats=yearByYear&group={statsFilter}')
     stats = response.json()
 
     player_info['stats'] = {}

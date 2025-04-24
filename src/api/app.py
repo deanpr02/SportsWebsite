@@ -127,7 +127,9 @@ def fetch_individual_player():
 
 @app.route('/api/player_names',methods=['GET'])
 def fetch_all_player_names():
-    names = db.get_player_names()
+    pos = request.args.get('pos')
+
+    names = db.get_player_names(pos)
 
     names_obj = {player['name']: player['id'] for player in names}
 

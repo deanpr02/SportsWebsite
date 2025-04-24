@@ -232,8 +232,14 @@ def is_player_in_database(player_id):
 
 
 def update_player(player_id,player_info):
+    """
+    After fetching the player's information from the API this function updates the player in the database.
+    When we preload the database only some information from each player is added. Once that player's page is
+    accessed then we gather the additional information to save time during preloading
+    """
+    
     mongo.db.mlb.update_one(
-        {'players.id': player_id},  # Matches the document containing the player
+        {'players.id': player_id},
         {
             '$set': {
                 'players.$[elem].stats': player_info['stats'],
@@ -241,11 +247,15 @@ def update_player(player_id,player_info):
                 'players.$[elem].awards': player_info['awards']
             }
         },
-        array_filters=[{'elem.id': player_id}]  # Targets the specific array element
+        array_filters=[{'elem.id': player_id}]
         )
     
 
 def get_player(player_id):
+    """
+    Gets a single players information such as about info, awards info, and stats info
+    """
+
     player = mongo.db.mlb.find_one(
         {'players.id': player_id},
         {'players.$': 1}
@@ -255,14 +265,60 @@ def get_player(player_id):
 
 
 def get_db_names():
+    """
+    Gets what databases already exist, this is to see if our 'sports_website' database exists, if not we needed to run
+    the preload database function
+    """
+
     return mongo.cx.list_database_names()
 
 
-def get_player_names():
-    names = mongo.db.mlb.aggregate([
-        { '$unwind': "$players" },
-        { '$project': { '_id': 0, 'name': "$players.name", 'id': "$players.id" } }
-    ])
+def get_player_names(amnt):
+    """
+    Fetches all the players names in our database along with their ID for allowed
+    capability of full player fetching in components
+    """
+    print(amnt)
+    names = []
+    if amnt == 'all':
+        names = mongo.db.mlb.aggregate([
+            { '$unwind': "$players" },
+            { '$project': { '_id': 0, 'name': "$players.name", 'id': "$players.id" } }
+        ])
+        return names
+
+    if amnt == 'P':
+        names = mongo.db.mlb.aggregate([
+            {
+                "$addFields": {
+                    "players": {
+                        "$filter": {
+                        "input": "$players",
+                        "as": "player",
+                        "cond": { "$eq": ["$$player.position", "P"] }
+                        }
+                    }
+                }
+            },
+            { "$unwind": "$players" },
+            { "$project": { "_id": 0, "name": "$players.name", "id": "$players.id" } }
+            ])
+    else:
+        names = mongo.db.mlb.aggregate([
+            {
+                "$addFields": {
+                    "players": {
+                        "$filter": {
+                        "input": "$players",
+                        "as": "player",
+                        "cond": { "$ne": ["$$player.position", "P"] }
+                    }
+                }
+            }
+        },
+        { "$unwind": "$players" },
+        { "$project": { "_id": 0, "name": "$players.name", "id": "$players.id" } }
+])
 
     return names
 
