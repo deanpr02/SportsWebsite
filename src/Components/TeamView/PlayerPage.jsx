@@ -1,9 +1,4 @@
-import { useState,useContext,useEffect } from 'react'
-import { PlayerContext } from './TeamPage';
-import { useParams } from 'react-router-dom'
-import { LineChart,PieChart, ResponsiveChartContainer } from '@mui/x-charts';
-import './PlayerPage.css'
-import WAR from '../../assets/mlb-resources/mlb-war.png'
+//Assets
 import AB from '../../assets/mlb-resources/mlb-ab.png'
 import BB from '../../assets/mlb-resources/mlb-bb.png'
 import CS from '../../assets/mlb-resources/mlb-cs.png'
@@ -22,47 +17,22 @@ import SO from '../../assets/mlb-resources/mlb-so.png'
 import Down from '../../assets/mlb-resources/mlb-down.png'
 import DownArrow from '../../assets/down-arrow.png'
 import Blank from '../../assets/mlb-resources/blank_face.png'
-import { useFetchPlayerStats } from '../../Hooks/useFetchPlayerStats'
-import { useGetAverageStat } from '../../Hooks/useGetAverageStat';
+
+//Library imports
+import { useState,useContext,useEffect } from 'react'
+import { useParams } from 'react-router-dom'
+import { LineChart,PieChart } from '@mui/x-charts';
+
+//Custom hooks
 import { useDatabase } from '../../Hooks/useDatabase'
 import { usePlayerNames } from '../../Hooks/usePlayerNames';
 import { useFetchComparedPlayer } from '../../Hooks/useFetchComparedPlayer';
+
+//Components
+import { PlayerContext } from './TeamPage';
 import Spinner from '../MainView/Spinner';
 
-
-const playerStats = {'stats': {
-                            '2024': {
-                                    'b_war': 10.8,
-                                    'b_ab': 559,
-                                    'b_batting_avg': .322,
-                                    'b_bb': 133,
-                                    'b_cs': 0,
-                                    'b_doubles': 36,
-                                    'b_games': 158,
-                                    'b_gidp': 22,
-                                    'b_h': 180,
-                                    'b_hbp': 9,
-                                    'b_hr': 58,
-                                    'b_ibb': 20,
-                                    'b_onbase_perc': .458,
-                                    'b_onbase_plus_slugging': 1.159,
-                                    'b_onbase_plus_slugging_plus':223,
-                                    'b_pa': 704,
-                                    'b_r': 122,
-                                    'b_rbat_plus': 223,
-                                    'b_rbi': 144,
-                                    'b_roba': .484,
-                                    'b_sb': 10,
-                                    'b_sf': 2,
-                                    'b_sh': 0,
-                                    'b_slugging_perc': .701,
-                                    'b_so': 171,
-                                    'b_tb': 392,
-                                    'b_triples': 1,
-                                    'b_war': 10.8
-                            }
-}
-}
+import './PlayerPage.css'
 
 const statDetails = {
     'gamesPlayed': Games,
@@ -103,7 +73,7 @@ export default function PlayerPage({teamInfo}){
     const {playerName} = useParams()
     const {playerID,_} = useContext(PlayerContext)
     const {dataObj,isLoading} = useDatabase('/api/player_info',{'id':playerID})
-    const { playerData, isBaseLoading, baseError } = useFetchPlayerStats("http://localhost:5000/api/webscrape/individual_player",'mlb',playerName)
+    //const { playerData, isBaseLoading, baseError } = useFetchPlayerStats("http://localhost:5000/api/webscrape/individual_player",'mlb',playerName)
     const [year, setYear] = useState('2025')
 
     return(
@@ -111,7 +81,7 @@ export default function PlayerPage({teamInfo}){
         {isLoading ? <Spinner color={teamInfo.primaryColor}/>
         :
         <div className='player-page-container'>
-            {playerData && dataObj && 
+            {dataObj && 
             <>
                 <PlayerAbout about={dataObj.about} number={dataObj['number']} image={dataObj['image-link']} position={dataObj.position} teamInfo={teamInfo} seasons={Object.keys(dataObj.stats)}/>
                 <PlayerStats stats={dataObj.stats} year={year} setYear={setYear} playerData={dataObj.stats}/>
@@ -176,7 +146,7 @@ function PlayerProfile({teamInfo,image}){
     return(
         <>
         <div className='player-profile' style={{backgroundImage:`url(${teamInfo.primaryLogo})`,backgroundColor:`#${teamInfo.secondaryColor}`}}>
-            <PlayerImage teamInfo={teamInfo} image={image}/>
+            <PlayerImage image={image}/>
             <div className='player-image-frame'>
                 <p></p>
             </div>
@@ -186,7 +156,7 @@ function PlayerProfile({teamInfo,image}){
 }
 
 
-function PlayerImage({teamInfo,image}){
+function PlayerImage({image}){
     return(
         <div className='player-page-image-container'>
             <img className='player-page-image' src={image} alt={'player-image'}></img>
@@ -427,7 +397,7 @@ function PlayerComparison({currentPlayerStats,currentPlayerImage,currentPlayerNa
             {playerNameList &&
                 <div>
                     <div className='player-comparison'>
-                        <CurrentPlayer stats={currentPlayerStats} image={currentPlayerImage} name={currentPlayerName}/>
+                        <CurrentPlayer image={currentPlayerImage} name={currentPlayerName}/>
                         <CompPlayer names={playerNameList} otherName={otherName} setOtherName={setOtherName} image={otherImage}/>
                     </div>
                     <StatCompare playerOne={currentPlayerStats} playerTwo={otherName === '---' ? null : playerNameList[otherName]} year={year} setImage={setOtherImage} setYears={setYearsAvailable}/>
@@ -438,7 +408,7 @@ function PlayerComparison({currentPlayerStats,currentPlayerImage,currentPlayerNa
 
 }
 
-function CurrentPlayer({stats,image,name}){
+function CurrentPlayer({image,name}){
     return(
         <div className='player-comp-card'>
             <img className='player-comp-img' src={image}/>
