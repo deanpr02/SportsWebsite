@@ -2,6 +2,7 @@ from flask import Flask,jsonify,request
 from flask_cors import CORS
 import spider as scraper
 from util import mongo
+from dataset import parse_team_history
 import database as db
 
 app = Flask(__name__)
@@ -134,6 +135,15 @@ def fetch_all_player_names():
     names_obj = {player['name']: player['id'] for player in names}
 
     return jsonify(names_obj)
+
+
+@app.route('/api/team_history',methods=['GET'])
+def fetch_team_history():
+    team_name = request.args.get('name')
+
+    history = parse_team_history(team_name)
+
+    return jsonify(history)
 
 
 

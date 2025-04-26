@@ -118,16 +118,89 @@ def fetch_individual_player():
 
     return player_info
     
+def fetch_league_seeds(league_id,season):
+    mlb = mlbstatsapi.Mlb()
+
+    seeds = {}
+    #seeds = []
+
+    standings = mlb.get_standings(league_id,season)
+
+    division_leaders = []
+    for division in standings:
+        teams = division.teamrecords
+        for team_obj in teams:
+            if team_obj.divisionchamp:
+                division_leaders.append({'name':team_obj.team.name,'rank':team_obj.leaguerank})
+                
+            wc_rank = team_obj.wildcardrank
+            if wc_rank and int(wc_rank) <= 3:
+                #seeds.append({'name':team_obj.team.name,'seed':int(wc_rank)+3})
+                seeds[int(wc_rank) + 3] = team_obj.team.name
+    
+    sorted_division_leaders = sorted(division_leaders, key=lambda x : x['rank'])
+    for i,team in enumerate(sorted_division_leaders):
+        seeds[i+1] = team['name']
+        #seeds.append({'name':team['name'],'seed':i+1})
+
+    return seeds
+
+def fetch_playoff_bracket(seeds):
+    def initialize_bracket(bracket,current_teams,next_teams):
+        #AL side of bracket
+        AL_seeds = seeds['AL']
+        for i,team in enumerate(AL_seeds):
+            if team['seed'] == 1 or team['seed'] == 2:
+                next_teams.append(team)
+            else:
+                current_teams.append(team)
+        print(next_teams)
+
+
+        match_up = {'home':{'name':'Yanks','wins':0,'seed':1},'away':{'name':'Sox','wins':0,'seed':2}}
+
+
+    r = requests.get('https://statsapi.mlb.com/api/v1/schedule/postseason?season=2024')
+
+    NUM_PLAYOFF_TEAMS = 6
+    bracket = {}
+    current_teams = []
+    next_teams = []
+
+    initialize_bracket(bracket,current_teams,next_teams)
+
+
+
+    #postseason_dates = r.json()['dates']
+    #for date in postseason_dates:
+    #    games = date['games']
+    #    for game in games:
+    #        if game['seriesDescription'] == 'Wild Card':
+    #            print(game)
+
+
+def temp():
+    mlb_seeds = {}
+
+    mlb_seeds['AL'] = fetch_league_seeds(103,2024)
+    mlb_seeds['NL'] = fetch_league_seeds(104,2024)
+
+    fetch_playoff_bracket(mlb_seeds)
     
 
 
 if __name__ == '__main__':
-    player_name = 'Shohei Ohtani'
+    #r = requests.get('https://statsapi.mlb.com/api/v1/schedule/postseason?sportId=1&season=2023')
+    #playoffs = r.json()['dates']
+#
+    #for date in playoffs:
+    #    games_on_date = date['games']
+    #    for game in games_on_date:
+    #        print(game['teams'],end='')
+    #    print()
+    temp()
+
     
-    mlb = mlbstatsapi.Mlb()
-    player_id = mlb.get_people_id(player_name)[0]
-    player = mlb.get_person(player_id)
-    print(player)
     
 #url = "https://statsapi.mlb.com/api/v1/standings?leagueId=103"  # AL Standings
 #response = requests.get(url)

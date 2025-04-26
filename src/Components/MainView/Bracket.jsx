@@ -54,7 +54,6 @@ export default function Bracket(){
 }
 
 function LeftBracket({results,setLeft}){
-    let rowOffset = 30;
 
     useEffect(()=>{
         const conferenceWinner = Object.entries(results).find(([name, data]) => !Array.isArray(data));
@@ -177,7 +176,7 @@ function MatchUp({home,away,homeWon,awayWon}){
     )
 }
 
-function Team({team,seriesScore}){
+function Team({team,seriesScore,opacity}){
     return(
         <div className="team">
             <img className="team-logo" src={team.secondaryLogo} alt="Team Logo" style={{"backgroundColor":`white`,border:'2px solid black'}}></img>
