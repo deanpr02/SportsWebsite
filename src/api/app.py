@@ -1,5 +1,8 @@
 from flask import Flask,jsonify,request
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager,create_access_token,jwt_required,get_jwt_identity,set_access_cookies
+from werkzeug.security import generate_password_hash,check_password_hash
+import os
 import spider as scraper
 from util import mongo
 from dataset import parse_team_history
@@ -8,6 +11,10 @@ import database as db
 app = Flask(__name__)
 CORS(app)
 app.config['MONGO_URI'] = 'mongodb://localhost:27017/sports_website'
+app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+app.config["JWT_SESSION_COOKIE"]= True
+
+jwt = JWTManager(app)
 
 mongo.init_app(app)
 
@@ -145,10 +152,49 @@ def fetch_team_history():
 
     return jsonify(history)
 
+"""
+User Authentication routes
+"""
+
+@app.route('/api/register',methods=['POST'])
+def register():
+    data = request.get_json()
+    hashed_pw = generate_password_hash(data['password'])
+    mongo.db.users.insert_one({'username':data['username'],'password':hashed_pw})
+
+    access_token = create_access_token(identity=data['username'])
+    response = jsonify({'msg': 'User registered'})
+    set_access_cookies(response, access_token)
+    return response, 201
+
+@app.route('/api/login',methods=['POST'])
+def login():
+    data = request.get_json()
+    user = mongo.db.users.find_one({'username':data['username']})
+    if user and check_password_hash(user['password'],data['password']):
+        response = jsonify({'msg':'Login successful'})
+        access_token = create_access_token(identity=user['username'])
+        set_access_cookies(response,access_token)
+        return response
+
+    return jsonify({'msg': 'Bad credentials'}),401
+
+@app.route('/api/validate',methods=['GET'])
+@jwt_required()
+def validate():
+    user_id = get_jwt_identity()
+    return jsonify({'user_id':user_id}),200
+
 
 
 
 if __name__ == '__main__':
+    if not app.config.get('SECRET_KEY'):
+        app.config['SECRET_KEY'] = os.urandom(32)
+
+    if not app.config.get('JWT_SECRET_KEY'):
+        app.config['JWT_SECRET_KEY'] = app.config['SECRET_KEY']
+
     db_names = db.get_db_names()
 
     if 'sports_website' not in db_names:

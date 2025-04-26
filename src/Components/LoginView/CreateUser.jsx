@@ -1,10 +1,7 @@
 import './CreateUser.css'
 
 import { useState } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
-import { doc,setDoc } from 'firebase/firestore'
-import { createUserWithEmailAndPassword } from "firebase/auth"
-import { auth,db } from '../../firebase'
+import { useNavigate } from 'react-router-dom'
 
 export default function CreateUser({setUserExists}){
   const navigate = useNavigate();  
@@ -13,34 +10,33 @@ export default function CreateUser({setUserExists}){
   const [password,setPassword] = useState("");
   const [username,setUsername] = useState("");
 
-  const saveUser = async (userID,username) => {
-    const userRef = doc(db,'users',userID);
-    try{
-    await setDoc(userRef,{
-      username:username
-    })
-    }
-    catch(error){
-      console.error('Error saving username:',error.message);
-    }
-  }
-
   const onSubmit = async (e) => {
     e.preventDefault()
 
-    await createUserWithEmailAndPassword(auth,email,password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        saveUser(user.uid,username);
-        navigate("/home");
-
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode,errorMessage);
+    try{
+      const response = await fetch('/api/register',{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials:'include',
+        body: JSON.stringify({username,password})
       });
-  }
+
+      const data = await response.json();
+      
+      if(response.ok){
+        console.log('User successfully created')
+        navigate('/home')
+      }
+      else{
+        console.log(data.msg || 'Registration failure')
+      }
+    } catch(error) {
+      console.error(error)
+    }
+    
+}
 
 
 

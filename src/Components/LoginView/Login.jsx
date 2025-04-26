@@ -1,9 +1,6 @@
 import './Login.css'
 import { FaUser,FaLock } from 'react-icons/fa';
 import { useState } from 'react'
-import { doc,getDoc } from 'firebase/firestore'
-import { signInWithEmailAndPassword,setPersistence,browserSessionPersistence } from 'firebase/auth'
-import { auth,db } from '../../firebase'
 import { useNavigate } from 'react-router-dom'
 
 export default function Login({setUserExists}) {
@@ -11,12 +8,6 @@ export default function Login({setUserExists}) {
     const [email,setEmail] = useState("")
     const [password,setPassword] = useState("")
 
-    const getUsername = async (userID) => {
-      const userRef = doc(db,'users',userID);
-      const userData = await getDoc(userRef);
-      const username = userData.data()['username'];
-      sessionStorage['username'] = username;
-    }
 
     const delay = (ms) => {
       return new Promise(resolve => setTimeout(resolve, ms));
@@ -31,23 +22,21 @@ export default function Login({setUserExists}) {
       loginFrame.style = previousStyle;
     }
 
-    const onLogin = (e) => {
+    const onLogin = async (e) => {
       e.preventDefault()
-      setPersistence(auth, browserSessionPersistence)
-      .then(() => {
-          return signInWithEmailAndPassword(auth,email,password);
+
+        const response = await fetch('/api/login',{
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        credentials:"include",
+        body: JSON.stringify({"username":email,"password":password}),
       })
-      .then((userCredential) => {
-          const user = userCredential.user;
-          getUsername(user.uid);
-          navigate('/home')
-      })
-        .catch((error) =>{
-          showWrongPassword();
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          console.log(errorCode,errorMessage);
-        })
+
+      if(response.ok){
+        navigate("/home")
+      }else{
+        showWrongPassword()
+      }
     }
   
   return (
