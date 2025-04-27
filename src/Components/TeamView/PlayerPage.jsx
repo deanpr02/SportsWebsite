@@ -15,7 +15,6 @@ import SF from '../../assets/mlb-resources/mlb-sf.png'
 import HR from '../../assets/mlb-resources/mlb-hr.png'
 import SO from '../../assets/mlb-resources/mlb-so.png'
 import Down from '../../assets/mlb-resources/mlb-down.png'
-import DownArrow from '../../assets/down-arrow.png'
 import Blank from '../../assets/mlb-resources/blank_face.png'
 
 //Library imports
@@ -30,6 +29,7 @@ import { useFetchComparedPlayer } from '../../Hooks/useFetchComparedPlayer';
 
 //Components
 import { PlayerContext } from './TeamPage';
+import DropDown from '../Utility/DropDown'
 import Spinner from '../MainView/Spinner';
 
 import './PlayerPage.css'
@@ -84,7 +84,7 @@ export default function PlayerPage({teamInfo}){
             {dataObj && 
             <>
                 <PlayerAbout about={dataObj.about} number={dataObj['number']} image={dataObj['image-link']} position={dataObj.position} teamInfo={teamInfo} seasons={Object.keys(dataObj.stats)}/>
-                <PlayerStats stats={dataObj.stats} year={year} setYear={setYear} playerData={dataObj.stats}/>
+                <PlayerStats stats={dataObj.stats} year={year} setYear={setYear} />
                 <PlayerChart stats={dataObj.stats} teamInfo={teamInfo}/>
                 <PlayerAwards awards={dataObj.awards}/>
                 <PlayerComparison currentPlayerStats={dataObj.stats} currentPlayerImage={dataObj['image-link']} currentPlayerName={playerName} currentPlayerPos={dataObj.position}/>
@@ -164,54 +164,18 @@ function PlayerImage({image}){
     )
 }
 
-function StatDropDown({data,state,setFunc}){
-    const DropMenu = () => {
-        return(
-            <div className='stat-dropdown-menu'>
-                {data.map((obj => {
-                    return <p className='stat-dropdown-item' 
-                                onClick={()=>{
-                                    setFunc(obj)
-                                    setDropped(false)
-                                }}
-                            >{obj}</p>
-                }))}
-            </div>
-        )
-    }
 
-    const [dropped,setDropped] = useState(false)
-
-    return(
-        <div className='stat-dropdown-container'>
-            <div className='stat-dropdown' onClick={()=>setDropped((prev) => !prev)}>
-                {!dropped ? 
-                    <p className='stat-dropdown-text'>{state}</p>
-                    :
-                    <p className='stat-dropdown-text' style={{opacity:0}}>{state}</p>   
-                }
-                <img src={DownArrow}/>
-            </div>
-            {dropped && <DropMenu setFunc={setFunc}/>}
-        </div>
-
-    )
-}
-
-function PlayerStats({stats,year,setYear,playerData}){
+function PlayerStats({stats,year,setYear}){
     const batchSize = 21;
     const shownBatch = Object.entries(stats[year]).slice(0,batchSize)
     const [hidden,setHidden] = useState(true)
-    //const {averageStats} = useGetAverageStat('mlb','2024',Object.keys(playerData[year]))
-    //const greenRatio = Math.round(Math.min((stats[year]['b_hr'] / averageStats)*200,255))
-    //const redRatio = Math.round(Math.min(averageStats/stats[year]['b_hr'])*200,255)
 
 
     return(
         <div className='player-stats-container'>
             <div className='stat-bar'>
                 <p className='stats-text-header'>Stats</p>
-                <StatDropDown data={Object.keys(stats).reverse()} state={year} setFunc={setYear}/>
+                <DropDown data={Object.keys(stats).reverse()} state={year} setFunc={setYear}/>
             </div>
             {hidden ? 
                         shownBatch.map(([key,value]) => {
@@ -253,7 +217,7 @@ function PlayerChart({stats,teamInfo}){
         <div className='player-chart-container'>
             <p className='text-header'>Visualization</p>
             <div style={{width:'15vh',margin:'5px'}}>
-            <StatDropDown data={statNameList} state={statName} setFunc={setStatName}/>
+            <DropDown data={statNameList} state={statName} setFunc={setStatName}/>
             </div>
             <div className='charts'>
             <StatLineChart xValues={years} yValues={statValues} statName={statName} teamColor={teamInfo.primaryColor}/>
@@ -392,7 +356,7 @@ function PlayerComparison({currentPlayerStats,currentPlayerImage,currentPlayerNa
         <div className='player-comparison-container'>
             <div className='stat-bar' style={{width:'100%'}}>
                 <p className='stats-text-header' style={{width:'100%'}}>Player Comparison</p>
-                <StatDropDown data={yearsAvailable} state={year} setFunc={setYear}/>
+                <DropDown data={yearsAvailable} state={year} setFunc={setYear}/>
             </div>
             {playerNameList &&
                 <div>
@@ -421,7 +385,7 @@ function CompPlayer({names,otherName,setOtherName,image}){
     return(
     <div className='player-comp-card'>
         <img className='player-comp-img' src={image}/>
-        <StatDropDown data={Object.keys(names)} state={otherName} setFunc={setOtherName}/>
+        <DropDown data={Object.keys(names)} state={otherName} setFunc={setOtherName}/>
     </div>
     )
 }
