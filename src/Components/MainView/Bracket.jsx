@@ -169,7 +169,7 @@ function Team({team,seriesScore,seed,opacity}){
                 </div>
                 <p>{team.name}</p>
             </div>
-            <div className='score'><p style={{height:'100%'}}>{seriesScore}</p></div>
+            <div className='score'><p>{seriesScore}</p></div>
         </div>
     )
 }
