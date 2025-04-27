@@ -4,6 +4,7 @@ import { useDatabase } from '../../Hooks/useDatabase'
 import { useState,useEffect,useContext } from 'react'
 
 import DropDown from '../Utility/DropDown'
+import Loading from './Loading'
 
 import AL from '../../assets/mlb-resources/american-league.png'
 import NL from '../../assets/mlb-resources/national-league.png'
@@ -21,13 +22,18 @@ export default function Bracket(){
     return(
         <>
         <div className="bracket-container">
+            {console.log(dataObj)}
             <div className='bracket-drop'><DropDown data={years} state={year} setFunc={setYear}/></div>
-            {dataObj && 
-                <div className="bracket">
-                <LeftBracket results={dataObj["AL"]}/>
-                <Championship leftConference={dataObj['WS']['AL']} rightConference={dataObj['WS']['NL']}/>
-                <RightBracket results={dataObj["NL"]}/>
-                </div>
+            {dataObj && (
+                isLoading ? 
+                    <Loading color={'FFFFFF'}/>
+                    :
+                    <div className="bracket">
+                    <LeftBracket results={dataObj["AL"]}/>
+                    <Championship leftConference={dataObj['WS']['AL']} rightConference={dataObj['WS']['NL']}/>
+                    <RightBracket results={dataObj["NL"]}/>
+                    </div>
+            )
             }
         </div>
         </>
@@ -108,13 +114,11 @@ function Round({roundData,offset,dir}){
     return(
     <div className="round-container">
         {roundData.map((match, index) => {
-            const winningTeam = useRetrieveTeam(match.home.name);
-            const losingTeam = useRetrieveTeam(match.away.name);
             return (
                 <div className="match-div" key={index}style={{height:`${offset}vh`}}>
                     {dir == 1 ? 
                     <>
-                    <MatchUp home={winningTeam} away={losingTeam} homeWon={match.home.wins} awayWon={match.away.wins}/>
+                    <MatchUp homeName={match.home.name} awayName={match.away.name} homeWon={match.home.wins} awayWon={match.away.wins}/>
                     {index < roundData.length / 2 ? 
                         <div className='bracket-line' style={{transform:`rotate(${rotationDeg}deg)`}}></div>
                         :
@@ -128,7 +132,7 @@ function Round({roundData,offset,dir}){
                         :
                         <div className='bracket-line' style={{transform:`rotate(${rotationDeg}deg)`}}></div>
                     }
-                    <MatchUp home={winningTeam} away={losingTeam} homeWon={match.home.wins} awayWon={match.away.wins}/>
+                    <MatchUp homeName={match.home.name} awayName={match.away.name} homeWon={match.home.wins} awayWon={match.away.wins}/>
                     </>
                     }
                 </div>
@@ -139,11 +143,18 @@ function Round({roundData,offset,dir}){
     
 }
 
-function MatchUp({home,away,homeWon,awayWon}){
+function MatchUp({homeName,awayName,homeWon,awayWon}){
+    const homeInfo = useRetrieveTeam(homeName);
+    const awayInfo = useRetrieveTeam(awayName);
+
     return(
         <div className="match-up">
-            <Team team={away} seriesScore={awayWon} opacity={awayWon > homeWon ? 1 : 0.75}/>
-            <Team team={home} seriesScore={homeWon} opacity={homeWon > awayWon ? 1 : 0.75}/>
+            {homeInfo && awayInfo &&
+                <>
+                    <Team team={awayInfo} seriesScore={awayWon} opacity={awayWon > homeWon ? 1 : 0.75}/>
+                    <Team team={homeInfo} seriesScore={homeWon} opacity={homeWon > awayWon ? 1 : 0.75}/>
+                </>
+            }
         </div>
     )
 }

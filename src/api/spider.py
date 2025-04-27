@@ -475,6 +475,9 @@ def get_postseason_bracket(year):
             if conf_type == 'Wo':
                 conf_type = 'WS'
             
+            if game['seriesDescription'] == 'Regular Season':
+                continue
+
             series_key = game['seriesDescription']
             if series_list.get(conf_type) is None:
                 series_list[conf_type] = {}
@@ -498,7 +501,12 @@ def get_postseason_bracket(year):
                 series_list[conf_type][series_key][home_team['seriesNumber']][home_team_name] = 0
                 series_list[conf_type][series_key][away_team['seriesNumber']][away_team_name] = 0
             
-            if home_team['isWinner']:
+            home_result = home_team.get('isWinner')
+            #This means game didn't finish, so skip it
+            if home_result is None:
+                continue
+
+            if home_result:
                 series_list[conf_type][series_key][home_team['seriesNumber']][home_team_name] += 1
             else:
                 series_list[conf_type][series_key][away_team['seriesNumber']][away_team_name] += 1
