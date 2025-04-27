@@ -6,6 +6,7 @@ export function useDatabase(url,params){
 
     useEffect(() => {
         const fetchFromDatabase = async () => {
+            setIsLoading(true)
             const paramString = new URLSearchParams(params).toString()
 
             const response = await fetch(`${url}?${paramString}`)

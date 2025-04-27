@@ -4,17 +4,13 @@ import { useDatabase } from '../../Hooks/useDatabase'
 import { useState,useEffect,useContext } from 'react'
 
 import DropDown from '../Utility/DropDown'
-import Loading from './Loading'
+import Spinner from './Spinner'
 
 import AL from '../../assets/mlb-resources/american-league.png'
 import NL from '../../assets/mlb-resources/national-league.png'
 import Trophy from '../../assets/mlb-resources/ws-trophy.png'
 
-/* Save the webscraped information to the session so we dont have to keep making the calls to the api
-each time a user redirects to a different page and then returns*/
 export default function Bracket(){
-
-    const [data,setData] = useState({})
     const years = Array.from({ length: 2024 - 2000 + 1 }, (_, i) => 2000 + i);
     const [year,setYear] = useState('2024')
     const { dataObj,isLoading } = useDatabase('/api/bracket',{'year':year})
@@ -22,18 +18,17 @@ export default function Bracket(){
     return(
         <>
         <div className="bracket-container">
-            {console.log(dataObj)}
             <div className='bracket-drop'><DropDown data={years} state={year} setFunc={setYear}/></div>
-            {dataObj && (
-                isLoading ? 
-                    <Loading color={'FFFFFF'}/>
-                    :
-                    <div className="bracket">
-                    <LeftBracket results={dataObj["AL"]}/>
-                    <Championship leftConference={dataObj['WS']['AL']} rightConference={dataObj['WS']['NL']}/>
-                    <RightBracket results={dataObj["NL"]}/>
-                    </div>
-            )
+            {isLoading ?
+            <Spinner color={'000000'}/>
+            :
+            <>
+                <div className="bracket">
+                <LeftBracket results={dataObj["AL"]}/>
+                <Championship leftConference={dataObj['WS']['AL']} rightConference={dataObj['WS']['NL']}/>
+                <RightBracket results={dataObj["NL"]}/>
+                </div>
+            </>
             }
         </div>
         </>
@@ -86,10 +81,10 @@ function Championship({leftConference,rightConference}){
         <div className="bracket-championship-container">
             <div className="championship-series">
                 <div className="left-conference-champion">
-                    <Team team={leftTeam} seriesScore={leftConference.wins} opacity={leftConference.wins > rightConference.wins ? 1 : 0.75}/>
+                    <Team team={leftTeam} seriesScore={leftConference.wins} seed={leftConference.seed} opacity={leftConference.wins > rightConference.wins ? 1 : 0.75}/>
                 </div>
                 <div className="right-conference-champion">
-                    <Team team={rightTeam} seriesScore={rightConference.wins} opacity={rightConference.wins > leftConference.wins ? 1 : 0.75}/>
+                    <Team team={rightTeam} seriesScore={rightConference.wins} seed={rightConference.seed} opacity={rightConference.wins > leftConference.wins ? 1 : 0.75}/>
                 </div>
             </div>
             </div>
@@ -118,7 +113,7 @@ function Round({roundData,offset,dir}){
                 <div className="match-div" key={index}style={{height:`${offset}vh`}}>
                     {dir == 1 ? 
                     <>
-                    <MatchUp homeName={match.home.name} awayName={match.away.name} homeWon={match.home.wins} awayWon={match.away.wins}/>
+                    <MatchUp homeName={match.home.name} awayName={match.away.name} homeWon={match.home.wins} awayWon={match.away.wins} homeSeed={match.home.seed} awaySeed={match.away.seed}/>
                     {index < roundData.length / 2 ? 
                         <div className='bracket-line' style={{transform:`rotate(${rotationDeg}deg)`}}></div>
                         :
@@ -132,7 +127,7 @@ function Round({roundData,offset,dir}){
                         :
                         <div className='bracket-line' style={{transform:`rotate(${rotationDeg}deg)`}}></div>
                     }
-                    <MatchUp homeName={match.home.name} awayName={match.away.name} homeWon={match.home.wins} awayWon={match.away.wins}/>
+                    <MatchUp homeName={match.home.name} awayName={match.away.name} homeWon={match.home.wins} awayWon={match.away.wins} homeSeed={match.home.seed} awaySeed={match.away.seed}/>
                     </>
                     }
                 </div>
@@ -143,7 +138,7 @@ function Round({roundData,offset,dir}){
     
 }
 
-function MatchUp({homeName,awayName,homeWon,awayWon}){
+function MatchUp({homeName,awayName,homeWon,awayWon,homeSeed,awaySeed}){
     const homeInfo = useRetrieveTeam(homeName);
     const awayInfo = useRetrieveTeam(awayName);
 
@@ -151,18 +146,21 @@ function MatchUp({homeName,awayName,homeWon,awayWon}){
         <div className="match-up">
             {homeInfo && awayInfo &&
                 <>
-                    <Team team={awayInfo} seriesScore={awayWon} opacity={awayWon > homeWon ? 1 : 0.75}/>
-                    <Team team={homeInfo} seriesScore={homeWon} opacity={homeWon > awayWon ? 1 : 0.75}/>
+                    <Team team={awayInfo} seriesScore={awayWon} seed={awaySeed} opacity={awayWon > homeWon ? 1 : 0.75}/>
+                    <Team team={homeInfo} seriesScore={homeWon} seed={homeSeed} opacity={homeWon > awayWon ? 1 : 0.75}/>
                 </>
             }
         </div>
     )
 }
 
-function Team({team,seriesScore,opacity}){
+function Team({team,seriesScore,seed,opacity}){
     return(
         <div className="team" style={{opacity:opacity}}>
-            <img className="team-logo" src={team.secondaryLogo} alt="Team Logo" style={{"backgroundColor":`white`,border:'2px solid black'}}></img>
+            <div style={{display:'flex',flexDirection:'column'}}>
+                <p style={{lineHeight:'0',padding:'5px',marginTop:'5px'}}>[{seed}]</p>
+                <img className="team-logo" src={team.secondaryLogo} alt="Team Logo" style={{"backgroundColor":`white`,border:'2px solid black'}}></img>
+            </div>
             <div className="team-name">
                 <div className="team-city">
                 <p>{team.city}</p>
