@@ -3,6 +3,8 @@ import { useRetrieveTeam } from '../../Hooks/useRetrieveTeam'
 import { useDatabase } from '../../Hooks/useDatabase'
 import { useState,useEffect,useContext } from 'react'
 
+import DropDown from '../Utility/DropDown'
+
 import AL from '../../assets/mlb-resources/american-league.png'
 import NL from '../../assets/mlb-resources/national-league.png'
 import Trophy from '../../assets/mlb-resources/ws-trophy.png'
@@ -12,36 +14,14 @@ each time a user redirects to a different page and then returns*/
 export default function Bracket(){
 
     const [data,setData] = useState({})
+    const years = Array.from({ length: 2024 - 2000 + 1 }, (_, i) => 2000 + i);
     const [year,setYear] = useState('2024')
     const { dataObj,isLoading } = useDatabase('/api/bracket',{'year':year})
-
-
-    //Make custom hooks for these use effects
-    useEffect(() =>{
-        const fetchData = async () => {
-            try{
-                const response = await fetch('http://localhost:5000/api/webscrape/postseason');
-                if(!response.ok){
-                    throw new Error(`HTTP error! status: ${response.status}`)
-                }
-                const result = await response.json();
-                setData(result);
-            }
-            catch (error) {
-            if (error instanceof TypeError) {
-                console.log('Network or CORS error: ' + error.message);
-            } else {
-                console.log('Fetch error: ' + error.message);
-            }
-        } 
-        }
-        fetchData();
-    },[])
 
     return(
         <>
         <div className="bracket-container">
-            <YearSelector data={data} year={year} setYear={setYear}/>
+            <div className='bracket-drop'><DropDown data={years} state={year} setFunc={setYear}/></div>
             {dataObj && 
                 <div className="bracket">
                 <LeftBracket results={dataObj["AL"]}/>
@@ -179,49 +159,6 @@ function Team({team,seriesScore,opacity}){
                 <p>{team.name}</p>
             </div>
             <div className='score'><p style={{height:'100%'}}>{seriesScore}</p></div>
-        </div>
-    )
-}
-
-function YearSelector({data,year,setYear}){
-    const [isVisible,setIsVisible] = useState(false)
-    return (
-        <div className="drop-down">
-        <DropDownTop displayedText={year} setIsVisible={setIsVisible}/>
-        {isVisible && <DropDown data={data} setYear={setYear} setIsVisible={setIsVisible}/>}
-        </div>
-    );
-}
-
-
-function DropDownTop({displayedText,setIsVisible}){
-    return(
-        <div className="dropdown-top" onClick={()=>setIsVisible(true)}>
-            <p>{displayedText}</p>
-        </div>
-    )
-}
-
-
-function DropDown({data,setYear,setIsVisible}){
-    return(
-        <div className="dropdown-container" onMouseLeave={()=>setIsVisible(false)}>
-            {Object.keys(data).reverse().map((key =>
-                <DropDownItem key={key} content={key} setYear={setYear} setIsVisible={setIsVisible}/>
-            ))}
-        </div>
-    )
-}
-
-function DropDownItem({content,setYear,setIsVisible}){
-    const handleClick = () => {
-        setYear(content);
-        setIsVisible(false);
-    }
-    
-    return(
-        <div className="dropdown-item">
-            <p onClick={handleClick}>{content}</p>
         </div>
     )
 }

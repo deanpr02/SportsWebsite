@@ -169,3 +169,12 @@
     
 }
 
+.bracket-drop{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    padding:10px;
+    width:100%;
+    border-bottom: 2px solid gray;
+}
+
