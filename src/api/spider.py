@@ -463,6 +463,7 @@ def get_postseason_bracket(year):
     seeds['NL'] = get_league_seeds(104,year)
 
     team_list = []
+    game_list = {}
     series_list = {}
 
     postseason_data = requests.get(f'https://statsapi.mlb.com/api/v1/schedule/postseason?season={year}').json()
@@ -478,6 +479,10 @@ def get_postseason_bracket(year):
             if game['seriesDescription'] == 'Regular Season':
                 continue
 
+            if game_list.get(game['gameGuid']):
+                continue
+
+            game_list[game['gameGuid']] = True
             series_key = game['seriesDescription']
             if series_list.get(conf_type) is None:
                 series_list[conf_type] = {}

@@ -11,7 +11,7 @@ import NL from '../../assets/mlb-resources/national-league.png'
 import Trophy from '../../assets/mlb-resources/ws-trophy.png'
 
 export default function Bracket(){
-    const years = Array.from({ length: 2024 - 2000 + 1 }, (_, i) => 2000 + i);
+    const years = Array.from({ length: 2024 - 2000 + 1 }, (_, i) => 2024 - i);
     const [year,setYear] = useState('2024')
     const { dataObj,isLoading } = useDatabase('/api/bracket',{'year':year})
 
@@ -81,10 +81,10 @@ function Championship({leftConference,rightConference}){
         <div className="bracket-championship-container">
             <div className="championship-series">
                 <div className="left-conference-champion">
-                    <Team team={leftTeam} seriesScore={leftConference.wins} seed={leftConference.seed} opacity={leftConference.wins > rightConference.wins ? 1 : 0.75}/>
+                    <Team team={leftTeam} seriesScore={leftConference.wins} seed={leftConference.seed} opacity={leftConference.wins > rightConference.wins ? 1 : 0.9}/>
                 </div>
                 <div className="right-conference-champion">
-                    <Team team={rightTeam} seriesScore={rightConference.wins} seed={rightConference.seed} opacity={rightConference.wins > leftConference.wins ? 1 : 0.75}/>
+                    <Team team={rightTeam} seriesScore={rightConference.wins} seed={rightConference.seed} opacity={rightConference.wins > leftConference.wins ? 1 : 0.9}/>
                 </div>
             </div>
             </div>
@@ -146,8 +146,8 @@ function MatchUp({homeName,awayName,homeWon,awayWon,homeSeed,awaySeed}){
         <div className="match-up">
             {homeInfo && awayInfo &&
                 <>
-                    <Team team={awayInfo} seriesScore={awayWon} seed={awaySeed} opacity={awayWon > homeWon ? 1 : 0.75}/>
-                    <Team team={homeInfo} seriesScore={homeWon} seed={homeSeed} opacity={homeWon > awayWon ? 1 : 0.75}/>
+                    <Team team={awayInfo} seriesScore={awayWon} seed={awaySeed} opacity={awayWon > homeWon ? 1 : 0.9}/>
+                    <Team team={homeInfo} seriesScore={homeWon} seed={homeSeed} opacity={homeWon > awayWon ? 1 : 0.9}/>
                 </>
             }
         </div>
@@ -155,11 +155,13 @@ function MatchUp({homeName,awayName,homeWon,awayWon,homeSeed,awaySeed}){
 }
 
 function Team({team,seriesScore,seed,opacity}){
+    const color = opacity == 1 ? 'white' : 'gray'
+
     return(
-        <div className="team" style={{opacity:opacity}}>
+        <div className="team" style={{backgroundColor:color,opacity:opacity}}>
             <div style={{display:'flex',flexDirection:'column'}}>
                 <p style={{lineHeight:'0',padding:'5px',marginTop:'5px'}}>[{seed}]</p>
-                <img className="team-logo" src={team.secondaryLogo} alt="Team Logo" style={{"backgroundColor":`white`,border:'2px solid black'}}></img>
+                <img className="team-logo" src={team.secondaryLogo} alt="Team Logo" style={{"backgroundColor":color,border:'2px solid black'}}></img>
             </div>
             <div className="team-name">
                 <div className="team-city">
