@@ -1,12 +1,14 @@
 import './Clubhouse.css'
 import { useState,useEffect } from 'react'
 import { useRetrieveTeam } from '../../Hooks/useRetrieveTeam';
-import { doc, collection,setDoc,onSnapshot,query,orderBy } from 'firebase/firestore'
-import { db } from '../../firebase'
+import { io } from 'socket.io-client'
+//import { doc, collection,setDoc,onSnapshot,query,orderBy } from 'firebase/firestore'
+//import { db } from '../../firebase'
 import { IoMdSend } from "react-icons/io";
 import { v4 as uuidv4 } from 'uuid';
 import { sha256 } from 'js-sha256'
-import Lock from '../../assets/menu-resources/padlock.png'
+
+const socket = io('http://localhost:5000')
 
 class UserPost{
     constructor(owner,content,time){
@@ -36,16 +38,16 @@ export default function Clubhouse(){
     const [contentCounter,setContentCounter] = useState(0);
     const [messages,setMessages] = useState([]);
 
-    const updateFirestore = async (chat) => {
-        const chatKey = uuidv4();
-        const chatRef = doc(db, 'mlb', 'chatlogs', currentChat,chatKey);
-        try {
-            await setDoc(chatRef, chat)
-            console.log("Firestore updated successfully!")
-        } catch (firestoreError) {
-            console.error("Firestore update failed:",firestoreError)
-        }
-    }
+    //const updateFirestore = async (chat) => {
+    //    const chatKey = uuidv4();
+    //    const chatRef = doc(db, 'mlb', 'chatlogs', currentChat,chatKey);
+    //    try {
+    //        await setDoc(chatRef, chat)
+    //        console.log("Firestore updated successfully!")
+    //    } catch (firestoreError) {
+    //        console.error("Firestore update failed:",firestoreError)
+    //    }
+    //}
 
     const createPost = () => {
         const userInput = document.getElementById('post-input');
@@ -55,8 +57,14 @@ export default function Clubhouse(){
         }
         const currentTime = getCurrentTime();
 
-        const newPost = {'owner':username,'content':postContent,'time':currentTime};
-        updateFirestore(newPost);
+        socket.emit("send_message", {
+            room: currentChat,
+            user: username,
+            text: postContent,
+            timestamp: currentTime
+        })
+        //const newPost = {'owner':username,'content':postContent,'time':currentTime};
+        //updateFirestore(newPost);
         document.getElementById('post-input').value = '';
         setContentCounter(0);
     }
@@ -66,17 +74,20 @@ export default function Clubhouse(){
     }
 
     useEffect(() => {
-        const chatRef = collection(db, 'mlb', 'chatlogs', currentChat);
-        const q = query(chatRef,orderBy('time','desc'));
+        socket.emit("join_room",{room:currentChat})
 
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const messageData = snapshot.docs.map((doc) => ({
-                ...doc.data()
-            }));
-            setMessages(messageData);
+        socket.on("message",(msg) => {
+            setMessages((prev) => [msg,...prev]);
+        })
+
+        socket.on("load_messages", (messages) => {
+            setMessages(messages); // messages is the array from the server
         });
-    
-        return () => unsubscribe();
+
+        return () => {
+            socket.emit("leave_room",{room:currentChat})
+            socket.off("message")
+        }
     }, [currentChat]);
 
     return(
@@ -168,11 +179,11 @@ function Post({postInfo}){
             <div className='profile-image'></div>
             <div style={{display:'flex',flexDirection:'column',alignItems:'flex-start',flexWrap:'wrap',maxWidth:'100%'}}>
                 <div style={{display:'flex',flexDirection:'row'}}>
-                    <p>{postInfo.owner}</p>
-                    <p className='post-time'>{postInfo.time}</p>
+                    <p>{postInfo.user}</p>
+                    <p className='post-time'>{postInfo.timestamp}</p>
                 </div>
                 <div className='content'>
-                    <p className='post-content'>{postInfo.content}</p>
+                    <p className='post-content'>{postInfo.text}</p>
                 </div>
             </div>
         </div>

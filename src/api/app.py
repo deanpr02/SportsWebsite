@@ -1,5 +1,6 @@
 from flask import Flask,jsonify,request
 from flask_cors import CORS
+from flask_socketio import SocketIO, join_room, leave_room, emit
 from flask_jwt_extended import JWTManager,create_access_token,jwt_required,get_jwt_identity,set_access_cookies
 from werkzeug.security import generate_password_hash,check_password_hash
 import os
@@ -14,6 +15,7 @@ app.config['MONGO_URI'] = 'mongodb://localhost:27017/sports_website'
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 app.config["JWT_SESSION_COOKIE"]= False
 
+socketio = SocketIO(app,cors_allowed_origins='*')
 jwt = JWTManager(app)
 
 mongo.init_app(app)
@@ -198,6 +200,35 @@ def validate():
     return jsonify({'user_id':user_id}),200
 
 
+"""
+SocketIO operations for real-time communication
+"""
+
+@socketio.on('join_room')
+def handle_join_room(data):
+    room = data['room']
+    join_room(room)
+
+    past_messages = mongo.db.messages.find({ 'room_id': room }, {'_id': 0}).sort({ 'timestamp': -1 }).limit(50)
+
+    emit('load_messages', list(past_messages), room=request.sid)
+
+@socketio.on('leave_room')
+def handle_leave_room(data):
+    room = data['room']
+    leave_room(room)
+
+@socketio.on('send_message')
+def handle_send_message(data):
+    room = data['room']
+    message = {'user': data['user'], 'text': data['text'], 'timestamp': data['timestamp']}
+
+    #save the message to the database
+    mongo.db.messages.insert_one({'room_id':room,'user':data['user'],'text':data['text'],'timestamp':data['timestamp']})
+
+    emit('message',message,room=room)
+
+
 
 
 if __name__ == '__main__':
@@ -212,5 +243,6 @@ if __name__ == '__main__':
     if 'sports_website' not in db_names:
         db.preload_database()
 
+    socketio.run(app,debug=True)
     app.run(debug=True,port=5000)
 
