@@ -12,7 +12,7 @@ app = Flask(__name__)
 CORS(app)
 app.config['MONGO_URI'] = 'mongodb://localhost:27017/sports_website'
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']
-app.config["JWT_SESSION_COOKIE"]= True
+app.config["JWT_SESSION_COOKIE"]= False
 
 jwt = JWTManager(app)
 
@@ -151,6 +151,18 @@ def fetch_team_history():
     history = parse_team_history(team_name)
 
     return jsonify(history)
+
+@app.route('/api/bracket',methods=['GET'])
+def fetch_bracket():
+    """
+    Returns a postseason bracket object with the WC, DS, CS, and WS games
+    for each conference
+    """
+    year = request.args.get('year')
+
+    bracket = scraper.get_postseason_bracket(year)
+
+    return jsonify(bracket)
 
 """
 User Authentication routes

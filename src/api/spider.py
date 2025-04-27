@@ -357,7 +357,155 @@ def fetch_player_info(player_id):
         player_info['awards'] = []
 
     return player_info
+
+def get_league_seeds(league_id,season):
+    """
+    Gets the seeds for a single conference for a season. Need to query individual conferences
+    because MLB Stats API does not support one collective season fetch
+    """
+    mlb = mlbstatsapi.Mlb()
+
+    seeds = {}
+
+    standings = mlb.get_standings(league_id,season)
+
+    division_leaders = []
+    for division in standings:
+        teams = division.teamrecords
+        for team_obj in teams:
+            if team_obj.divisionchamp:
+                division_leaders.append({'name':team_obj.team.name,'rank':team_obj.leaguerank})
+                
+            wc_rank = team_obj.wildcardrank
+            if wc_rank and int(wc_rank) <= 3:
+                seeds[team_obj.team.name] = int(wc_rank) + 3
     
+    sorted_division_leaders = sorted(division_leaders, key=lambda x : x['rank'])
+    for i,team in enumerate(sorted_division_leaders):
+        seeds[team['name']] = i + 1
+
+    return seeds
+
+def reformat_bracket(bracket,seeds):
+    """
+    Reformats the bracket object into a format that is more digestible for the client.
+    There are certain ways the games in each round should be arranged so they are consistent
+    with their future matchups.
+    """
+
+    for conf_name,conf in bracket.items():
+        if conf_name == 'WS':
+            ws_obj = {}
+            match_up = conf['World Series']
+            for d in match_up.values():
+                for name,wins in d.items():
+                    seed,conference = (seeds['AL'][name], 'AL') if seeds['AL'].get(name) else (seeds['NL'][name], 'NL')
+                    ws_obj[conference] = {'name': name, 'wins': wins, 'seed': seed}
+            bracket[conf_name] = ws_obj
+            break
+        
+        for series_name,series in conf.items():
+            game_list = []
+            for game in series.values():
+                team_a,team_b = game.keys()
+                team_a_wins,team_b_wins = game.values()
+                if seeds[conf_name][team_a] < seeds[conf_name][team_b]:
+                    game_obj = {
+                        'home': {
+                            'seed': seeds[conf_name][team_a],
+                            'name': team_a,
+                            'wins': team_a_wins
+                        },
+                        'away': {
+                            'seed': seeds[conf_name][team_b],
+                            'name': team_b,
+                            'wins': team_b_wins
+                        }
+                    }
+                    game_list.append(game_obj)
+                else:
+                    game_obj = {
+                        'home': {
+                            'seed': seeds[conf_name][team_b],
+                            'name': team_b,
+                            'wins': team_b_wins
+                        },
+                        'away': {
+                            'seed': seeds[conf_name][team_a],
+                            'name': team_a,
+                            'wins': team_a_wins
+                        }
+                    }
+                    game_list.append(game_obj)
+
+            if series_name == 'Wild Card':
+                sorted_series = sorted(game_list,key=lambda x: x['home']['seed'])
+                bracket[conf_name][series_name] = sorted_series
+            
+            elif series_name == 'Division Series':
+                sorted_series = sorted(game_list,key=lambda x: -x['home']['seed'])
+                bracket[conf_name][series_name] = sorted_series
+            
+            else:
+                bracket[conf_name][series_name] = game_list
+    
+    return bracket
+
+def get_postseason_bracket(year):
+    """
+    Gets the postseason bracket for a particular year. Returns Wild Card, Division Series,
+    Conference Series, and World Series match ups
+    """
+
+    #This is sets the seedings for each team in the playoffs
+    seeds = {}
+    seeds['AL'] = get_league_seeds(103,year)
+    seeds['NL'] = get_league_seeds(104,year)
+
+    team_list = []
+    series_list = {}
+
+    postseason_data = requests.get(f'https://statsapi.mlb.com/api/v1/schedule/postseason?season={year}').json()
+
+    for date in postseason_data['dates']:
+        games = date['games']
+        for game in games:
+            #Will be AL for AL games and NL for NL games
+            conf_type = game['description'][0:2]
+            if conf_type == 'Wo':
+                conf_type = 'WS'
+            
+            series_key = game['seriesDescription']
+            if series_list.get(conf_type) is None:
+                series_list[conf_type] = {}
+            
+            if series_list[conf_type].get(series_key) is None:
+                series_list[conf_type][series_key] = {}
+            
+            teams = game['teams']
+            home_team = teams['home']
+            away_team = teams['away']
+
+            home_team_name = home_team['team']['name']
+            away_team_name = away_team['team']['name']
+
+            series_id = frozenset({home_team_name,away_team_name})
+            if series_id not in team_list:
+                team_list.append(series_id)
+            
+                series_list[conf_type][series_key][home_team['seriesNumber']] = {}
+                series_list[conf_type][series_key][away_team['seriesNumber']] = {}
+                series_list[conf_type][series_key][home_team['seriesNumber']][home_team_name] = 0
+                series_list[conf_type][series_key][away_team['seriesNumber']][away_team_name] = 0
+            
+            if home_team['isWinner']:
+                series_list[conf_type][series_key][home_team['seriesNumber']][home_team_name] += 1
+            else:
+                series_list[conf_type][series_key][away_team['seriesNumber']][away_team_name] += 1
+
+    series_list = reformat_bracket(series_list,seeds)
+
+    return series_list
 
 
 

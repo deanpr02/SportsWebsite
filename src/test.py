@@ -122,7 +122,6 @@ def fetch_league_seeds(league_id,season):
     mlb = mlbstatsapi.Mlb()
 
     seeds = {}
-    #seeds = []
 
     standings = mlb.get_standings(league_id,season)
 
@@ -136,12 +135,14 @@ def fetch_league_seeds(league_id,season):
             wc_rank = team_obj.wildcardrank
             if wc_rank and int(wc_rank) <= 3:
                 #seeds.append({'name':team_obj.team.name,'seed':int(wc_rank)+3})
-                seeds[int(wc_rank) + 3] = team_obj.team.name
+                #seeds[int(wc_rank) + 3] = team_obj.team.name
+                seeds[team_obj.team.name] = int(wc_rank) + 3
     
     sorted_division_leaders = sorted(division_leaders, key=lambda x : x['rank'])
     for i,team in enumerate(sorted_division_leaders):
-        seeds[i+1] = team['name']
+        #seeds[i+1] = team['name']
         #seeds.append({'name':team['name'],'seed':i+1})
+        seeds[team['name']] = i + 1
 
     return seeds
 
@@ -185,7 +186,8 @@ def temp():
     mlb_seeds['AL'] = fetch_league_seeds(103,2024)
     mlb_seeds['NL'] = fetch_league_seeds(104,2024)
 
-    fetch_playoff_bracket(mlb_seeds)
+    print(mlb_seeds)
+    #fetch_playoff_bracket(mlb_seeds)
     
 
 
