@@ -179,11 +179,11 @@ function PlayerStats({stats,year,setYear}){
             </div>
             {hidden ? 
                         shownBatch.map(([key,value]) => {
-                            return <StatRow statistic={value} title={key} logo={statDetails[key]}/>
+                            return <StatRow key={key} statistic={value} title={key} logo={statDetails[key]}/>
                         })
                         :
                         Object.entries(stats[year]).map(([key,value]) => {
-                            return <StatRow statistic={value} title={key} logo={statDetails[key]}/>
+                            return <StatRow key={key} statistic={value} title={key} logo={statDetails[key]}/>
                         })}
             <div className='expand-bar' style={{padding:'1px'}} onClick={() => setHidden((prev) => !prev)}>
                 {hidden ?
@@ -323,8 +323,8 @@ function StatLineChart({xValues,yValues,statName,teamColor}){
 }
 
 function PlayerAwards({awards}){
-    const awardYears = awards.map((award => <p style={{height:'5vh'}}>{award.year}</p>))
-    const awardTitles = awards.map((award => <p style={{height:'5vh'}}>{award.name}</p>))
+    const awardYears = awards.map(((award,i) => <p key={i} style={{height:'5vh'}}>{award.year}</p>))
+    const awardTitles = awards.map(((award,i) => <p key={i} style={{height:'5vh'}}>{award.name}</p>))
     return(
         <div className='player-awards-container'>
             <div className='stat-bar'>

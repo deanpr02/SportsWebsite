@@ -76,7 +76,7 @@ function PlayerPool({playerList,primaryColor,secondaryColor,sortKey,sortDirectio
         <>
         {modifiedData.map((playerInfo) => (
             <>
-            <PlayerCard playerID={playerInfo.id} playerName={playerInfo.name} playerStats={playerInfo.stats["2025"]} playerPosition={playerInfo.position} playerImage={playerInfo['image-link']} primaryColor={primaryColor} secondaryColor={secondaryColor} sortedAttribute={sortedAttribute}/>
+            <PlayerCard key={playerInfo.id} playerID={playerInfo.id} playerName={playerInfo.name} playerStats={playerInfo.stats["2025"]} playerPosition={playerInfo.position} playerImage={playerInfo['image-link']} primaryColor={primaryColor} secondaryColor={secondaryColor} sortedAttribute={sortedAttribute}/>
             </>
         ))}
         </>

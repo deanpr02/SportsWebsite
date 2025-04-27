@@ -51,8 +51,8 @@ function GameList({games}){
         <Routes>
             <Route path="game" element={<MLBGame home={homeTeam} away={awayTeam}/>}/>
             <Route path="/" element={<><div className='score-game-list'>
-                    {games.map((game => {
-                        return <Game home={game.teams.home} away={game.teams.away} venue={game.venue.name}/>
+                    {games.map(((game,i) => {
+                        return <Game  key={i} home={game.teams.home} away={game.teams.away} venue={game.venue.name}/>
                     }))}
                 </div></>}/>
         </Routes>
