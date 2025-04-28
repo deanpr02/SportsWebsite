@@ -1,3 +1,8 @@
+import { useState,useContext } from 'react'
+import { useNavigate,Routes,Route } from 'react-router-dom'
+
+import { UserContext } from './Home'
+
 import Bracket from './Bracket'
 import Navbar from './Navbar'
 import Scores from '../ScoreView/Scores'
@@ -6,9 +11,6 @@ import Statistics from './Statistics'
 import TeamPage from '../TeamView/TeamPage'
 import TeamLibrary from '../TeamView/TeamLibrary'
 import Clubhouse from './Clubhouse'
-import { useState,useContext } from 'react'
-import { useNavigate,Routes,Route } from 'react-router-dom'
-import { UserContext } from './Home'
 
 import MLBLogo from '../../assets/menu-resources/mlb-logo.png'
 

@@ -224,7 +224,7 @@ def handle_send_message(data):
     message = {'user': data['user'], 'text': data['text'], 'timestamp': data['timestamp']}
 
     #save the message to the database
-    mongo.db.messages.insert_one({'room_id':room,'user':data['user'],'text':data['text'],'timestamp':data['timestamp']})
+    mongo.db.messages.insert_one({'room_id':room,'chat_id':data['chatID'],'user':data['user'],'text':data['text'],'timestamp':data['timestamp']})
 
     emit('message',message,room=room)
 

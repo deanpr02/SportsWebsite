@@ -1,7 +1,6 @@
-import './Bracket.css'
 import { useRetrieveTeam } from '../../Hooks/useRetrieveTeam'
 import { useDatabase } from '../../Hooks/useDatabase'
-import { useState,useEffect,useContext } from 'react'
+import { useState,useEffect } from 'react'
 
 import DropDown from '../Utility/DropDown'
 import Spinner from './Spinner'
@@ -9,6 +8,8 @@ import Spinner from './Spinner'
 import AL from '../../assets/mlb-resources/american-league.png'
 import NL from '../../assets/mlb-resources/national-league.png'
 import Trophy from '../../assets/mlb-resources/ws-trophy.png'
+
+import './Bracket.css'
 
 export default function Bracket(){
     const years = Array.from({ length: 2024 - 2000 + 1 }, (_, i) => 2024 - i);

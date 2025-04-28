@@ -1,11 +1,13 @@
-import './MainMenu.css'
-import { useNavigate,Routes,Route } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+
 import SportMenuContainer from './SportMenuContainer'
 import Baseball from '../../assets/menu-resources/mlb-logo.png'
 import Football from '../../assets/menu-resources/nfl-logo.png'
 import Basketball from '../../assets/menu-resources/nba-logo.png'
 import Hockey from '../../assets/menu-resources/nhl-logo.png'
 import Soccer from '../../assets/menu-resources/mls-logo.png'
+
+import './MainMenu.css'
 
 export default function MainMenu(){
     const navigate = useNavigate()

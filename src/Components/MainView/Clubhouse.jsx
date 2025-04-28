@@ -1,22 +1,15 @@
-import './Clubhouse.css'
 import { useState,useEffect } from 'react'
-import { useRetrieveTeam } from '../../Hooks/useRetrieveTeam';
-import { io } from 'socket.io-client'
-//import { doc, collection,setDoc,onSnapshot,query,orderBy } from 'firebase/firestore'
-//import { db } from '../../firebase'
-import { IoMdSend } from "react-icons/io";
 import { v4 as uuidv4 } from 'uuid';
 import { sha256 } from 'js-sha256'
+import { io } from 'socket.io-client'
+
+import { useRetrieveTeam } from '../../Hooks/useRetrieveTeam';
+
+import { IoMdSend } from "react-icons/io";
+
+import './Clubhouse.css'
 
 const socket = io('http://localhost:5000')
-
-class UserPost{
-    constructor(owner,content,time){
-        this.owner = owner;
-        this.content = content;
-        this.time = time;
-    }
-}
 
 const timeOptions = {
     timeZone: 'America/Phoenix',
@@ -38,17 +31,6 @@ export default function Clubhouse(){
     const [contentCounter,setContentCounter] = useState(0);
     const [messages,setMessages] = useState([]);
 
-    //const updateFirestore = async (chat) => {
-    //    const chatKey = uuidv4();
-    //    const chatRef = doc(db, 'mlb', 'chatlogs', currentChat,chatKey);
-    //    try {
-    //        await setDoc(chatRef, chat)
-    //        console.log("Firestore updated successfully!")
-    //    } catch (firestoreError) {
-    //        console.error("Firestore update failed:",firestoreError)
-    //    }
-    //}
-
     const createPost = () => {
         const userInput = document.getElementById('post-input');
         const postContent = userInput.value;
@@ -56,21 +38,22 @@ export default function Clubhouse(){
             return
         }
         const currentTime = getCurrentTime();
+        const chatID = uuidv4();
 
         socket.emit("send_message", {
             room: currentChat,
+            chatID: chatID,
             user: username,
             text: postContent,
             timestamp: currentTime
         })
-        //const newPost = {'owner':username,'content':postContent,'time':currentTime};
-        //updateFirestore(newPost);
+
         document.getElementById('post-input').value = '';
         setContentCounter(0);
     }
 
     const cleanseString = (str) => {
-
+        //To be implemented
     }
 
     useEffect(() => {
@@ -81,7 +64,7 @@ export default function Clubhouse(){
         })
 
         socket.on("load_messages", (messages) => {
-            setMessages(messages); // messages is the array from the server
+            setMessages(messages);
         });
 
         return () => {

@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import { Routes,Route,useNavigate } from 'react-router-dom'
+
 import { useGetSchedule } from "../../Hooks/useGetSchedule"
-import './Scores.css'
 import { useRetrieveTeam } from '../../Hooks/useRetrieveTeam';
+
 import MLBGame from './MLBGame';
+
+import './Scores.css'
 
 export default function Scores(){
     const {schedule} = useGetSchedule('MLB');

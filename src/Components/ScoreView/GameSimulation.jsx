@@ -1,6 +1,8 @@
 import { useState, useRef } from 'react'
-import './GameSimulation.css'
+
 import HomePlate from '../../assets/mlb-resources/mlb-homeplate.jpg'
+
+import './GameSimulation.css'
 
 export default function GameSimulation() {
 

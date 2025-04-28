@@ -1,10 +1,10 @@
 import { useState,useEffect,createContext } from 'react';
 import { useNavigate,Route,Routes } from 'react-router-dom'
 
-import './Home.css'
-
 import MainMenu from './MainMenu'
 import MLBView from './MLBView'
+
+import './Home.css'
 
 export const UserContext = createContext(null);
 

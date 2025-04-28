@@ -1,11 +1,13 @@
 import { useState,useMemo } from 'react'
+
 import { useRetrieveTeam } from '../../Hooks/useRetrieveTeam'
 import { useTeamRank } from  '../../Hooks/useFetchTeamRank'
 import { useStatNames } from '../../Hooks/useStatNames'
-import './MLBGame.css'
+
 import StadiumCloud from "./StadiumCloud"
 import GameSimulation from './GameSimulation'
-import { setDefaultEventParameters } from 'firebase/analytics'
+
+import './MLBGame.css'
 
 const gameState = {
     active: 0,

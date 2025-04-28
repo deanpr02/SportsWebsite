@@ -1,15 +1,17 @@
-import './Navbar.css'
-import LogOut from '../../assets/menu-resources/logout.png'
 import { useNavigate } from 'react-router-dom'
-import { signOut } from 'firebase/auth'
-import { auth } from '../../firebase'
+
+import LogOut from '../../assets/menu-resources/logout.png'
+//import { signOut } from 'firebase/auth'
+//import { auth } from '../../firebase'
+
+import './Navbar.css'
 
 export default function Navbar({leagueLogo,homePath}){
     const navigate = useNavigate()
 
     const logout = async () => {
         try{
-            await signOut(auth);
+            //await signOut(auth);
             console.log('User Logged Out');
         }
         catch(error){
