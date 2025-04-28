@@ -52,6 +52,7 @@ function GameList({games}){
     return(
         <>
         <Routes>
+            {console.log(games)}
             <Route path="game" element={<MLBGame home={homeTeam} away={awayTeam}/>}/>
             <Route path="/" element={<><div className='score-game-list'>
                     {games.map(((game,i) => {
@@ -64,37 +65,64 @@ function GameList({games}){
 }
 
 function Game({away,home,venue}){
-    const homeTeam = home.team.name
-    const awayTeam = away.team.name
+    const homeInfo = useRetrieveTeam(home.team.name)
+    const awayInfo = useRetrieveTeam(away.team.name)
     const navigate = useNavigate();
 
     return(
         <>
-                    <div className='score-game-detail-container' onClick={()=>navigate("game")}>
-                        <div className='score-game-container'>
-                            <Team name={awayTeam} dir={-1} flexOrientation={'row'}/>
+                    <div className='score-game-detail-container'>
+                        <div className='score-game-container' onClick={()=>navigate("game")}>
+                            <Team teamInfo={awayInfo} dir={-1} flexOrientation={'row'}/>
                             <p style={{fontSize:'24px'}}>VS.</p>
-                            <Team name={homeTeam} dir={1} flexOrientation={'row-reverse'}/>
+                            <Team teamInfo={homeInfo} dir={1} flexOrientation={'row-reverse'}/>
                         </div>
-                        <GameInfo venue={venue}/>
+                        <GameInfo homeInfo={homeInfo} awayInfo={awayInfo} venue={venue}/>
                     </div>
         </>
     )
 }
 
-function GameInfo({venue}){
+function GameInfo({homeInfo,awayInfo,venue}){
     return(
         <div className='game-info-container'>
-        <p>00:00 PM.</p>
-        <p>{venue}</p>
+            <p>00:00 PM.</p>
+            <p>{venue}</p>
+            <GamePredictionPanel awayInfo={awayInfo} homeInfo={homeInfo}/>
         </div>
     )
 }
 
-function Team({name,flexOrientation}){
-    //dumb fix cause API is broken
-    const teamName = name === 'Athletics' ? 'Oakland Athletics' : name;
-    const teamInfo = useRetrieveTeam(teamName);
+function GamePredictionPanel({awayInfo,homeInfo}){
+    const [gamePicked,setGamePicked] = useState(undefined)
+
+    return(
+        <>
+        {!gamePicked ? 
+            <div className='game-prediction-container'>
+                    <p style={{color:'black'}}>Who Ya Got?</p>
+                    <div style={{display:'flex',flexDirection:'row'}}>
+                        <div className='prediction-selector' style={{borderRight:'2px solid white',borderRadius:'10px 0 0 10px',backgroundColor:`#${awayInfo.primaryColor}`}}
+                            onClick={()=>setGamePicked(awayInfo)}>
+                            {awayInfo.abbr}
+                        </div>
+                        <div className='prediction-selector' style={{borderRadius:'0 10px 10px 0',backgroundColor:`#${homeInfo.primaryColor}`}}
+                            onClick={()=>setGamePicked(homeInfo)}>
+                            {homeInfo.abbr}
+                        </div>
+                    </div>
+            </div>
+            :
+            <div className='game-prediction-container'>
+                <p style={{color:'black'}}>Voted {gamePicked.abbr}</p>
+                <div className='prediction-selected' style={{width:'100%',backgroundColor:`#${gamePicked.primaryColor}`,borderRadius:'10px'}}></div>
+            </div>
+        }
+        </>
+    )
+}
+
+function Team({teamInfo,flexOrientation}){
 
     return(
         <div>

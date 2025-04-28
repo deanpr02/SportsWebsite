@@ -233,6 +233,20 @@ export function useRetrieveTeam(teamId){
             "description": "Owned by John Fisher, who has been the principal owner since 2005. The Oakland Athletics were founded in 1901 as the Philadelphia Athletics, moved to Kansas City in 1955, and then to Oakland in 1968. The team played at the Oakland Coliseum from 1968 to 2024, a stadium known for its gritty charm and passionate fan base. The team left Oakland after the 2024 season, temporarily moving to West Sacramento before a permanent move to Las Vegas.",
             "coords": [37.751535,-122.200515]
         },
+        "Athletics":{
+            "name": "Athletics",
+            "city": "Oakland",
+            "abbr": "OAK",
+            "primaryLogo": AthleticsPrimary,
+            "secondaryLogo": AthleticsSecondary,
+            "stadium": AthleticsStadium,
+            "location": "Oakland, CA",
+            "division": "AL West",
+            "primaryColor": "003831",
+            "secondaryColor": "EFB21E",
+            "description": "Owned by John Fisher, who has been the principal owner since 2005. The Oakland Athletics were founded in 1901 as the Philadelphia Athletics, moved to Kansas City in 1955, and then to Oakland in 1968. The team played at the Oakland Coliseum from 1968 to 2024, a stadium known for its gritty charm and passionate fan base. The team left Oakland after the 2024 season, temporarily moving to West Sacramento before a permanent move to Las Vegas.",
+            "coords": [37.751535,-122.200515]
+        },
         "Seattle Mariners":{
             "name": "Mariners",
             "city": "Seattle",

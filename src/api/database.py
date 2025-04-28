@@ -1,9 +1,11 @@
-from firebase_admin import firestore
-from google.cloud.firestore_v1.base_query import FieldFilter
-import time, random, os
+"""
+This file controls database operations such as retrieving and saving information to the MongoDB/
+"""
+
+import time
+import random
 import spider as scraper
 import mlbstatsapi
-import time
 from util import mongo
 
 mlb_teams = ['yankees','redsox','orioles','bluejays','rays',
@@ -101,31 +103,11 @@ def calculate_team_averages(db):
     print("\nCalculating team averages...")
     for team_abbr in mlb_abbrs:
         try:
-            players_ref = db.collection('mlb').document('data').collection('players')
-            query = players_ref.where(filter=FieldFilter('team', '==', team_abbr))
-            docs = query.get()
 
             total_stats = {}
             num_batters = 0
             num_pitchers = 0
 
-            for doc in docs:
-                data = doc.to_dict()
-                position = data.get('position', '')
-                stats = data.get('stats', {}).get('2025', data.get('stats', {}))
-
-                # Determine player type
-                if position.endswith('P'):
-                    num_pitchers += 1
-                else:
-                    num_batters += 1
-
-                # Aggregate stats
-                for stat, value in stats.items():
-                    if stat in total_stats:
-                        total_stats[stat] += float(value)
-                    else:
-                        total_stats[stat] = float(value)
 
             # Calculate averages
             avg_stats = {}
@@ -137,12 +119,8 @@ def calculate_team_averages(db):
                 
                 avg_stats[stat] = round(total/divisor,2) if stats_to_average.get(stat) else total
 
-            # Update team document
-            team_ref = db.collection('mlb').document('data').collection('teams').document(team_abbr)
-            team_ref.set({
-                'averageStats': avg_stats,
-                'lastUpdated': firestore.SERVER_TIMESTAMP
-            }, merge=True)
+            #update database here
+            
             print(f"Updated averages for {team_abbr}")
 
         except Exception as e:
@@ -278,7 +256,6 @@ def get_player_names(amnt):
     Fetches all the players names in our database along with their ID for allowed
     capability of full player fetching in components
     """
-    print(amnt)
     names = []
     if amnt == 'all':
         names = mongo.db.mlb.aggregate([
