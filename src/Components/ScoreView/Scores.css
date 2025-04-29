@@ -76,6 +76,8 @@
     padding-right:10px;
     padding-top:10px;
     padding-bottom:10px;
+    font-size:1.5vw;
+    justify-content: space-between;
 }
 
 .score-logo{
@@ -174,6 +176,8 @@
     border: 2px solid white;
     border-radius: 10px;
     background-color: white;
+    margin-top:10px;
+    margin-bottom:10px;
 }
 
 .prediction-selector{
@@ -198,3 +202,50 @@
     opacity:0.5;
 }
 
+.game-info-detail-section{
+    display:flex;
+    width:100%;
+    align-items: center;
+    padding:10px;
+    font-size: 1vw;
+}
+
+.game-info-detail-section img{
+    width:2vw;
+    height:3vh;
+    margin-right:10px;
+}
+
+.team-score-label{
+    font-family: "Cal Sans", sans-serif;
+    display:flex;
+    align-items: center;
+    justify-self: center;
+    font-size:5vh;
+}
+
+.score-team-preview{
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+    gap:10vh;
+    align-items:center;
+    font-size:5vh;
+    margin-right:1vw;
+    margin-left:1vw;
+}
+
+.score-team-wrapper{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:flex-start;
+    font-size:5vh;
+}
+
+.score-team-record{
+    font-family: "Cal Sans", sans-serif;
+    font-size:3vh;
+    margin-left:1vw;
+}

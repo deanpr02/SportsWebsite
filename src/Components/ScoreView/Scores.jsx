@@ -6,6 +6,9 @@ import { useRetrieveTeam } from '../../Hooks/useRetrieveTeam';
 
 import MLBGame from './MLBGame';
 
+import Stadium from '../../assets/stadium.png'
+import Line from '../../assets/line.png'
+
 import './Scores.css'
 
 export default function Scores(){
@@ -52,11 +55,17 @@ function GameList({games}){
     return(
         <>
         <Routes>
-            {console.log(games)}
             <Route path="game" element={<MLBGame home={homeTeam} away={awayTeam}/>}/>
             <Route path="/" element={<><div className='score-game-list'>
+                    {console.log(games)}
                     {games.map(((game,i) => {
-                        return <Game  key={i} home={game.teams.home} away={game.teams.away} venue={game.venue.name}/>
+                        return <Game  
+                                key={i} 
+                                home={game.teams.home} 
+                                away={game.teams.away} 
+                                venue={game.venue.name}
+                                date={game.gameDate}
+                                status={game.status.codedGameState}/>
                     }))}
                 </div></>}/>
         </Routes>
@@ -64,31 +73,61 @@ function GameList({games}){
     )
 }
 
-function Game({away,home,venue}){
+function Game({away,home,venue,date,status}){
     const homeInfo = useRetrieveTeam(home.team.name)
     const awayInfo = useRetrieveTeam(away.team.name)
     const navigate = useNavigate();
 
+    console.log(away)
+    const formattedDate = new Date(date);
+
+    // Get the time in 12-hour format with AM/PM, in the local time zone:
+    const options = { hour: 'numeric', minute: '2-digit', hour12: true };
+    const formattedTime = formattedDate.toLocaleTimeString(undefined, options);
+
+    const gameStatus = status === 'F' ? true : false;
+
     return(
-        <>
-                    <div className='score-game-detail-container'>
-                        <div className='score-game-container' onClick={()=>navigate("game")}>
-                            <Team teamInfo={awayInfo} dir={-1} flexOrientation={'row'}/>
-                            <p style={{fontSize:'24px'}}>VS.</p>
-                            <Team teamInfo={homeInfo} dir={1} flexOrientation={'row-reverse'}/>
-                        </div>
-                        <GameInfo homeInfo={homeInfo} awayInfo={awayInfo} venue={venue}/>
+        <>  
+            {!gameStatus ?
+                <div className='score-game-detail-container'>
+                    <div className='score-game-container' onClick={()=>navigate("game")}>
+                        <Team teamInfo={awayInfo} flexOrientation={'row'}/>
+                        <p style={{fontSize:'24px'}}>VS.</p>
+                        <Team teamInfo={homeInfo} flexOrientation={'row-reverse'}/>
                     </div>
+                    <GameInfo homeInfo={homeInfo} awayInfo={awayInfo} venue={venue} time={formattedTime} gameStatus={gameStatus}/>
+                </div>
+                :
+                <div className='score-game-detail-container'>
+                    <div className='score-game-container' onClick={()=>navigate("game")}>
+                        <TeamScore teamInfo={awayInfo} score={away.score} record={away.leagueRecord} isWinner={away.isWinner}/>
+                        <TeamScore teamInfo={homeInfo} score={home.score} record={home.leagueRecord} isWinner={home.isWinner}/>
+                    </div>
+                    <GameInfo homeInfo={homeInfo} awayInfo={awayInfo} venue={venue} time={'Final'} gameStatus={gameStatus}/>
+                </div>
+            }  
         </>
     )
 }
 
-function GameInfo({homeInfo,awayInfo,venue}){
+function GameInfo({homeInfo,awayInfo,venue,time,gameStatus}){
     return(
         <div className='game-info-container'>
-            <p>00:00 PM.</p>
-            <p>{venue}</p>
-            <GamePredictionPanel awayInfo={awayInfo} homeInfo={homeInfo}/>
+            <div style={{marginTop:'10px'}}>
+            <p style={{fontSize:'4vh'}}>{time}</p>
+                <div className='game-info-detail-section'>
+                    <img src={Stadium}></img>
+                    <p>{venue}</p>
+                </div>
+                <div className='game-info-detail-section'>
+                    <img src={Line}></img>
+                    <p>{homeInfo.abbr} -500</p>
+                </div>
+            </div>
+            {!gameStatus &&
+                <GamePredictionPanel awayInfo={awayInfo} homeInfo={homeInfo}/>
+            }
         </div>
     )
 }
@@ -100,7 +139,7 @@ function GamePredictionPanel({awayInfo,homeInfo}){
         <>
         {!gamePicked ? 
             <div className='game-prediction-container'>
-                    <p style={{color:'black'}}>Who Ya Got?</p>
+                    <p style={{color:'black'}}>Predict</p>
                     <div style={{display:'flex',flexDirection:'row'}}>
                         <div className='prediction-selector' style={{borderRight:'2px solid white',borderRadius:'10px 0 0 10px',backgroundColor:`#${awayInfo.primaryColor}`}}
                             onClick={()=>setGamePicked(awayInfo)}>
@@ -131,6 +170,28 @@ function Team({teamInfo,flexOrientation}){
             <div className='corner-borders' style={{'--psuedo-border-color':`#${teamInfo.primaryColor}`}}><span><img className='score-logo' src={teamInfo.primaryLogo} style={{backgroundImage:`linear-gradient(color-mix(in srgb,#${teamInfo.primaryColor} 60%,#${teamInfo.secondaryColor}),#${teamInfo.secondaryColor}`,flexDirection:flexOrientation}}></img></span></div>
             <div style={{display:'flex',flexDirection:'column',justifyContent:'center',fontSize:'32px',paddingLeft:'10px',paddingRight:'10px'}}><p>{teamInfo.city}</p><p>{teamInfo.name}</p></div>
         </div>
+        }
+        </div>
+    )
+}
+
+function TeamScore({teamInfo,score,record,isWinner}){
+    const opacity = isWinner ? 1 : 0.5;
+
+    return(
+        <div>
+        {teamInfo &&
+            <>
+                <div className='score-team-container' style={{marginBottom:'5px',marginTop:'5px',border:`2px solid #${teamInfo.primaryColor}`}}>
+                    <div className='corner-borders' style={{'--psuedo-border-color':`#${teamInfo.primaryColor}`}}><span><img className='score-logo' src={teamInfo.primaryLogo} style={{backgroundImage:`linear-gradient(color-mix(in srgb,#${teamInfo.primaryColor} 60%,#${teamInfo.secondaryColor}),#${teamInfo.secondaryColor}`}}></img></span></div>
+                    <div  className="score-team-wrapper">
+                    <div className='score-team-preview' style={{opacity:opacity}}><p>{teamInfo.abbr}</p><p className='team-score-label'>{score}</p></div>
+                    <div className='score-team-record'>
+                        <p>{record.wins}-{record.losses}</p>
+                    </div>
+                    </div>
+                </div>
+            </>
         }
         </div>
     )
