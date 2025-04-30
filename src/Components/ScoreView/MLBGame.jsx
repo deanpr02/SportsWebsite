@@ -5,6 +5,7 @@ import { useTeamRank } from  '../../Hooks/useFetchTeamRank'
 import { useStatNames } from '../../Hooks/useStatNames'
 
 import StadiumCloud from "./StadiumCloud"
+import LiveGame from './LiveGame'
 import GameSimulation from './GameSimulation'
 
 import './MLBGame.css'
@@ -25,6 +26,7 @@ export default function MLBGame({home,away}){
         <div className='mlb-game-container'>
             <ScoreGraphic home={homeTeamInfo} away={awayTeamInfo} homeScore={homeScore} awayScore={awayScore}/>
             <ScoreBox homeInfo={homeTeamInfo} awayInfo={awayTeamInfo}/>
+            {false ? 
             <div className='mlb-mid-score'>
                 <>
                     <SideView city={awayTeamInfo.city} color={awayTeamInfo.primaryColor} teamName={awayTeamInfo.abbr}/>
@@ -32,7 +34,10 @@ export default function MLBGame({home,away}){
                     <SideView city={homeTeamInfo.city} color={homeTeamInfo.primaryColor} teamName={homeTeamInfo.abbr}/>
                 </>
             </div>
-            <GameSimulation/>
+            :
+            <LiveGame homeInfo={homeTeamInfo} awayInfo={awayTeamInfo}/>
+            }
+        
         </div>
     )
 }

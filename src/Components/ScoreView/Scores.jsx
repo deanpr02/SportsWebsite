@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState,useEffect } from 'react'
 import { Routes,Route,useNavigate } from 'react-router-dom'
 
 import { useGetSchedule } from "../../Hooks/useGetSchedule"
@@ -13,20 +13,42 @@ import './Scores.css'
 
 export default function Scores(){
     const {schedule} = useGetSchedule('MLB');
-    const [currentDay,setCurrentDay] = useState(0);
+    const [homeTeam,setHomeTeam] = useState("New York Yankees");
+    const [awayTeam,setAwayTeam] = useState("Boston Red Sox");
+
+    const [currentDay,setCurrentDay] = useState(-1);
+
+    useEffect(() => {
+        if(schedule.length > 0){
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const formattedDate = `${year}-${month}-${day}`;
+            const newIndex = schedule.findIndex(obj => obj.date === formattedDate);
+            setCurrentDay(newIndex !== -1 ? newIndex : 0);
+        }
+    }, [schedule]);
     
     return(
-        <div>
-            <div className='scores-date-list'>
-                {schedule.map((item,index) => {
-                    return currentDay === index ?
-                        <DateListing index={index} date={item.date} setCurrentDay={setCurrentDay} isSelected={true}></DateListing>
-                        :
-                        <DateListing index={index} date={item.date} setCurrentDay={setCurrentDay} isSelected={false}></DateListing>
-                })}
-            </div>
-            {schedule.length > 0 && <GameList games={schedule[currentDay].games}/>}
-        </div>
+        <Routes>
+            <Route path='game' element={<MLBGame home={homeTeam} away={awayTeam}/>}/>
+            <Route path='/' element={
+                <>
+                    <div>
+                        <div className='scores-date-list'>
+                            {schedule.map((item,index) => {
+                                return currentDay === index ?
+                                    <DateListing index={index} date={item.date} setCurrentDay={setCurrentDay} isSelected={true}/>
+                                    :
+                                    <DateListing index={index} date={item.date} setCurrentDay={setCurrentDay} isSelected={false}/>
+                            })}
+                        </div>
+                        {schedule.length > 0 && currentDay > -1 && <GameList games={schedule[currentDay].games}/>}
+                    </div>
+                </>
+            }/>
+        </Routes>
     )
 }
 
@@ -49,27 +71,19 @@ function DateListing({index,date,isSelected,setCurrentDay}){
 }
 
 function GameList({games}){
-    const [homeTeam,setHomeTeam] = useState("New York Yankees");
-    const [awayTeam,setAwayTeam] = useState("Boston Red Sox");
 
     return(
-        <>
-        <Routes>
-            <Route path="game" element={<MLBGame home={homeTeam} away={awayTeam}/>}/>
-            <Route path="/" element={<><div className='score-game-list'>
-                    {console.log(games)}
-                    {games.map(((game,i) => {
-                        return <Game  
-                                key={i} 
-                                home={game.teams.home} 
-                                away={game.teams.away} 
-                                venue={game.venue.name}
-                                date={game.gameDate}
-                                status={game.status.codedGameState}/>
-                    }))}
-                </div></>}/>
-        </Routes>
-        </>
+        <div className='score-game-list'>
+            {games.map(((game,i) => {
+                return <Game  
+                        key={i} 
+                        home={game.teams.home} 
+                        away={game.teams.away} 
+                        venue={game.venue.name}
+                        date={game.gameDate}
+                        status={game.status.codedGameState}/>
+            }))}
+    </div>
     )
 }
 
@@ -78,7 +92,6 @@ function Game({away,home,venue,date,status}){
     const awayInfo = useRetrieveTeam(away.team.name)
     const navigate = useNavigate();
 
-    console.log(away)
     const formattedDate = new Date(date);
 
     // Get the time in 12-hour format with AM/PM, in the local time zone:
