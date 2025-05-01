@@ -1,6 +1,6 @@
 import './DevConsole.css'
 
-export default function DevConsole({setStrikes,setBalls,setOuts,setInning,setInningHalf,setCanAdvance,setBases,setHomeScore,setAwayScore,bases,inningHalf,outs,canAdvance}){
+export default function DevConsole({setStrikes,setBalls,setOuts,setInning,setInningHalf,setCanAdvance,setBases,setHomeScore,setAwayScore,setHalfRuns,bases,inningHalf,outs,canAdvance}){
     const addStrike = () => {
         if(outs < 3){
             setStrikes((prev) => prev+1)
@@ -18,6 +18,7 @@ export default function DevConsole({setStrikes,setBalls,setOuts,setInning,setInn
             setBases([]);
             setOuts(0);
             setCanAdvance(false);
+            setHalfRuns(0);
             if(inningHalf == -1){
                 setInning((prevInning) => prevInning+1)
             }
@@ -64,6 +65,7 @@ export default function DevConsole({setStrikes,setBalls,setOuts,setInning,setInn
         else{
             setHomeScore((prev) => prev+newScore)
         }
+        setHalfRuns((prevRuns) => prevRuns + newScore)
 
         newBases.push(baseObj)
         setBases(newBases);
@@ -83,6 +85,7 @@ export default function DevConsole({setStrikes,setBalls,setOuts,setInning,setInn
         else{
             setHomeScore((prev) => prev+newScore)
         }
+        setHalfRuns((prevRuns) => prevRuns + newScore)
 
         newBases.push(baseObj)
         setBases(newBases)
@@ -101,6 +104,7 @@ export default function DevConsole({setStrikes,setBalls,setOuts,setInning,setInn
         else{
             setHomeScore((prev) => prev+newScore)
         }
+        setHalfRuns((prevRuns) => prevRuns + newScore)
 
         newBases.push(baseObj)
         setBases(newBases)
@@ -110,28 +114,52 @@ export default function DevConsole({setStrikes,setBalls,setOuts,setInning,setInn
         setStrikes(0)
         setBalls(0)
 
+
+        const {newBases,newScore} = updateBases(4);
+
         if(inningHalf == 1){
             setAwayScore((prev) => prev+newScore+1)
         }
         else{
             setHomeScore((prev) => prev+newScore+1)
         }
-
-        const {newBases,newScore} = updateBases(4);
+        setHalfRuns((prevRuns) => prevRuns + newScore + 1)
 
         setBases(newBases)
     }
 
+    const groundOut = () => {
+        if(outs < 3){
+            setStrikes(0)
+            setBalls(0)
+            setOuts((prev) => prev+1)
+        }
+    }
+
+    const flyOut = () => {
+        if(outs < 3){
+            setStrikes(0)
+            setBalls(0)
+            setOuts((prev) => prev+1)
+        }
+
+    }
+
     return(
         <div className='dev-console'>
-            <DevButton text={"Reset"} handleClick={resetGame}/>
-            <DevButton text={"Add Strike"} handleClick={addStrike}/>
-            <DevButton text={"Add Ball"} handleClick={addBall}/>
-            <DevButton text={"Next Inning"} handleClick={incrementInning}/>
-            <DevButton text={"Single"} handleClick={hitSingle}/>
-            <DevButton text={"Double"} handleClick={hitDouble}/>
-            <DevButton text={"Triple"} handleClick={hitTriple}/>
-            <DevButton text={"Homerun"} handleClick={hitHomeRun}/>
+            <p>Development Console</p>
+            <div style={{display:'flex',flexDirection:'row',flexWrap:'wrap'}}>
+                <DevButton text={"Reset"} handleClick={resetGame}/>
+                <DevButton text={"Add Strike"} handleClick={addStrike}/>
+                <DevButton text={"Add Ball"} handleClick={addBall}/>
+                <DevButton text={"Next Inning"} handleClick={incrementInning}/>
+                <DevButton text={"Single"} handleClick={hitSingle}/>
+                <DevButton text={"Double"} handleClick={hitDouble}/>
+                <DevButton text={"Triple"} handleClick={hitTriple}/>
+                <DevButton text={"Homerun"} handleClick={hitHomeRun}/>
+                <DevButton text={"Ground Out"} handleClick={groundOut}/>
+                <DevButton text={"Fly Out"} handleClick={flyOut}/>
+            </div>
         </div>
     )
 }

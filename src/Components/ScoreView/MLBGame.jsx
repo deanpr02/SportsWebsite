@@ -1,4 +1,4 @@
-import { useState,useMemo } from 'react'
+import { useState,useEffect,useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 import { useRetrieveTeam } from '../../Hooks/useRetrieveTeam'
@@ -21,7 +21,8 @@ export default function MLBGame(){
     const [homeScore,setHomeScore] = useState(0);
     const [awayScore,setAwayScore] = useState(0);
     const [inning,setInning] = useState(1);
-    const [inningHalf,setInningHalf] = useState(1)
+    const [inningHalf,setInningHalf] = useState(1);
+    const [halfRuns,setHalfRuns] = useState(0);
 
     const [searchParams] = useSearchParams();
     const homeName = searchParams.get('home');
@@ -33,7 +34,7 @@ export default function MLBGame(){
     return(
         <div className='mlb-game-container'>
             <ScoreGraphic home={homeTeamInfo} away={awayTeamInfo} homeScore={homeScore} awayScore={awayScore} inning={inning} inningHalf={inningHalf}/>
-            <ScoreBox homeInfo={homeTeamInfo} awayInfo={awayTeamInfo}/>
+            <ScoreBox homeInfo={homeTeamInfo} awayInfo={awayTeamInfo} inning={inning} inningHalf={inningHalf} halfRuns={halfRuns}/>
             {false ? 
             <div className='mlb-mid-score'>
                 <>
@@ -50,7 +51,8 @@ export default function MLBGame(){
                 setInning={setInning} 
                 setInningHalf={setInningHalf}
                 setHomeScore={setHomeScore}
-                setAwayScore={setAwayScore}/>
+                setAwayScore={setAwayScore}
+                setHalfRuns={setHalfRuns}/>
             }
         
         </div>
@@ -61,10 +63,10 @@ function ScoreGraphic({home,away,homeScore,awayScore,inning,inningHalf}){
     return(
         <div style={{display:'flex',flexDirection:'column', alignItems:'center'}}>
             <div className='mlb-score-graphic'>
-                <div style={{objectFit:'contain',paddingRight:'20px'}}><img src={away.primaryLogo} style={{width:'10vh',height:'10vh',backgroundColor:`#${away.secondaryColor}`,borderRadius:'10px',padding:'5px'}}></img></div>
+                <div style={{paddingRight:'20px'}}><img src={away.primaryLogo} style={{width:'10vh',height:'10vh',objectFit:'contain',backgroundColor:`#${away.secondaryColor}`,borderRadius:'10px',padding:'5px'}}></img></div>
                 <p style={{paddingRight:'30px'}}>{awayScore}</p>
                 <p style={{paddingRight:'20px'}}>{homeScore}</p>
-                <div style={{objectFit:'contain'}}><img src={home.primaryLogo} style={{width:'10vh',height:'10vh',backgroundColor:`#${home.secondaryColor}`,borderRadius:'10px',padding:'5px'}}></img></div>
+                <div><img src={home.primaryLogo} style={{width:'10vh',height:'10vh',objectFit:'contain',backgroundColor:`#${home.secondaryColor}`,borderRadius:'10px',padding:'5px'}}></img></div>
             </div>
             {false ? 
                 <p style={{fontFamily: 'Bebas Neue, sans-serif',fontSize:'20px'}}>1:00 P.M.</p>
@@ -78,11 +80,44 @@ function ScoreGraphic({home,away,homeScore,awayScore,inning,inningHalf}){
     )
 }
 
-function ScoreBox({homeInfo,awayInfo}){
+function ScoreBox({homeInfo,awayInfo,inning,inningHalf,halfRuns}){
+    const [numInnings,setNumInnings] = useState(9);
+    const [gameScore,setGameScore] = useState(undefined)
+
+    useEffect(() => {
+        if(!gameScore){
+            const newGameScore = {}
+            const i = Array.from({length:numInnings},(_,i) => i+1)
+            i.forEach((inning) => {
+                newGameScore[inning] = {top:undefined,bot:undefined}
+            })
+            newGameScore[1] = {top:0,bot:undefined}
+            setGameScore(newGameScore)
+        }
+
+    },[])
+
+    useEffect(() => {
+        if(gameScore){
+            const newGameScore = {...gameScore}
+            const half = inningHalf == 1 ? 'top' : 'bot'
+            if(newGameScore[inning][half] == undefined){
+                newGameScore[inning][half] = 0
+            }
+            else{
+                newGameScore[inning][half] = halfRuns
+            }
+            setGameScore(newGameScore)
+        }
+    },[inningHalf,halfRuns])
+
+
     return(
         <div className='mlb-score-box'>
             <ScoreBug home={homeInfo} away={awayInfo}/>
-            <BoxScore/>
+            {gameScore && 
+                <BoxScore gameScore={gameScore} numInnings={numInnings}/>
+            }
         </div>
     )
 }
@@ -102,14 +137,13 @@ function ScoreBug({home,away}){
     )
 }
 
-function BoxScore(){
-    const [numInnings,setNumInnings] = useState(9);
+function BoxScore({gameScore,numInnings}){
     const innings = Array.from({length:numInnings},(_,i)=> i+1);
     
     return(
         <div className='mlb-box-score'>
             {innings.map((inn) => {
-                return <Inning inningNumber={inn}/>
+                return <Inning inningNumber={inn} score={gameScore[inn]}/>
             })}
             <div style={{width:'10%',height:'100%',borderLeft:'1px solid gray'}}></div>
             <Inning inningNumber={"R"}/>
@@ -119,14 +153,15 @@ function BoxScore(){
     )
 }
 
-function Inning({inningNumber}){
-    const [awayScore,setAwayScore] = useState("");
-    const [homeScore,setHomeScore] = useState("");
+function Inning({inningNumber,score}){
+    const awayScore = score ? score.top : ''
+    const homeScore = score ? score.bot : ''
+    
     const color = inningNumber % 2 == 0 ? '#111111' : '#333333'
     return(
         <div className='mlb-score-inning' style={{backgroundColor:color}}>
-            <div style={{width:'100%',height:'5vh',borderBottom:'1px solid gray'}}><p>{awayScore}</p></div>
-            <div style={{width:'100%',height:'5vh',borderBottom:'1px solid gray'}}><p>{homeScore}</p></div>
+            <div className='mlb-score-inning-section'><p>{awayScore}</p></div>
+            <div className='mlb-score-inning-section'><p>{homeScore}</p></div>
             <p>{inningNumber}</p>
         </div>
     )

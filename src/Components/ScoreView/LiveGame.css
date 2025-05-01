@@ -16,6 +16,7 @@
     width:40vh;
     height:50vh;
     font-size: 1.5vw;
+    user-select:none;
 }
 
 .live-game-main-view{
@@ -37,6 +38,7 @@
     border-radius:50%;
     margin:10px;
     position:relative;
+    user-select:none;
 }
 
 .player-portrait-wrapper{
@@ -96,6 +98,7 @@
     display:flex;
     flex-direction:column;
     padding:2vw;
+    user-select:none;
 }
 
 .game-status-strikes{
