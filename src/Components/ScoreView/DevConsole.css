@@ -1,0 +1,20 @@
+.dev-console{
+    display:flex;
+    flex-direction:row;
+    background-color: rgba(200,200,200,0.3);
+    width:50vw;
+    margin:10px;
+    padding:10px;
+    font-family: "Bebas Neue", sans serif;
+    font-size:20px;
+}
+
+.dev-button{
+    background-color: rgba(50,50,50,1);
+    padding:10px;
+    border-radius:10px;
+    border: 2px solid gray;
+    cursor: pointer;
+    margin-left:10px;
+    margin-right:10px;
+}
