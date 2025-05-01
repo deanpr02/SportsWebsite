@@ -1,4 +1,5 @@
 import { useState,useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 import { useRetrieveTeam } from '../../Hooks/useRetrieveTeam'
 import { useTeamRank } from  '../../Hooks/useFetchTeamRank'
@@ -16,15 +17,22 @@ const gameState = {
     delayed: 2
 };
 
-export default function MLBGame({home,away}){
+export default function MLBGame(){
     const [homeScore,setHomeScore] = useState(0);
     const [awayScore,setAwayScore] = useState(0);
-    const homeTeamInfo = useRetrieveTeam(home);
-    const awayTeamInfo = useRetrieveTeam(away);
+    const [inning,setInning] = useState(1);
+    const [inningHalf,setInningHalf] = useState(1)
+
+    const [searchParams] = useSearchParams();
+    const homeName = searchParams.get('home');
+    const awayName = searchParams.get('away');
+    
+    const homeTeamInfo = useRetrieveTeam(homeName);
+    const awayTeamInfo = useRetrieveTeam(awayName);
 
     return(
         <div className='mlb-game-container'>
-            <ScoreGraphic home={homeTeamInfo} away={awayTeamInfo} homeScore={homeScore} awayScore={awayScore}/>
+            <ScoreGraphic home={homeTeamInfo} away={awayTeamInfo} homeScore={homeScore} awayScore={awayScore} inning={inning} inningHalf={inningHalf}/>
             <ScoreBox homeInfo={homeTeamInfo} awayInfo={awayTeamInfo}/>
             {false ? 
             <div className='mlb-mid-score'>
@@ -35,14 +43,21 @@ export default function MLBGame({home,away}){
                 </>
             </div>
             :
-            <LiveGame homeInfo={homeTeamInfo} awayInfo={awayTeamInfo}/>
+            <LiveGame 
+                homeInfo={homeTeamInfo} 
+                awayInfo={awayTeamInfo} 
+                inningHalf={inningHalf} 
+                setInning={setInning} 
+                setInningHalf={setInningHalf}
+                setHomeScore={setHomeScore}
+                setAwayScore={setAwayScore}/>
             }
         
         </div>
     )
 }
 
-function ScoreGraphic({home,away,homeScore,awayScore}){
+function ScoreGraphic({home,away,homeScore,awayScore,inning,inningHalf}){
     return(
         <div style={{display:'flex',flexDirection:'column', alignItems:'center'}}>
             <div className='mlb-score-graphic'>
@@ -51,7 +66,14 @@ function ScoreGraphic({home,away,homeScore,awayScore}){
                 <p style={{paddingRight:'20px'}}>{homeScore}</p>
                 <div style={{objectFit:'contain'}}><img src={home.primaryLogo} style={{width:'10vh',height:'10vh',backgroundColor:`#${home.secondaryColor}`,borderRadius:'10px',padding:'5px'}}></img></div>
             </div>
-            <p style={{fontFamily: 'Bebas Neue, sans-serif',fontSize:'20px'}}>1:00 P.M.</p>
+            {false ? 
+                <p style={{fontFamily: 'Bebas Neue, sans-serif',fontSize:'20px'}}>1:00 P.M.</p>
+                :
+                <div style={{display:'flex',flexDirection:'row',fontFamily: 'Bebas Neue, sans-serif',fontSize:'20px'}}>
+                    {inningHalf > 0 ? <p>Top</p> : <p>Bottom</p>} 
+                    <p style={{marginLeft:'10px'}}>{inning}</p>
+                </div>
+            }
         </div>
     )
 }

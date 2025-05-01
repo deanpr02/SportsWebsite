@@ -44,7 +44,7 @@ export default function Scores(){
                                     <DateListing index={index} date={item.date} setCurrentDay={setCurrentDay} isSelected={false}/>
                             })}
                         </div>
-                        {schedule.length > 0 && currentDay > -1 && <GameList games={schedule[currentDay].games}/>}
+                        {schedule.length > 0 && currentDay > -1 && <GameList games={schedule[currentDay].games} setHomeTeam={setHomeTeam} setAwayTeam={setAwayTeam}/>}
                     </div>
                 </>
             }/>
@@ -70,7 +70,7 @@ function DateListing({index,date,isSelected,setCurrentDay}){
     )
 }
 
-function GameList({games}){
+function GameList({games,setHomeTeam,setAwayTeam}){
 
     return(
         <div className='score-game-list'>
@@ -100,11 +100,18 @@ function Game({away,home,venue,date,status}){
 
     const gameStatus = status === 'F' ? true : false;
 
+    const handleClick = () => {
+        navigate({
+            pathname: "game",
+            search: `?home=${encodeURIComponent(home.team.name)}&away=${encodeURIComponent(away.team.name)}`
+        })
+    }
+
     return(
         <>  
             {!gameStatus ?
                 <div className='score-game-detail-container'>
-                    <div className='score-game-container' onClick={()=>navigate("game")}>
+                    <div className='score-game-container' onClick={handleClick}>
                         <Team teamInfo={awayInfo} flexOrientation={'row'}/>
                         <p style={{fontSize:'24px'}}>VS.</p>
                         <Team teamInfo={homeInfo} flexOrientation={'row-reverse'}/>
@@ -113,7 +120,7 @@ function Game({away,home,venue,date,status}){
                 </div>
                 :
                 <div className='score-game-detail-container'>
-                    <div className='score-game-container' onClick={()=>navigate("game")}>
+                    <div className='score-game-container' onClick={handleClick}>
                         <TeamScore teamInfo={awayInfo} score={away.score} record={away.leagueRecord} isWinner={away.isWinner}/>
                         <TeamScore teamInfo={homeInfo} score={home.score} record={home.leagueRecord} isWinner={home.isWinner}/>
                     </div>
