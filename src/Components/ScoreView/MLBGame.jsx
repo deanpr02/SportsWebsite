@@ -25,7 +25,7 @@ export default function MLBGame(){
     const [inningHalf,setInningHalf] = useState(1);
     const [halfRuns,setHalfRuns] = useState(0);
 
-    const { lineup } = useLineup()
+    const { lineup,setLineup } = useLineup()
 
     const [searchParams] = useSearchParams();
     const homeName = searchParams.get('home');
@@ -53,6 +53,7 @@ export default function MLBGame(){
                 awayInfo={awayTeamInfo} 
                 inningHalf={inningHalf} 
                 lineup={lineup}
+                setLineup={setLineup}
                 setInning={setInning} 
                 setInningHalf={setInningHalf}
                 setHomeScore={setHomeScore}

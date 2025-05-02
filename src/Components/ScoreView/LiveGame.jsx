@@ -10,7 +10,7 @@ import './LiveGame.css'
 //assign each base a value for example 2 will be second base, and each additional hit will add to that value
 //if the value exceeds 4, home. then the run scores and pop it from baserunners
 
-export default function LiveGame({homeInfo,awayInfo,inningHalf,lineup,setInning,setInningHalf,setHomeScore,setAwayScore,setHalfRuns}){
+export default function LiveGame({homeInfo,awayInfo,inningHalf,lineup,setLineup,setInning,setInningHalf,setHomeScore,setAwayScore,setHalfRuns}){
     const [strikes,setStrikes] = useState(0)
     const [balls,setBalls] = useState(0)
     const [outs,setOuts] = useState(0)
@@ -62,11 +62,15 @@ export default function LiveGame({homeInfo,awayInfo,inningHalf,lineup,setInning,
                 setHomeScore={setHomeScore}
                 setAwayScore={setAwayScore}
                 setHalfRuns={setHalfRuns}
+                setLineup={setLineup}
+                setLineupIndices={setLineupIndices}
+                lineup={lineup}
+                lineupIndices={lineupIndices}
                 bases={bases}
                 inningHalf={inningHalf}
                 outs={outs} 
                 canAdvance={canAdvance}/>
-            <GameBoxScore awayInfo={awayInfo} homeInfo={homeInfo} lineup={lineup}/>
+            {lineup && <GameBoxScore awayInfo={awayInfo} homeInfo={homeInfo} lineup={lineup}/>}
         </>
     )
 }

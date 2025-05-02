@@ -6,6 +6,7 @@
     border-top: 2px solid gray;
     border-bottom: 2px solid gray;
     font-family: "Bebas Neue", sans-serif;
+    font-size:1vw;
 }
 
 .box-score-header-primary{
@@ -59,6 +60,7 @@
     padding:20px;
     display:flex;
     flex-direction:column;
+    user-select:none;
 }
 
 .box-score-selector{
@@ -75,6 +77,7 @@
     font-size: 2vw;
     border-left:2px solid gray;
     border-top: 2px solid gray;
+    cursor:pointer;
 }
 
 .box-score-background{
@@ -84,5 +87,5 @@
     object-fit: contain;
     width:100%;
     height:100%;
-    opacity:0.3;
+    opacity:0.2;
 }

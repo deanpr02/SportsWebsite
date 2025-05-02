@@ -21,7 +21,7 @@ export default function GameBoxScore({awayInfo,homeInfo,lineup}){
             <BoxScoreHeading color={team == 'away' ? awayInfo.primaryColor : homeInfo.primaryColor}/>
             <div style={{position:'relative'}}>
             <img className='box-score-background' src={team == 'away' ? awayInfo.primaryLogo : homeInfo.primaryLogo}></img>
-            {lineup && lineupSelected.map((player) => {
+            {lineupSelected.map((player) => {
                 return <BoxScoreLine playerObj={player}/>
             })}
             </div>
@@ -37,6 +37,7 @@ function BoxScoreHeading({color}){
             <div className='box-score-header-secondary'><p>#</p></div>
             <div className='box-score-header-secondary'><p>AB</p></div>
             <div className='box-score-header-secondary'><p>H</p></div>
+            <div className='box-score-header-secondary'><p>RBI</p></div>
             <div className='box-score-header-secondary'><p>1B</p></div>
             <div className='box-score-header-secondary'><p>2B</p></div>
             <div className='box-score-header-secondary'><p>3B</p></div>
@@ -53,14 +54,15 @@ function BoxScoreLine({playerObj}){
             <div className='box-score-primary'><p>{playerObj.name}</p></div>
             <div className='box-score-secondary'><p>{playerObj.position}</p></div>
             <div className='box-score-secondary'><p>{playerObj.number}</p></div>
-            <div className='box-score-secondary'><p>0</p></div>
-            <div className='box-score-secondary'><p>0</p></div>
-            <div className='box-score-secondary'><p>0</p></div>
-            <div className='box-score-secondary'><p>0</p></div>
-            <div className='box-score-secondary'><p>0</p></div>
-            <div className='box-score-secondary'><p>0</p></div>
-            <div className='box-score-secondary'><p>0</p></div>
-            <div className='box-score-secondary' style={{borderRight:'2px solid gray'}}><p>0</p></div>
+            <div className='box-score-secondary'><p>{playerObj.ab}</p></div>
+            <div className='box-score-secondary'><p>{playerObj.h}</p></div>
+            <div className='box-score-secondary'><p>{playerObj.rbi}</p></div>
+            <div className='box-score-secondary'><p>{playerObj['1b']}</p></div>
+            <div className='box-score-secondary'><p>{playerObj['2b']}</p></div>
+            <div className='box-score-secondary'><p>{playerObj['3b']}</p></div>
+            <div className='box-score-secondary'><p>{playerObj.hr}</p></div>
+            <div className='box-score-secondary'><p>{playerObj.so}</p></div>
+            <div className='box-score-secondary' style={{borderRight:'2px solid gray'}}><p>{playerObj.bb}</p></div>
         </div>
     )
 }
