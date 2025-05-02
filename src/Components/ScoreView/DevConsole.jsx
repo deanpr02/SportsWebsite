@@ -74,86 +74,92 @@ export default function DevConsole({setStrikes,setBalls,setOuts,setInning,setInn
     }
 
     const hitSingle = () => {
-        setStrikes(0)
-        setBalls(0)
-        const baseObj = {bases:1}
+        if(outs < 3){
+            setStrikes(0)
+            setBalls(0)
+            const baseObj = {bases:1}
 
-        const {newBases,newScore} = updateBases(1);
+            const {newBases,newScore} = updateBases(1);
 
-        if(inningHalf == 1){
-            setAwayScore((prev) => prev+newScore)
-            updateLineup('away','1b',newScore,false)
-        }
-        else{
-            setHomeScore((prev) => prev+newScore)
-            updateLineup('home','1b',newScore,false)
-        }
-        setHalfRuns((prevRuns) => prevRuns + newScore)
+            if(inningHalf == 1){
+                setAwayScore((prev) => prev+newScore)
+                updateLineup('away','1b',newScore,false)
+            }
+            else{
+                setHomeScore((prev) => prev+newScore)
+                updateLineup('home','1b',newScore,false)
+            }
+            setHalfRuns((prevRuns) => prevRuns + newScore)
 
-        newBases.push(baseObj)
-        setBases(newBases);
+            newBases.push(baseObj)
+            setBases(newBases);
+    }
     }
 
     const hitDouble = () => {
-        setStrikes(0)
-        setBalls(0)
-        const baseObj = {bases:2}
+        if(outs < 3){
+            setStrikes(0)
+            setBalls(0)
+            const baseObj = {bases:2}
 
-        const {newBases,newScore} = updateBases(2);
+            const {newBases,newScore} = updateBases(2);
 
-        if(inningHalf == 1){
-            setAwayScore((prev) => prev+newScore)
-            updateLineup('away','2b',newScore,false)
-        }
-        else{
-            setHomeScore((prev) => prev+newScore)
-            updateLineup('home','2b',newScore,false)
-        }
-        setHalfRuns((prevRuns) => prevRuns + newScore)
+            if(inningHalf == 1){
+                setAwayScore((prev) => prev+newScore)
+                updateLineup('away','2b',newScore,false)
+            }
+            else{
+                setHomeScore((prev) => prev+newScore)
+                updateLineup('home','2b',newScore,false)
+            }
+            setHalfRuns((prevRuns) => prevRuns + newScore)
 
-        newBases.push(baseObj)
-        setBases(newBases)
+            newBases.push(baseObj)
+            setBases(newBases)
+    }
     }
 
     const hitTriple = () => {
-        setStrikes(0)
-        setBalls(0)
-        const baseObj = {bases:3}
+        if(outs < 3){
+            setStrikes(0)
+            setBalls(0)
+            const baseObj = {bases:3}
 
-        const {newBases,newScore} = updateBases(3);
+            const {newBases,newScore} = updateBases(3);
 
-        if(inningHalf == 1){
-            setAwayScore((prev) => prev+newScore)
-            updateLineup('away','3b',newScore,false)
+            if(inningHalf == 1){
+                setAwayScore((prev) => prev+newScore)
+                updateLineup('away','3b',newScore,false)
+            }
+            else{
+                setHomeScore((prev) => prev+newScore)
+                updateLineup('home','3b',newScore,false)
+            }
+            setHalfRuns((prevRuns) => prevRuns + newScore)
+
+            newBases.push(baseObj)
+            setBases(newBases)
         }
-        else{
-            setHomeScore((prev) => prev+newScore)
-            updateLineup('home','3b',newScore,false)
-        }
-        setHalfRuns((prevRuns) => prevRuns + newScore)
-
-        newBases.push(baseObj)
-        setBases(newBases)
     }
 
     const hitHomeRun = () => {
-        setStrikes(0)
-        setBalls(0)
+        if(outs < 3){
+            setStrikes(0)
+            setBalls(0)
+            const {newBases,newScore} = updateBases(4);
 
+            if(inningHalf == 1){
+                setAwayScore((prev) => prev+newScore+1)
+                updateLineup('away','hr',newScore+1,false)
+            }
+            else{
+                setHomeScore((prev) => prev+newScore+1)
+                updateLineup('home','hr',newScore+1,false)
+            }
+            setHalfRuns((prevRuns) => prevRuns + newScore + 1)
 
-        const {newBases,newScore} = updateBases(4);
-
-        if(inningHalf == 1){
-            setAwayScore((prev) => prev+newScore+1)
-            updateLineup('away','hr',newScore+1,false)
+            setBases(newBases)
         }
-        else{
-            setHomeScore((prev) => prev+newScore+1)
-            updateLineup('home','hr',newScore+1,false)
-        }
-        setHalfRuns((prevRuns) => prevRuns + newScore + 1)
-
-        setBases(newBases)
     }
 
     const groundOut = () => {

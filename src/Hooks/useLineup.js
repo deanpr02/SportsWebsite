@@ -10,7 +10,7 @@ export function useLineup(){
 
         const generateLineup = () => {
             const generatePlayers = () => POSITIONS.map((pos, i) => ({
-                name: `Player: ${i + 1}`,
+                name: `Player ${i+1}`,
                 position: pos,
                 number: i,
                 ab: 0,
