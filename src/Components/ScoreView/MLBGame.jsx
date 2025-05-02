@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useRetrieveTeam } from '../../Hooks/useRetrieveTeam'
 import { useTeamRank } from  '../../Hooks/useFetchTeamRank'
 import { useStatNames } from '../../Hooks/useStatNames'
+import { useLineup } from '../../Hooks/useLineup'
 
 import StadiumCloud from "./StadiumCloud"
 import LiveGame from './LiveGame'
@@ -24,9 +25,12 @@ export default function MLBGame(){
     const [inningHalf,setInningHalf] = useState(1);
     const [halfRuns,setHalfRuns] = useState(0);
 
+    const { lineup } = useLineup()
+
     const [searchParams] = useSearchParams();
     const homeName = searchParams.get('home');
     const awayName = searchParams.get('away');
+
     
     const homeTeamInfo = useRetrieveTeam(homeName);
     const awayTeamInfo = useRetrieveTeam(awayName);
@@ -34,7 +38,7 @@ export default function MLBGame(){
     return(
         <div className='mlb-game-container'>
             <ScoreGraphic home={homeTeamInfo} away={awayTeamInfo} homeScore={homeScore} awayScore={awayScore} inning={inning} inningHalf={inningHalf}/>
-            <ScoreBox homeInfo={homeTeamInfo} awayInfo={awayTeamInfo} inning={inning} inningHalf={inningHalf} halfRuns={halfRuns}/>
+            <ScoreBoard homeInfo={homeTeamInfo} awayInfo={awayTeamInfo} inning={inning} inningHalf={inningHalf} halfRuns={halfRuns}/>
             {false ? 
             <div className='mlb-mid-score'>
                 <>
@@ -48,6 +52,7 @@ export default function MLBGame(){
                 homeInfo={homeTeamInfo} 
                 awayInfo={awayTeamInfo} 
                 inningHalf={inningHalf} 
+                lineup={lineup}
                 setInning={setInning} 
                 setInningHalf={setInningHalf}
                 setHomeScore={setHomeScore}
@@ -80,7 +85,7 @@ function ScoreGraphic({home,away,homeScore,awayScore,inning,inningHalf}){
     )
 }
 
-function ScoreBox({homeInfo,awayInfo,inning,inningHalf,halfRuns}){
+function ScoreBoard({homeInfo,awayInfo,inning,inningHalf,halfRuns}){
     const [numInnings,setNumInnings] = useState(9);
     const [gameScore,setGameScore] = useState(undefined)
 
@@ -116,7 +121,7 @@ function ScoreBox({homeInfo,awayInfo,inning,inningHalf,halfRuns}){
         <div className='mlb-score-box'>
             <ScoreBug home={homeInfo} away={awayInfo}/>
             {gameScore && 
-                <BoxScore gameScore={gameScore} numInnings={numInnings}/>
+                <ScoreBox gameScore={gameScore} numInnings={numInnings}/>
             }
         </div>
     )
@@ -137,7 +142,7 @@ function ScoreBug({home,away}){
     )
 }
 
-function BoxScore({gameScore,numInnings}){
+function ScoreBox({gameScore,numInnings}){
     const innings = Array.from({length:numInnings},(_,i)=> i+1);
     
     return(

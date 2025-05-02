@@ -1,6 +1,7 @@
 import { useState,useEffect } from 'react'
 
 import DevConsole from './DevConsole'
+import GameBoxScore from './GameBoxScore'
 
 import Blank from '../../assets/mlb-resources/blank_face.png'
 
@@ -9,12 +10,13 @@ import './LiveGame.css'
 //assign each base a value for example 2 will be second base, and each additional hit will add to that value
 //if the value exceeds 4, home. then the run scores and pop it from baserunners
 
-export default function LiveGame({homeInfo,awayInfo,inningHalf,setInning,setInningHalf,setHomeScore,setAwayScore,setHalfRuns}){
+export default function LiveGame({homeInfo,awayInfo,inningHalf,lineup,setInning,setInningHalf,setHomeScore,setAwayScore,setHalfRuns}){
     const [strikes,setStrikes] = useState(0)
     const [balls,setBalls] = useState(0)
     const [outs,setOuts] = useState(0)
 
     const [bases,setBases] = useState([])
+    const [lineupIndices,setLineupIndices] = useState({away:0,home:0})
 
     const [canAdvance,setCanAdvance] = useState(false)
 
@@ -45,9 +47,9 @@ export default function LiveGame({homeInfo,awayInfo,inningHalf,setInning,setInni
     return(
         <>
             <div className='live-game-mid-score'>
-                    <LiveSide teamInfo={inningHalf == 1 ? awayInfo : homeInfo}/>
+                    <LiveSide teamInfo={inningHalf == 1 ? awayInfo : homeInfo} lineupIndices={lineupIndices}/>
                     <GameMain strikes={strikes} balls={balls} outs={outs} bases={bases}/>
-                    <LiveSide teamInfo={inningHalf == 1 ? homeInfo : awayInfo}/>
+                    <LiveSide teamInfo={inningHalf == 1 ? homeInfo : awayInfo} lineupIndices={lineupIndices}/>
             </div>
             <DevConsole 
                 setStrikes={setStrikes} 
@@ -64,11 +66,12 @@ export default function LiveGame({homeInfo,awayInfo,inningHalf,setInning,setInni
                 inningHalf={inningHalf}
                 outs={outs} 
                 canAdvance={canAdvance}/>
+            <GameBoxScore awayInfo={awayInfo} homeInfo={homeInfo} lineup={lineup}/>
         </>
     )
 }
 
-function LiveSide({teamInfo}){
+function LiveSide({teamInfo,lineupIndices}){
     return(
         <div className='live-game-side-view'>
             <PlayerPortrait color={teamInfo.primaryColor} logo={teamInfo.primaryLogo}/>
