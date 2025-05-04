@@ -21,7 +21,7 @@ export default function LiveGame({homeInfo,awayInfo,inningHalf,lineup,setLineup,
     const [canAdvance,setCanAdvance] = useState(false)
 
     const battingLineup = inningHalf == 1 ? lineup['away']['batting'] : lineup['home']['batting']
-    const pitchingLineup = inningHalf == 1 ? lineup['home']['batting'] : lineup['away']['batting']
+    const pitchingLineup = inningHalf == 1 ? lineup['home']['pitching'] : lineup['away']['pitching']
 
     const addOut = () => {
         if(outs <= 2){
@@ -54,12 +54,12 @@ export default function LiveGame({homeInfo,awayInfo,inningHalf,lineup,setLineup,
             <div className='live-game-mid-score'>
                 {battingLineup && pitchingLineup &&
                 <>
-                    <LiveSide 
+                    <BattingSide 
                         teamInfo={inningHalf == 1 ? awayInfo : homeInfo} 
                         lineup={battingLineup} 
                         index={inningHalf == 1 ? lineupIndices['away'] : lineupIndices['home']}/>
                     <GameMain strikes={strikes} balls={balls} outs={outs} bases={bases}/>
-                    <LiveSide 
+                    <PitchingSide 
                         teamInfo={inningHalf == 1 ? homeInfo : awayInfo}
                         lineup={pitchingLineup}
                         index={inningHalf == 1 ? lineupIndices['home'] : lineupIndices['away']}/>
@@ -90,7 +90,27 @@ export default function LiveGame({homeInfo,awayInfo,inningHalf,lineup,setLineup,
     )
 }
 
-function LiveSide({teamInfo,lineup,index}){
+function PitchingSide({teamInfo,lineup,index}){
+    
+    return(
+        <div className='live-game-side-view'>
+            {lineup && 
+            <>
+                <PlayerPortrait color={teamInfo.primaryColor} logo={teamInfo.primaryLogo}/>
+                <div>
+                    <div style={{display:'flex',flexDirection:'row',margin:'10px'}}>
+                        <p style={{marginRight:'1vw'}}>{lineup[0].name}</p><p>#{lineup[0].number}</p>
+                    </div>
+                    <p>{lineup[0].position}</p>
+                </div>
+                
+            </>
+            }
+        </div>
+    )
+}
+
+function BattingSide({teamInfo,lineup,index}){
     const hits = lineup[index]['hr'] ? 
         <p>{lineup[index]['hr']} HR</p>
         : lineup[index]['3b'] ?

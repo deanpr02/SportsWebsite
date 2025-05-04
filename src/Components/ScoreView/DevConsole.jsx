@@ -57,16 +57,16 @@ export default function DevConsole({setStrikes,setBalls,setOuts,setInning,setInn
         const newIndices = {...lineupIndices}
 
         if(isOut){
-            newLineup[half][lineupIndices[half]][index] += 1
+            newLineup[half]['batting'][lineupIndices[half]][index] += 1
             newIndices[half] = newIndices[half]+1 >= 9 ? 0 : newIndices[half]+1
         }
         else{
-            newLineup[half][lineupIndices[half]]['h'] += 1
-            newLineup[half][lineupIndices[half]]['rbi'] += runners
-            newLineup[half][lineupIndices[half]][index] += 1
+            newLineup[half]['batting'][lineupIndices[half]]['h'] += 1
+            newLineup[half]['batting'][lineupIndices[half]]['rbi'] += runners
+            newLineup[half]['batting'][lineupIndices[half]][index] += 1
             newIndices[half] = newIndices[half]+1 >= 9 ? 0 : newIndices[half]+1
         }
-        newLineup[half][lineupIndices[half]]['ab'] += 1
+        newLineup[half]['batting'][lineupIndices[half]]['ab'] += 1
 
         setLineupIndices(newIndices)
         setLineup(newLineup)
