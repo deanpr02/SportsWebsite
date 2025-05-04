@@ -1,12 +1,26 @@
-import { useState,useEffect } from 'react'
+import { useState, useEffect } from 'react';
 
-const POSITIONS = ['C','1B','2B','3B','SS','DH','LF','CF','RF']
+const POSITIONS = ['C','1B','2B','3B','SS','DH','LF','CF','RF'];
 
-export function useLineup(){
-    const [lineup,setLineup] = useState(undefined)
-    
+export function useLineup(gameID) {
+    const [lineup, setLineup] = useState(undefined);
+
     useEffect(() => {
-        const players = [];
+        const fetchLineups = async () => {
+            try {
+                const data = await fetch(`/api/lineup?gameID=${gameID}`);
+                if (!data.ok) throw new Error('Network response was not ok');
+                const lineups = await data.json();
+                if (lineups) {
+                    setLineup(lineups);
+                } else {
+                    generateLineup();
+                }
+            } catch (error) {
+                //If lineup does not exist, generate mock lineup
+                generateLineup();
+            }
+        };
 
         const generateLineup = () => {
             const generatePlayers = () => POSITIONS.map((pos, i) => ({
@@ -24,14 +38,18 @@ export function useLineup(){
                 bb: 0
             }));
             const tempLineup = {
-                away: generatePlayers().map(player => ({ ...player })),
-                home: generatePlayers().map(player => ({ ...player }))
+                away: generatePlayers(),
+                home: generatePlayers()
             };
             setLineup(tempLineup);
+        };
+
+        if (gameID) {
+            fetchLineups();
+        } else {
+            generateLineup();
         }
+    }, [gameID]);
 
-        generateLineup()
-    },[])
-
-    return { lineup,setLineup }
+    return { lineup, setLineup };
 }

@@ -74,9 +74,11 @@ function GameList({games,setHomeTeam,setAwayTeam}){
 
     return(
         <div className='score-game-list'>
+            {console.log(games)}
             {games.map(((game,i) => {
                 return <Game  
                         key={i} 
+                        gameID={game.gamePk}
                         home={game.teams.home} 
                         away={game.teams.away} 
                         venue={game.venue.name}
@@ -87,7 +89,7 @@ function GameList({games,setHomeTeam,setAwayTeam}){
     )
 }
 
-function Game({away,home,venue,date,status}){
+function Game({gameID,away,home,venue,date,status}){
     const homeInfo = useRetrieveTeam(home.team.name)
     const awayInfo = useRetrieveTeam(away.team.name)
     const navigate = useNavigate();
@@ -103,7 +105,7 @@ function Game({away,home,venue,date,status}){
     const handleClick = () => {
         navigate({
             pathname: "game",
-            search: `?home=${encodeURIComponent(home.team.name)}&away=${encodeURIComponent(away.team.name)}`
+            search: `?id=${encodeURIComponent(gameID)}&home=${encodeURIComponent(home.team.name)}&away=${encodeURIComponent(away.team.name)}`
         })
     }
 

@@ -25,11 +25,10 @@ export default function MLBGame(){
     const [inningHalf,setInningHalf] = useState(1);
     const [halfRuns,setHalfRuns] = useState(0);
 
-    const { lineup,setLineup } = useLineup()
-
     const [searchParams] = useSearchParams();
     const homeName = searchParams.get('home');
     const awayName = searchParams.get('away');
+    const { lineup,setLineup } = useLineup(searchParams.get('id'))
 
     
     const homeTeamInfo = useRetrieveTeam(homeName);
@@ -37,6 +36,8 @@ export default function MLBGame(){
 
     return(
         <div className='mlb-game-container'>
+            {lineup &&
+            <>
             <ScoreGraphic home={homeTeamInfo} away={awayTeamInfo} homeScore={homeScore} awayScore={awayScore} inning={inning} inningHalf={inningHalf}/>
             <ScoreBoard homeInfo={homeTeamInfo} awayInfo={awayTeamInfo} inning={inning} inningHalf={inningHalf} halfRuns={halfRuns}/>
             {false ? 
@@ -60,7 +61,8 @@ export default function MLBGame(){
                 setAwayScore={setAwayScore}
                 setHalfRuns={setHalfRuns}/>
             }
-        
+            </>
+        }
         </div>
     )
 }

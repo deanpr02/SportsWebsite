@@ -4,7 +4,7 @@ import './GameBoxScore.css'
 
 export default function GameBoxScore({awayInfo,homeInfo,lineup}){
     const [team,setTeam] = useState('away')
-    const lineupSelected = lineup[team]
+    const lineupSelected = lineup[team]['batting']
 
     return(
         <div className='box-score-container'>

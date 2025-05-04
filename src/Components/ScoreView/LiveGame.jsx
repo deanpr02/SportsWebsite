@@ -20,6 +20,9 @@ export default function LiveGame({homeInfo,awayInfo,inningHalf,lineup,setLineup,
 
     const [canAdvance,setCanAdvance] = useState(false)
 
+    const battingLineup = inningHalf == 1 ? lineup['away']['batting'] : lineup['home']['batting']
+    const pitchingLineup = inningHalf == 1 ? lineup['home']['batting'] : lineup['away']['batting']
+
     const addOut = () => {
         if(outs <= 2){
             setOuts((prev) => prev+1)
@@ -44,12 +47,24 @@ export default function LiveGame({homeInfo,awayInfo,inningHalf,lineup,setLineup,
         }
     },[strikes,balls,outs])
 
+
+
     return(
         <>
             <div className='live-game-mid-score'>
-                    <LiveSide teamInfo={inningHalf == 1 ? awayInfo : homeInfo} lineupIndices={lineupIndices}/>
+                {battingLineup && pitchingLineup &&
+                <>
+                    <LiveSide 
+                        teamInfo={inningHalf == 1 ? awayInfo : homeInfo} 
+                        lineup={battingLineup} 
+                        index={inningHalf == 1 ? lineupIndices['away'] : lineupIndices['home']}/>
                     <GameMain strikes={strikes} balls={balls} outs={outs} bases={bases}/>
-                    <LiveSide teamInfo={inningHalf == 1 ? homeInfo : awayInfo} lineupIndices={lineupIndices}/>
+                    <LiveSide 
+                        teamInfo={inningHalf == 1 ? homeInfo : awayInfo}
+                        lineup={pitchingLineup}
+                        index={inningHalf == 1 ? lineupIndices['home'] : lineupIndices['away']}/>
+                </>
+                }
             </div>
             <DevConsole 
                 setStrikes={setStrikes} 
@@ -75,13 +90,30 @@ export default function LiveGame({homeInfo,awayInfo,inningHalf,lineup,setLineup,
     )
 }
 
-function LiveSide({teamInfo,lineupIndices}){
+function LiveSide({teamInfo,lineup,index}){
+    const hits = lineup[index]['hr'] ? 
+        <p>{lineup[index]['hr']} HR</p>
+        : lineup[index]['3b'] ?
+        <p>{lineup[index]['3b']} 3B</p>
+        : lineup[index]['2b'] ?
+        <p>{lineup[index]['2b']} 2B</p>
+        :
+        <p></p>
     return(
         <div className='live-game-side-view'>
-            <PlayerPortrait color={teamInfo.primaryColor} logo={teamInfo.primaryLogo}/>
-            <div style={{display:'flex',flexDirection:'row',margin:'10px'}}><p style={{marginRight:'1vw'}}>John Doe</p><p>#00</p></div>
-            <p>0.00 ERA 0 SO</p>
-            <p>0.0 IP</p>
+            {lineup && 
+            <>
+                <PlayerPortrait color={teamInfo.primaryColor} logo={teamInfo.primaryLogo}/>
+                <div>
+                    <div style={{display:'flex',flexDirection:'row',margin:'10px'}}>
+                        <p style={{marginRight:'1vw'}}>{lineup[index].name}</p><p>#{lineup[index].number}</p>
+                    </div>
+                    <p>{lineup[index].position}</p>
+                </div>
+                <p>{lineup[index]['h']} - {lineup[index]['ab']}</p>
+                {hits}
+            </>
+            }
         </div>
     )
 }

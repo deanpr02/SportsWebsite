@@ -193,6 +193,15 @@ def login():
 
     return jsonify({'msg': 'Bad credentials'}),401
 
+@app.route('/api/lineup',methods=['GET'])
+def fetch_lineup():
+    game_id = request.args.get('gameID')
+    game_id = int(game_id)
+
+    lineups = scraper.get_game_lineups(game_id)
+
+    return jsonify(lineups)
+
 @app.route('/api/validate',methods=['GET'])
 @jwt_required()
 def validate():
@@ -227,6 +236,7 @@ def handle_send_message(data):
     mongo.db.messages.insert_one({'room_id':room,'chat_id':data['chatID'],'user':data['user'],'text':data['text'],'timestamp':data['timestamp']})
 
     emit('message',message,room=room)
+
 
 
 
