@@ -57,7 +57,9 @@ export default function DevConsole({setStrikes,setBalls,setOuts,setInning,setInn
         const newIndices = {...lineupIndices}
 
         if(isOut){
-            newLineup[half]['batting'][lineupIndices[half]][index] += 1
+            if(index){
+                newLineup[half]['batting'][lineupIndices[half]][index] += 1
+            }
             newIndices[half] = newIndices[half]+1 >= 9 ? 0 : newIndices[half]+1
         }
         else{
@@ -167,6 +169,12 @@ export default function DevConsole({setStrikes,setBalls,setOuts,setInning,setInn
             setStrikes(0)
             setBalls(0)
             setOuts((prev) => prev+1)
+            if(inningHalf == 1){
+                updateLineup('away',null,0,true)
+            }
+            else{
+                updateLineup('home',null,0,true)
+            }
         }
     }
 
@@ -175,6 +183,12 @@ export default function DevConsole({setStrikes,setBalls,setOuts,setInning,setInn
             setStrikes(0)
             setBalls(0)
             setOuts((prev) => prev+1)
+            if(inningHalf == 1){
+                updateLineup('away',null,0,true)
+            }
+            else{
+                updateLineup('home',null,0,true)
+            }
         }
 
     }
