@@ -1,15 +1,65 @@
 import './DevConsole.css'
 
-export default function DevConsole({setStrikes,setBalls,setOuts,setInning,setInningHalf,setCanAdvance,setBases,setHomeScore,setAwayScore,setHalfRuns,setLineup,setLineupIndices,lineup,lineupIndices,bases,inningHalf,outs,canAdvance}){
+export default function DevConsole({setStrikes,setBalls,setOuts,setInning,setInningHalf,setCanAdvance,setBases,setHomeScore,setAwayScore,setHalfRuns,setLineup,setLineupIndices,lineup,lineupIndices,bases,inningHalf,strikes,balls,outs,canAdvance}){
     const addStrike = () => {
         if(outs < 3){
             setStrikes((prev) => prev+1)
+            if(strikes+1 >= 3){
+                if(inningHalf == 1){
+                    updateLineup('away','so',0,true)
+                }
+                else{
+                    updateLineup('home','so',0,true)
+                }
+            }
         }
     }
 
+    const walk = () => {
+        let newScore = 0
+        const newBases = [{bases:1}]
+        let currentBase = {bases:1}
+
+        bases.reverse().forEach((base) => {
+            if(currentBase.bases == base.bases){
+                if(base.bases + 1 >= 4){
+                    newScore += 1
+                }
+                else{
+                    newBases.splice(0,0,{bases:base.bases+1})
+                    currentBase = {bases:base.bases+1}
+                }
+            }
+            else{
+                newBases.splice(0,0,{bases:base.bases})
+            }
+        })
+        
+        return {newBases,newScore}
+
+    }
+
+    //TODO: handle walk functionality on base paths
     const addBall = () => {
         if(outs < 3){
             setBalls((prev) => prev+1)
+        }
+
+        if(balls+1 >= 4){
+            console.log('hello')
+            const {newBases,newScore} = walk()
+
+            if(inningHalf == 1){
+                setAwayScore((prev) => prev+newScore)
+                updateLineup('away','bb',0,true)
+            }
+            else{
+                setHomeScore((prev) => prev+newScore)
+                updateLineup('home','bb',0,true)
+            }
+            setHalfRuns((prevRuns) => prevRuns + newScore)
+
+            setBases(newBases)
         }
     }
 

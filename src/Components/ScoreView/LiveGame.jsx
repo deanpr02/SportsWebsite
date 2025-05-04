@@ -83,6 +83,8 @@ export default function LiveGame({homeInfo,awayInfo,inningHalf,lineup,setLineup,
                 lineupIndices={lineupIndices}
                 bases={bases}
                 inningHalf={inningHalf}
+                strikes={strikes}
+                balls={balls}
                 outs={outs} 
                 canAdvance={canAdvance}/>
             {lineup && <GameBoxScore awayInfo={awayInfo} homeInfo={homeInfo} lineup={lineup}/>}
