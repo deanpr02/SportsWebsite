@@ -22,7 +22,7 @@ export default function LiveGame({homeInfo,awayInfo,inningHalf,lineup,images,set
 
     const battingLineup = inningHalf == 1 ? lineup['away']['batting'] : lineup['home']['batting']
     const pitchingLineup = inningHalf == 1 ? lineup['home']['pitching'] : lineup['away']['pitching']
-
+    
     const addOut = () => {
         if(outs <= 2){
             setOuts((prev) => prev+1)
@@ -51,6 +51,7 @@ export default function LiveGame({homeInfo,awayInfo,inningHalf,lineup,images,set
 
     return(
         <>
+            <>
             <div className='live-game-mid-score'>
                 {battingLineup && pitchingLineup &&
                 <>
@@ -89,7 +90,8 @@ export default function LiveGame({homeInfo,awayInfo,inningHalf,lineup,images,set
                 balls={balls}
                 outs={outs} 
                 canAdvance={canAdvance}/>
-            {lineup && <GameBoxScore awayInfo={awayInfo} homeInfo={homeInfo} lineup={lineup}/>}
+            <GameBoxScore awayInfo={awayInfo} homeInfo={homeInfo} lineup={lineup}/>
+            </>
         </>
     )
 }
@@ -100,7 +102,7 @@ function PitchingSide({teamInfo,lineup,index,images}){
         <div className='live-game-side-view'>
             {lineup && 
             <>
-                <PlayerPortrait color={teamInfo.primaryColor} logo={teamInfo.primaryLogo}/>
+                <PlayerPortrait image={images[lineup[0].name]} color={teamInfo.primaryColor} logo={teamInfo.primaryLogo}/>
                 <div>
                     <div style={{display:'flex',flexDirection:'row',margin:'10px'}}>
                         <p style={{marginRight:'1vw'}}>{lineup[0].name}</p><p>#{lineup[0].number}</p>

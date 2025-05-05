@@ -5,9 +5,11 @@ const POSITIONS = ['C','1B','2B','3B','SS','DH','LF','CF','RF'];
 export function useLineup(gameID) {
     const [lineup, setLineup] = useState(undefined);
     const [images, setImages] = useState(undefined);
+    const [isLoaded,setIsLoaded] = useState(false)
 
     useEffect(() => {
         const fetchLineups = async () => {
+            setIsLoaded(false)
             try {
                 const data = await fetch(`/api/lineup?gameID=${gameID}`);
                 if (!data.ok) throw new Error('Network response was not ok');
@@ -15,6 +17,7 @@ export function useLineup(gameID) {
                 if (parsedData) {
                     setImages(parsedData['images'])
                     setLineup(parsedData['lineups']);
+                    setIsLoaded(true)
                 } else {
                     generateLineup();
                 }
@@ -51,7 +54,8 @@ export function useLineup(gameID) {
         } else {
             generateLineup();
         }
+
     }, [gameID]);
 
-    return { lineup, setLineup, images };
+    return { lineup, setLineup, images, isLoaded };
 }

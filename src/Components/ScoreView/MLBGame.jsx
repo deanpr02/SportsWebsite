@@ -8,6 +8,7 @@ import { useLineup } from '../../Hooks/useLineup'
 
 import StadiumCloud from "./StadiumCloud"
 import LiveGame from './LiveGame'
+import Spinner from '../MainView/Spinner'
 import GameSimulation from './GameSimulation'
 
 import './MLBGame.css'
@@ -28,7 +29,7 @@ export default function MLBGame(){
     const [searchParams] = useSearchParams();
     const homeName = searchParams.get('home');
     const awayName = searchParams.get('away');
-    const { lineup,setLineup,images } = useLineup(searchParams.get('id'))
+    const { lineup,setLineup,images,isLoaded } = useLineup(searchParams.get('id'))
 
     
     const homeTeamInfo = useRetrieveTeam(homeName);
@@ -36,7 +37,7 @@ export default function MLBGame(){
 
     return(
         <div className='mlb-game-container'>
-            {lineup &&
+            {isLoaded ?
             <>
             <ScoreGraphic home={homeTeamInfo} away={awayTeamInfo} homeScore={homeScore} awayScore={awayScore} inning={inning} inningHalf={inningHalf}/>
             <ScoreBoard homeInfo={homeTeamInfo} awayInfo={awayTeamInfo} inning={inning} inningHalf={inningHalf} halfRuns={halfRuns}/>
@@ -63,6 +64,8 @@ export default function MLBGame(){
                 setHalfRuns={setHalfRuns}/>
             }
             </>
+            :
+            <Spinner color={homeTeamInfo.primaryColor}/>
         }
         </div>
     )
