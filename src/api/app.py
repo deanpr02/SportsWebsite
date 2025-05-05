@@ -199,8 +199,15 @@ def fetch_lineup():
     game_id = int(game_id)
 
     lineups = scraper.get_game_lineups(game_id)
+    
+    player_names = [player['name'] for side in lineups.values() for group in side.values() for player in group]
+    images = db.get_player_images(player_names)
+    
+    #test = [p['image'] for p in list(images)]
+    player_images = {p['name']: p['image'] for p in list(images)}
+    
 
-    return jsonify(lineups)
+    return jsonify({'lineups':lineups,'images':player_images})
 
 @app.route('/api/validate',methods=['GET'])
 @jwt_required()

@@ -299,6 +299,36 @@ def get_player_names(amnt):
 
     return names
 
+
+def get_player_images(player_list):
+    """
+    Fetches the player images given a list of player names. 
+    """
+    player_images = mongo.db.mlb.aggregate([
+        {'$project': {
+            'players': {
+                '$filter': {
+                    'input': '$players',
+                    'as': 'player',
+                    'cond': {
+                        '$in': ['$$player.name',player_list]
+                    }
+                }
+            } 
+        }},
+        {'$unwind': '$players'},
+        {
+            '$project': {
+            '_id': 0,
+            'name': '$players.name',
+            'image': '$players.image-link'
+            }
+        }
+    ])
+
+    return player_images
+
+
 def preload_database():
     """
     Load the database with player stats fetched from the MLB Stats API and player images fetched from 

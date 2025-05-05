@@ -10,7 +10,7 @@ import './LiveGame.css'
 //assign each base a value for example 2 will be second base, and each additional hit will add to that value
 //if the value exceeds 4, home. then the run scores and pop it from baserunners
 
-export default function LiveGame({homeInfo,awayInfo,inningHalf,lineup,setLineup,setInning,setInningHalf,setHomeScore,setAwayScore,setHalfRuns}){
+export default function LiveGame({homeInfo,awayInfo,inningHalf,lineup,images,setLineup,setInning,setInningHalf,setHomeScore,setAwayScore,setHalfRuns}){
     const [strikes,setStrikes] = useState(0)
     const [balls,setBalls] = useState(0)
     const [outs,setOuts] = useState(0)
@@ -57,12 +57,14 @@ export default function LiveGame({homeInfo,awayInfo,inningHalf,lineup,setLineup,
                     <BattingSide 
                         teamInfo={inningHalf == 1 ? awayInfo : homeInfo} 
                         lineup={battingLineup} 
-                        index={inningHalf == 1 ? lineupIndices['away'] : lineupIndices['home']}/>
+                        index={inningHalf == 1 ? lineupIndices['away'] : lineupIndices['home']}
+                        images={images}/>
                     <GameMain strikes={strikes} balls={balls} outs={outs} bases={bases}/>
                     <PitchingSide 
                         teamInfo={inningHalf == 1 ? homeInfo : awayInfo}
                         lineup={pitchingLineup}
-                        index={inningHalf == 1 ? lineupIndices['home'] : lineupIndices['away']}/>
+                        index={inningHalf == 1 ? lineupIndices['home'] : lineupIndices['away']}
+                        images={images}/>
                 </>
                 }
             </div>
@@ -92,7 +94,7 @@ export default function LiveGame({homeInfo,awayInfo,inningHalf,lineup,setLineup,
     )
 }
 
-function PitchingSide({teamInfo,lineup,index}){
+function PitchingSide({teamInfo,lineup,index,images}){
     
     return(
         <div className='live-game-side-view'>
@@ -112,7 +114,7 @@ function PitchingSide({teamInfo,lineup,index}){
     )
 }
 
-function BattingSide({teamInfo,lineup,index}){
+function BattingSide({teamInfo,lineup,index,images}){
     const hits = lineup[index]['hr'] ? 
         <p>{lineup[index]['hr']} HR</p>
         : lineup[index]['3b'] ?
@@ -125,7 +127,7 @@ function BattingSide({teamInfo,lineup,index}){
         <div className='live-game-side-view'>
             {lineup && 
             <>
-                <PlayerPortrait color={teamInfo.primaryColor} logo={teamInfo.primaryLogo}/>
+                <PlayerPortrait image={images[lineup[index].name]} color={teamInfo.primaryColor} logo={teamInfo.primaryLogo}/>
                 <div>
                     <div style={{display:'flex',flexDirection:'row',margin:'10px'}}>
                         <p style={{marginRight:'1vw'}}>{lineup[index].name}</p><p>#{lineup[index].number}</p>
@@ -140,10 +142,10 @@ function BattingSide({teamInfo,lineup,index}){
     )
 }
 
-function PlayerPortrait({color,logo}){
+function PlayerPortrait({color,logo,image}){
     return(
         <div className='player-portrait-container' style={{border: `2px solid #${color}` ,backgroundColor:`#${color}60`}}>
-            <div className='player-portrait-wrapper'><img className='player-portrait-img' src={Blank}></img></div>
+            <div className='player-portrait-wrapper'><img className='player-portrait-img' src={image ? image : Blank}></img></div>
             <div className='player-portrait-team-logo'><img src={logo}></img></div>
         </div>
     )

@@ -28,7 +28,7 @@ export default function MLBGame(){
     const [searchParams] = useSearchParams();
     const homeName = searchParams.get('home');
     const awayName = searchParams.get('away');
-    const { lineup,setLineup } = useLineup(searchParams.get('id'))
+    const { lineup,setLineup,images } = useLineup(searchParams.get('id'))
 
     
     const homeTeamInfo = useRetrieveTeam(homeName);
@@ -54,6 +54,7 @@ export default function MLBGame(){
                 awayInfo={awayTeamInfo} 
                 inningHalf={inningHalf} 
                 lineup={lineup}
+                images={images}
                 setLineup={setLineup}
                 setInning={setInning} 
                 setInningHalf={setInningHalf}

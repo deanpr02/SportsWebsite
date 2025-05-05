@@ -39,14 +39,12 @@ export default function DevConsole({setStrikes,setBalls,setOuts,setInning,setInn
 
     }
 
-    //TODO: handle walk functionality on base paths
     const addBall = () => {
         if(outs < 3){
             setBalls((prev) => prev+1)
         }
 
         if(balls+1 >= 4){
-            console.log('hello')
             const {newBases,newScore} = walk()
 
             if(inningHalf == 1){
