@@ -2,9 +2,8 @@ import { useState,useEffect,useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 import { useRetrieveTeam } from '../../Hooks/useRetrieveTeam'
-import { useTeamRank } from  '../../Hooks/useFetchTeamRank'
-import { useStatNames } from '../../Hooks/useStatNames'
 import { useLineup } from '../../Hooks/useLineup'
+import { useDatabase } from '../../Hooks/useDatabase'
 
 import StadiumCloud from "./StadiumCloud"
 import LiveGame from './LiveGame'
@@ -37,11 +36,11 @@ export default function MLBGame(){
 
     return(
         <div className='mlb-game-container'>
-            {isLoaded ?
+            {true ?
             <>
             <ScoreGraphic home={homeTeamInfo} away={awayTeamInfo} homeScore={homeScore} awayScore={awayScore} inning={inning} inningHalf={inningHalf}/>
             <ScoreBoard homeInfo={homeTeamInfo} awayInfo={awayTeamInfo} inning={inning} inningHalf={inningHalf} halfRuns={halfRuns}/>
-            {false ? 
+            {true ? 
             <div className='mlb-mid-score'>
                 <>
                     <SideView city={awayTeamInfo.city} color={awayTeamInfo.primaryColor} teamName={awayTeamInfo.abbr}/>
@@ -180,16 +179,20 @@ function Inning({inningNumber,score}){
 }
 
 function SideView({city,color,teamName}){
-    const stats = useMemo(() => ['p_earned_run_avg','b_hr','b_r'], []);
-    const formattedStats = useStatNames()
-    const {rankings} = useTeamRank(teamName,stats)
+    const {dataObj,isLoading} = useDatabase('/api/team_rank',{'name':teamName})
 
     return(
         <div className='mlb-side-view'>
             <p>{city}</p>
-            {rankings && formattedStats && Object.entries(rankings).map(([statName,obj]) => {
-                return <TeamStatBar statName={formattedStats[statName]} statRank={obj.rank} stat={obj.value} color={color}/>
-            })}
+            <>
+            {!isLoading ? 
+                dataObj.map((obj) => {
+                    return <TeamStatBar statName={obj.name} statRank={obj.rank} stat={obj.value} color={color}/>
+                })
+                :
+                <Spinner color={color} height={'100%'}/>
+            }
+            </>
         </div>
     )
 }

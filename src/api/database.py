@@ -195,6 +195,45 @@ def get_depth_chart(team_name):
     
     return players
 
+def get_team_ranks(team_name):
+    team_ranks = mongo.db.mlb.aggregate([
+        {'$unwind': '$players'},
+        {
+            '$group': {
+                '_id': '$players.team',
+                'homeruns': {'$sum': '$players.stats.2025.homeruns'},
+                'runs': {'$sum': '$players.stats.2025.runs'},
+                'era': {'$sum': '$players.stats.2025.earnedruns'}
+            }
+        },
+        {
+            '$setWindowFields': {
+                'sortBy': {'homeruns':-1},
+                'output': {
+                    'hr_rank': {'$rank': {}}
+                }
+            }
+        },
+        {
+            '$setWindowFields': {
+                'sortBy': {'runs':-1},
+                'output': {
+                    'runs_rank': {'$rank': {}}
+                }
+            }
+        },
+        {
+            '$setWindowFields': {
+                'sortBy': {'era':1},
+                'output': {
+                    'era_rank': {'$rank': {}}
+                }
+            }
+        },
+        {'$match':{'_id':team_name}}
+    ])
+    return team_ranks
+
 
 def is_player_in_database(player_id):
     is_exists = mongo.db.mlb.count_documents({
@@ -314,7 +353,7 @@ def get_player_images(player_list):
                         '$in': ['$$player.name',player_list]
                     }
                 }
-            } 
+            }
         }},
         {'$unwind': '$players'},
         {

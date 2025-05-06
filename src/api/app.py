@@ -108,6 +108,25 @@ def fetch_team_depth_chart():
 
     return cache[f'depth-chart-{team_name}']
 
+@app.route('/api/team_rank',methods=['GET'])
+def fetch_team_rank():
+    team_name = request.args.get('name')
+
+    if not team_name: return
+
+    team_stats = db.get_team_ranks(team_name)
+    if team_stats:
+        team_stats = list(team_stats)[0]
+        team_ranks = [
+            {'rank':team_stats['hr_rank'],'value':team_stats['homeruns'],'name':"Home Runs"},
+            {'rank':team_stats['runs_rank'],'value':team_stats['runs'],'name':'Runs'},
+            {'rank':team_stats['era_rank'],'value':team_stats['era'],'name':'ERA'}
+        ]
+    else:
+        team_ranks = []
+
+    return jsonify(team_ranks)
+
 @app.route('/api/player_info',methods=['GET'])
 def fetch_individual_player():
     """
