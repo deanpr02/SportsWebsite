@@ -2,9 +2,7 @@ import { useState,useEffect,useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import FilterImage from '../../assets/mlb-resources/filter.png'
 import SortImage from '../../assets/mlb-resources/sort.png'
-import { useFetchData } from '../../Hooks/useFetchData'
 import { useDatabase } from '../../Hooks/useDatabase'
-import { useFetchPlayerbase } from '../../Hooks/useFetchPlayerbase'
 import { PlayerContext } from './TeamPage'
 
 import './DepthChart.css'
@@ -12,12 +10,10 @@ import './DepthChart.css'
 const defaultPicture = "https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:silo:current.png/r_max/w_180,q_auto:best/v1/people/683679/headshot/silo/current"
 
 export default function DepthChart({teamName,primaryColor,secondaryColor}){
-    //const {data,isLoading,error} = useFetchData("http://localhost:5000/api/webscrape/players",{'name':teamName},`${teamName}-players`);
     const [sortKey,setSortKey] = useState(null)
     const {dataObj} = useDatabase('/api/depth_chart',{'name':teamName})
     const [sortDirection,setSortDirection] = useState(1)
     const [sortedAttribute,setSortedAttribute] = useState("N/A")
-    //const {baseData,isBaseLoading,baseError} = useFetchPlayerbase("http://localhost:5000/api/webscrape/players",{'name':teamName},'mlb',teamName)
     
     return(
         <div className='depth-additional'>

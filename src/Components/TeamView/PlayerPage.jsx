@@ -73,7 +73,6 @@ export default function PlayerPage({teamInfo}){
     const {playerName} = useParams()
     const {playerID,_} = useContext(PlayerContext)
     const {dataObj,isLoading} = useDatabase('/api/player_info',{'id':playerID})
-    //const { playerData, isBaseLoading, baseError } = useFetchPlayerStats("http://localhost:5000/api/webscrape/individual_player",'mlb',playerName)
     const [year, setYear] = useState('2025')
 
     return(
