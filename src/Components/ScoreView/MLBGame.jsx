@@ -6,6 +6,7 @@ import { useLineup } from '../../Hooks/useLineup'
 import { useDatabase } from '../../Hooks/useDatabase'
 
 import StadiumCloud from "./StadiumCloud"
+import UpcomingView from './UpcomingView'
 import LiveGame from './LiveGame'
 import Spinner from '../MainView/Spinner'
 import GameSimulation from './GameSimulation'
@@ -36,18 +37,12 @@ export default function MLBGame(){
 
     return(
         <div className='mlb-game-container'>
-            {true ?
+            {isLoaded ?
             <>
             <ScoreGraphic home={homeTeamInfo} away={awayTeamInfo} homeScore={homeScore} awayScore={awayScore} inning={inning} inningHalf={inningHalf}/>
             <ScoreBoard homeInfo={homeTeamInfo} awayInfo={awayTeamInfo} inning={inning} inningHalf={inningHalf} halfRuns={halfRuns}/>
             {true ? 
-            <div className='mlb-mid-score'>
-                <>
-                    <SideView city={awayTeamInfo.city} color={awayTeamInfo.primaryColor} teamName={awayTeamInfo.abbr}/>
-                    <StadiumCloud/>
-                    <SideView city={homeTeamInfo.city} color={homeTeamInfo.primaryColor} teamName={homeTeamInfo.abbr}/>
-                </>
-            </div>
+                <UpcomingView awayTeamInfo={awayTeamInfo} homeTeamInfo={homeTeamInfo}/>
             :
             <LiveGame 
                 homeInfo={homeTeamInfo} 
@@ -64,7 +59,7 @@ export default function MLBGame(){
             }
             </>
             :
-            <Spinner color={homeTeamInfo.primaryColor}/>
+            <Spinner color={'000000'}/>
         }
         </div>
     )
@@ -72,6 +67,8 @@ export default function MLBGame(){
 
 function ScoreGraphic({home,away,homeScore,awayScore,inning,inningHalf}){
     return(
+        <>
+        {home && away && 
         <div style={{display:'flex',flexDirection:'column', alignItems:'center'}}>
             <div className='mlb-score-graphic'>
                 <div style={{paddingRight:'20px'}}><img src={away.primaryLogo} style={{width:'10vh',height:'10vh',objectFit:'contain',backgroundColor:`#${away.secondaryColor}`,borderRadius:'10px',padding:'5px'}}></img></div>
@@ -88,6 +85,8 @@ function ScoreGraphic({home,away,homeScore,awayScore,inning,inningHalf}){
                 </div>
             }
         </div>
+        }
+        </>
     )
 }
 
@@ -180,7 +179,6 @@ function Inning({inningNumber,score}){
 
 function SideView({city,color,teamName}){
     const {dataObj,isLoading} = useDatabase('/api/team_rank',{'name':teamName})
-
     return(
         <div className='mlb-side-view'>
             <p>{city}</p>

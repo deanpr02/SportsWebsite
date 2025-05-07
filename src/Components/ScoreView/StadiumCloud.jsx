@@ -8,6 +8,8 @@ import PadresDepth from '../../assets/mlb-resources/stadiums/petcodepth.png'
 import Padres from '../../assets/mlb-resources/stadiums/petco_park.jpg'
 import GiantsDepth from '../../assets/mlb-resources/stadiums/oracledepth.png'
 import Giants from '../../assets/mlb-resources/stadiums/oracle_park.jpg'
+import DbacksDepth from '../../assets/mlb-resources/stadiums/chasefielddepth.png'
+import Dbacks from '../../assets/mlb-resources/stadiums/chase_field.jpg'
 
 
 import {useEffect,useMemo,useState,useRef} from 'react'
@@ -17,7 +19,7 @@ import { Canvas } from '@react-three/fiber'
 export default function StadiumCloud(){
     return(
         <div>
-            <CloudFrame stadiumSrc={Yankees} depthSrc={YankeesDepth}/>
+            <CloudFrame stadiumSrc={Dbacks} depthSrc={DbacksDepth}/>
         </div>
     )
 }
