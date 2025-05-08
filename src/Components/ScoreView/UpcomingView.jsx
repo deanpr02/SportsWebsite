@@ -10,7 +10,7 @@ export default function UpcomingView({awayTeamInfo,homeTeamInfo}){
         <div className='mlb-mid-score'>
             <>
                 <SideView city={awayTeamInfo.city} color={awayTeamInfo.primaryColor} teamName={awayTeamInfo.abbr}/>
-                <StadiumCloud/>
+                <StadiumCloud homeName={homeTeamInfo.abbr}/>
                 <SideView city={homeTeamInfo.city} color={homeTeamInfo.primaryColor} teamName={homeTeamInfo.abbr}/>
             </>
         </div>

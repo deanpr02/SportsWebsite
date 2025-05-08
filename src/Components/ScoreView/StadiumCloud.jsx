@@ -1,25 +1,18 @@
-import YankeesDepth from '../../assets/mlb-resources/stadiums/testdepth.png'
-import Yankees from '../../assets/mlb-resources/stadiums/test.png'
-import RedSoxDepth from '../../assets/mlb-resources/stadiums/fenwaydepth.png'
-import RedSox from '../../assets/mlb-resources/stadiums/fenway.jpg'
-import DodgersDepth from '../../assets/mlb-resources/stadiums/dodgerdepth.png'
-import Dodgers from '../../assets/mlb-resources/stadiums/dodger_stadium.jpg'
-import PadresDepth from '../../assets/mlb-resources/stadiums/petcodepth.png'
-import Padres from '../../assets/mlb-resources/stadiums/petco_park.jpg'
-import GiantsDepth from '../../assets/mlb-resources/stadiums/oracledepth.png'
-import Giants from '../../assets/mlb-resources/stadiums/oracle_park.jpg'
-import DbacksDepth from '../../assets/mlb-resources/stadiums/chasefielddepth.png'
-import Dbacks from '../../assets/mlb-resources/stadiums/chase_field.jpg'
-
-
 import {useEffect,useMemo,useState,useRef} from 'react'
 import { Points,OrbitControls } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 
-export default function StadiumCloud(){
+import { useRetrieveStadium } from '../../Hooks/useRetrieveStadium'
+
+export default function StadiumCloud({homeName}){
+    const stadiumImages = useRetrieveStadium(homeName)
+    console.log(stadiumImages)
+
     return(
         <div>
-            <CloudFrame stadiumSrc={Dbacks} depthSrc={DbacksDepth}/>
+            {stadiumImages && 
+                <CloudFrame stadiumSrc={stadiumImages.src} depthSrc={stadiumImages.depth}/>
+            }
         </div>
     )
 }
