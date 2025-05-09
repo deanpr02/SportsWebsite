@@ -4,6 +4,7 @@ such as postseason history and etc.
 """
 import requests
 import mlbstatsapi
+from datetime import date,timedelta
 
 from bs4 import BeautifulSoup, Comment
 
@@ -341,7 +342,8 @@ def fetch_player_info(player_id):
 
         stat = split['stat']  # This is a dict of all stat categories for the season
         for k, v in stat.items():
-            player_info['stats'][season][k] = v
+            stat_name = k.lower()
+            player_info['stats'][season][stat_name] = v
     
     response = requests.get(f'https://statsapi.mlb.com/api/v1/people/{player_id}?hydrate=awards')
 
@@ -595,6 +597,54 @@ def get_game_lineups(game_id):
         lineups['away']['pitching'].append(players[pitcher])
 
     return lineups
+
+
+def get_season_stats_from_game(gameID):
+    mlb = mlbstatsapi.Mlb()
+    player_season_stats = {}
+
+    boxscore = mlb.get_game(gameID).livedata.boxscore
+
+    home = boxscore.teams.home
+    away = boxscore.teams.away
+
+    home_players = home.players
+    for player in home_players.values():
+        if player.position.abbreviation == 'P':
+            season_stats = player.seasonstats['pitching']
+            player_season_stats[player.person.id] = season_stats
+        else:
+            season_stats = player.seasonstats['batting']
+            player_season_stats[player.person.id] = season_stats
+
+    away_players = away.players
+    for player in away_players.values():
+        if player.position.abbreviation == 'P':
+            season_stats = player.seasonstats['pitching']
+            player_season_stats[player.person.id] = season_stats
+        else:
+            season_stats = player.seasonstats['batting']
+            player_season_stats[player.person.id] = season_stats
+
+    return player_season_stats
+
+def get_todays_games(updatedGames):
+    todays_date = date.today()
+    scheduleData = requests.get(f'https://statsapi.mlb.com/api/v1/schedule/games/?sportId=1&startDate={todays_date}&endDate={todays_date}').json()
+
+    dates = scheduleData['dates']
+
+    game_ids = []
+    for d in dates:
+        games = d['games']
+        for game in games:
+            if game['status']['statusCode'] != 'F':
+                continue
+            game_id = game['gamePk']
+            if game_id not in updatedGames:
+                game_ids.append(game_id)
+    
+    return game_ids
 
 
 

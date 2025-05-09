@@ -161,7 +161,8 @@ def fetch_player_objects(images):
                     #stats_advanced = stats_obj['seasonadvanced']
                     for split in stats_basic.splits:
                         for k, v in split.stat.__dict__.items():
-                            player_stats[k] = v
+                            stat_name = k.lower()
+                            player_stats[stat_name] = v
             else:
                 stats_obj = mlb.get_player_stats(player.id,stats=STATS,groups=['hitting'],params=PARAMS).get('hitting')
 
@@ -169,7 +170,8 @@ def fetch_player_objects(images):
                     stats_basic = stats_obj['season']
                     for split in stats_basic.splits:
                         for k, v in split.stat.__dict__.items():
-                            player_stats[k] = v
+                            stat_name = k.lower()
+                            player_stats[stat_name] = v
 
             obj['stats'] = {'2025':player_stats}
 
@@ -201,9 +203,27 @@ def get_team_ranks(team_name):
         {
             '$group': {
                 '_id': '$players.team',
-                'homeruns': {'$sum': '$players.stats.2025.homeruns'},
-                'runs': {'$sum': '$players.stats.2025.runs'},
-                'era': {'$sum': '$players.stats.2025.earnedruns'}
+                'homeruns': {'$sum': {
+                    '$cond': [
+                        {'$ne': ['$players.position', 'P']},
+                        '$players.stats.2025.homeruns',
+                        0
+                    ]
+                }},
+                'runs': {'$sum': {
+                    '$cond': [
+                        {'$ne': ['$players.position', 'P']},
+                        '$players.stats.2025.runs',
+                        0
+                    ]
+                }},
+                'era': {'$sum': {
+                    '$cond': [
+                        {'$eq': ['$players.position', 'P']},
+                        '$players.stats.2025.earnedruns',
+                        0
+                    ]
+                }}
             }
         },
         {
@@ -366,6 +386,48 @@ def get_player_images(player_list):
     ])
 
     return player_images
+
+def update_db_status(current_date):
+    status = mongo.db.mlb.find_one({'update': {'$exists': True}}, {'_id': 0, 'update': 1})
+    updated_games = None
+
+    if status is None:
+        mongo.db.mlb.insert_one({'update': {'lastUpdated':current_date,'updatedTeams':[]}})
+        updated_games = []
+    else:
+        last_updated = status['update']['lastUpdated']
+        if last_updated == current_date:
+            updated_games = status['update'].get('updatedTeams', [])
+        else:
+            mongo.db.mlb.update_one(
+                {'update': {'$exists': True}},
+                {'$set': {'update.lastUpdated': current_date, 'update.updatedTeams': []}}
+            )
+            updated_games = []
+    
+    games_to_update = scraper.get_todays_games(updated_games)
+    updated_games = games_to_update + updated_games
+    mongo.db.mlb.update_one(
+                {'update': {'$exists': True}},
+                {'$set': {'update.updatedTeams': updated_games}}
+    )
+
+    return games_to_update
+    
+
+def update_season_stats(player_stats):
+    for player_id, update_fields in player_stats.items():
+        result = mongo.db.mlb.update_one(
+        {'players.id': player_id},
+        {
+            '$set': {
+                'players.$[elem].stats.2025': update_fields,
+            }
+        },
+        array_filters=[{'elem.id': player_id}]
+        )
+
+
 
 
 def preload_database():

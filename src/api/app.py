@@ -2,8 +2,10 @@ from flask import Flask,jsonify,request
 from flask_cors import CORS
 from flask_socketio import SocketIO, join_room, leave_room, emit
 from flask_jwt_extended import JWTManager,create_access_token,jwt_required,get_jwt_identity,set_access_cookies
+from flask_apscheduler import APScheduler
 from werkzeug.security import generate_password_hash,check_password_hash
 import os
+from datetime import date,datetime,timedelta
 import spider as scraper
 from util import mongo
 from dataset import parse_team_history
@@ -17,6 +19,7 @@ app.config["JWT_SESSION_COOKIE"]= True
 
 socketio = SocketIO(app,cors_allowed_origins='*')
 jwt = JWTManager(app)
+scheduler = APScheduler()
 
 mongo.init_app(app)
 
@@ -228,6 +231,18 @@ def fetch_lineup():
 
     return jsonify({'lineups':lineups,'images':player_images})
 
+#@app.route('/api/test',methods=['GET'])
+#def test():
+#    yesterday = date.today() - timedelta(days=2)
+#    yesterday_datetime = datetime.combine(yesterday, datetime.min.time())
+#    games_to_update = db.update_db_status(yesterday_datetime)
+#
+#    for game in games_to_update:
+#        player_stats = scraper.get_season_stats_from_game(game)
+#        db.update_season_stats(player_stats)
+#    
+#    return jsonify([])
+
 @app.route('/api/validate',methods=['GET'])
 @jwt_required()
 def validate():
@@ -263,7 +278,15 @@ def handle_send_message(data):
 
     emit('message',message,room=room)
 
+@scheduler.task('interval',id='update_database_stats',minutes=30)
+def update_database_stats():
+    today = date.today()
+    today_datetime = datetime.combine(today, datetime.min.time())
+    games_to_update = db.update_db_status(today_datetime)
 
+    for game in games_to_update:
+        player_stats = scraper.get_season_stats_from_game(game)
+        db.update_season_stats(player_stats)
 
 
 
@@ -279,6 +302,8 @@ if __name__ == '__main__':
     if 'sports_website' not in db_names:
         db.preload_database()
 
+    scheduler.init_app(app)
+    scheduler.start()
     socketio.run(app,debug=True)
     app.run(debug=True,port=5000)
 

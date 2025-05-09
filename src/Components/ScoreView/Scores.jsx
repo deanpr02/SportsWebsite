@@ -3,6 +3,7 @@ import { Routes,Route,useNavigate } from 'react-router-dom'
 
 import { useGetSchedule } from "../../Hooks/useGetSchedule"
 import { useRetrieveTeam } from '../../Hooks/useRetrieveTeam';
+//import { useDatabase } from '../../Hooks/useDatabase';
 
 import MLBGame from './MLBGame';
 
@@ -15,6 +16,7 @@ export default function Scores(){
     const {schedule} = useGetSchedule('MLB');
     const [homeTeam,setHomeTeam] = useState("New York Yankees");
     const [awayTeam,setAwayTeam] = useState("Boston Red Sox");
+    //const {dataObj,isLoading} = useDatabase('/api/test',{})
 
     const [currentDay,setCurrentDay] = useState(-1);
 
@@ -29,6 +31,10 @@ export default function Scores(){
             setCurrentDay(newIndex !== -1 ? newIndex : 0);
         }
     }, [schedule]);
+
+    useEffect(() => {
+
+    },[])
     
     return(
         <Routes>
@@ -44,7 +50,7 @@ export default function Scores(){
                                     <DateListing index={index} date={item.date} setCurrentDay={setCurrentDay} isSelected={false}/>
                             })}
                         </div>
-                        {schedule.length > 0 && currentDay > -1 && <GameList games={schedule[currentDay].games} setHomeTeam={setHomeTeam} setAwayTeam={setAwayTeam}/>}
+                        {schedule.length > 0 && currentDay > -1 && <GameList games={schedule[currentDay].games} />}
                     </div>
                 </>
             }/>
@@ -70,11 +76,10 @@ function DateListing({index,date,isSelected,setCurrentDay}){
     )
 }
 
-function GameList({games,setHomeTeam,setAwayTeam}){
+function GameList({games}){
 
     return(
         <div className='score-game-list'>
-            {console.log(games)}
             {games.map(((game,i) => {
                 return <Game  
                         key={i} 
